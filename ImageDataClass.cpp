@@ -5,14 +5,14 @@
 #include "ImageDataClass.h"
 
 // default constructor
-imgdata::ImageDataClass(void) : intensity(0.0) {}
+imgdata::ImageDataClass::ImageDataClass(void) : intensity(0.0) {}
 
 // custom constructor
-imgdata::ImageDataClass(unsigned char intensity) : intensity(intensity) {}
+imgdata::ImageDataClass::ImageDataClass(unsigned char intensity) : intensity(intensity) {}
 
 // destructor
-imgdata::~ImageDataClass() {}
+imgdata::ImageDataClass::~ImageDataClass() {}
 
-imgdata::getIntensity(void) {
+const unsigned char imgdata::ImageDataClass::getIntensity(void) {
     return this->intensity;
 }

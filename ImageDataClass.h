@@ -7,7 +7,7 @@
 
 #include <vector>
 
-using namespace imgdata {
+namespace imgdata {
     class ImageDataClass {
         
         private:
@@ -18,7 +18,7 @@ using namespace imgdata {
             ImageDataClass(unsigned char intensity);
             virtual ~ImageDataClass();
 
-            unsigned char getIntensity();
+            const unsigned char getIntensity();
 
     };
 }
