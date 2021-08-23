@@ -16,7 +16,6 @@ class Split
 {
 	private:
 		std::shared_ptr< std::shared_ptr<Axel[]>[] > data;
-		bool corrupt;
 		int rows, cols;
 		std::vector<std::shared_ptr<Split>> children;
 	public:
@@ -31,9 +30,9 @@ class Split
 		Split& operator=(Split && s);
 		
 		void cut();
-		void test();
-		bool getStatus();
-		void merge();
+		bool test();
+		bool fracTest();
+		std::shared_ptr< std::shared_ptr<Axel[]>[] > getData();
 		std::vector<int> getDim();
 		std::vector<std::shared_ptr<Split>> getKids();
 		friend std::ostream & operator<<(std::ostream & out, Split & s);
