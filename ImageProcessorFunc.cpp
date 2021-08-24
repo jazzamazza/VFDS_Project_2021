@@ -10,8 +10,9 @@ void func::collect(Split & parent, std::vector<Split> & collector)
 {
         if(parent.getAllFrac()) //if all 0's
         {
-		//std::cout << "all\n" << parent << std::endl;
+		std::cout << "all\n" << parent << std::endl;
                 collector.push_back(parent);
+
         }
         else
         {
@@ -23,7 +24,7 @@ void func::collect(Split & parent, std::vector<Split> & collector)
 			kid->test();
                         if(kid->getSomeFrac()) //if any 0's
                         {
-				//std::cout << "some\n" << *kid << std::endl;
+				std::cout << "some\n" << *kid << std::endl;
                                 collect(*kid, collector);
                         }
                 }

@@ -19,16 +19,17 @@ Split::Split(const Split & s): data(nullptr), allFracture(s.allFracture), someFr
 {
 	if(s.data != nullptr)
 	{
-		this->data = std::make_shared<std::shared_ptr<Pixel[]>[]> (new Pixel[this->rows]);
-		for(int x = 0; x < this->rows; x++)
+		std::shared_ptr<std::shared_ptr<Pixel[]>[]> temp(new std::shared_ptr<Pixel[]>[this->rows]);
+                for(int x = 0; x < this->rows; x++)
                 {
-			std::shared_ptr<Pixel[]> row(new Pixel[cols]);
+                	std::shared_ptr<Pixel[]> row(new Pixel[this->cols]);
                         for(int y = 0; y < this->cols; y++)
                         {
-                                row[y] = s.data[x][y];
+                        	row[y] = s.data[x][y];
                         }
-                        this->data[x] = row;
+                        temp[x] = row;
                 }
+                this->data = std::move(temp);
 	}
 	for(std::vector<std::shared_ptr<Split>>::const_iterator i = s.children.begin(); i != s.children.end(); ++i)
 	{
