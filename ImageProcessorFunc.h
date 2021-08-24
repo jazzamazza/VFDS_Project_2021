@@ -11,6 +11,7 @@
 namespace func
 {
 	void collect(Split & parent, std::vector<Split> & collector);
+	void printCollection(std::vector<Split> & coll);
 }
 
 
