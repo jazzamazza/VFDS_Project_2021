@@ -18,7 +18,7 @@ namespace imgdata {
             PartData(unsigned char intensity);
             ~PartData();
 
-            const std::vector<Pixel> getShape();
+            const std::vector<Pixel> getShape() const;
 
     };
 }

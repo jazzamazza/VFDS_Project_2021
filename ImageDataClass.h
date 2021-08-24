@@ -18,7 +18,7 @@ namespace imgdata {
             ImageDataClass(unsigned char intensity);
             virtual ~ImageDataClass();
 
-            const unsigned char getIntensity();
+            const unsigned char getIntensity() const;
 
     };
 }

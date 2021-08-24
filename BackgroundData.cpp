@@ -5,13 +5,14 @@
 #include "BackgroundData.h"
 
 // default constructor
-imgdata::BackgroundData::BackgroundData(void) : imgdata::ImageClassData::ImageClassData(), dim(0) {}
+imgdata::BackgroundData::BackgroundData(void) : imgdata::ImageDataClass(), dim(0) {}
 
 // custom constructor
-imgdata::BackgroundData::BackgroundData(unsigned char intensity, int dim) : ImageClassData(intensity), dim(dim) {}
+imgdata::BackgroundData::BackgroundData(unsigned char intensity, int dim) : imgdata::ImageDataClass(intensity), dim(dim) {}
 
+// destructor
 imgdata::BackgroundData::~BackgroundData() {}
 
-const int BackgroundData::BackgroundData::getDim() {
+const int imgdata::BackgroundData::BackgroundData::getDim() {
     return this->dim;
 }

@@ -13,6 +13,6 @@ imgdata::ImageDataClass::ImageDataClass(unsigned char intensity) : intensity(int
 // destructor
 imgdata::ImageDataClass::~ImageDataClass() {}
 
-const unsigned char imgdata::ImageDataClass::getIntensity(void) {
+const unsigned char imgdata::ImageDataClass::getIntensity(void) const{
     return this->intensity;
 }

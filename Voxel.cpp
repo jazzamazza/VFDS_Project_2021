@@ -61,16 +61,16 @@ imgdata::Voxel& imgdata::Voxel::operator=(imgdata::Voxel&& rhs) {
     return *this;
 }
 
-const std::vector<int> imgdata::Voxel::getCoords() {
+const std::vector<int> imgdata::Voxel::getCoords() const{
     return this->coords;
 }
 
-const int imgdata::Voxel::getX() {
+const int imgdata::Voxel::getX() const{
     return this->coords[0];
 }
-const int imgdata::Voxel::getY() {
+const int imgdata::Voxel::getY() const{
     return this->coords[1];
 }
-const int imgdata::Voxel::getZ() {
+const int imgdata::Voxel::getZ() const{
     return this->coords[2];
 }

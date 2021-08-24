@@ -13,10 +13,10 @@ namespace imgdata {
             int dim;
         public:
             BackgroundData(void);
-            BackgroundData(int dim);
+            BackgroundData(unsigned char intensity, int dim);
             ~BackgroundData();
 
-            int getDim();
+            const int getDim();
     };
 }
 

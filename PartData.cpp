@@ -12,6 +12,6 @@ imgdata::PartData::PartData(unsigned char intensity) : imgdata::ImageDataClass(i
 // destructor
 imgdata::PartData::~PartData() {}
 
-const std::vector<Pixel> imgdata::PartData::getShape() {
+const std::vector<Pixel> imgdata::PartData::getShape() const{
     return this->shape;
 }

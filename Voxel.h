@@ -22,13 +22,13 @@ namespace imgdata {
             Voxel(const Voxel& v);
             Voxel& operator=(const Voxel& rhs);
 
-            Voxel(const Voxel&& v);
-            Voxel& operator=(const Voxel&& rhs);
+            Voxel(Voxel&& v);
+            Voxel& operator=(Voxel&& rhs);
 
-            const std::vector<int> getCoords();
-            const int getX();
-            const int getY();
-            const int getZ();
+            const std::vector<int> getCoords() const;
+            const int getX() const;
+            const int getY() const;
+            const int getZ() const;
     };
 }
 
