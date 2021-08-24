@@ -10,19 +10,19 @@
 #include <memory>
 #include <iostream>
 
-#include "Axel.h"
+#include "Pixel.h"
 
 class Split
 {
 	private:
-		std::shared_ptr< std::shared_ptr<Axel[]>[] > data;
+		std::shared_ptr< std::shared_ptr<Pixel[]>[] > data;
 		int rows, cols;
 		std::vector<std::shared_ptr<Split>> children;
 	public:
 		//constructors
 		Split();
 		~Split();
-		Split(std::shared_ptr<std::shared_ptr<Axel[]>[]> & data, int rows, int cols);
+		Split(std::shared_ptr<std::shared_ptr<Pixel[]>[]> & data, int rows, int cols);
 		//other 4
 		Split(const Split & s);
 		Split& operator=(const Split & s);
@@ -32,7 +32,7 @@ class Split
 		void cut();
 		bool test();
 		bool fracTest();
-		std::shared_ptr< std::shared_ptr<Axel[]>[] > getData();
+		std::shared_ptr< std::shared_ptr<Pixel[]>[] > getData();
 		std::vector<int> getDim();
 		std::vector<std::shared_ptr<Split>> getKids();
 		friend std::ostream & operator<<(std::ostream & out, Split & s);

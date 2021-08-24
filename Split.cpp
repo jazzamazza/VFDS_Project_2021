@@ -12,17 +12,17 @@ Split::Split(): data(nullptr), rows(0), cols(0){}
 Split::~Split(){}
 
 //Custom
-Split::Split(std::shared_ptr<std::shared_ptr<Axel[]>[]> & data, int rows, int cols): data(data), rows(rows), cols(cols){}
+Split::Split(std::shared_ptr<std::shared_ptr<Pixel[]>[]> & data, int rows, int cols): data(data), rows(rows), cols(cols){}
 
 //Copy Constructor
 Split::Split(const Split & s): data(nullptr), rows(s.rows), cols(s.cols)
 {
 	if(s.data != nullptr)
 	{
-		this->data = std::make_shared<std::shared_ptr<Axel[]>[]> (new Axel[this->rows]);
+		this->data = std::make_shared<std::shared_ptr<Pixel[]>[]> (new Pixel[this->rows]);
 		for(int x = 0; x < this->rows; x++)
                 {
-			std::shared_ptr<Axel[]> row(new Axel[cols]);
+			std::shared_ptr<Pixel[]> row(new Pixel[cols]);
                         for(int y = 0; y < this->cols; y++)
                         {
                                 row[y] = s.data[x][y];
@@ -61,10 +61,10 @@ Split& Split::operator=(const Split & s)
 		
 		if(s.data != nullptr)
 		{
-			std::shared_ptr<std::shared_ptr<Axel[]>[]> temp(new std::shared_ptr<Axel[]>[this->rows]);
+			std::shared_ptr<std::shared_ptr<Pixel[]>[]> temp(new std::shared_ptr<Pixel[]>[this->rows]);
         	        for(int x = 0; x < this->rows; x++)
                 	{
-                        	std::shared_ptr<Axel[]> row(new Axel[this->cols]);
+                        	std::shared_ptr<Pixel[]> row(new Pixel[this->cols]);
                         	for(int y = 0; y < this->cols; y++)
                         	{
                                 	row[y] = s.data[x][y];
@@ -133,7 +133,7 @@ std::vector<int> Split::getDim()
 	return ret;
 }
 
-std::shared_ptr< std::shared_ptr<Axel[]>[] > Split::getData()
+std::shared_ptr< std::shared_ptr<Pixel[]>[] > Split::getData()
 {
 	return this->data;
 }
@@ -184,10 +184,10 @@ void Split::cut()
 	//4 Regions
 		
 	//TLeft
-	std::shared_ptr<std::shared_ptr<Axel[]>[]> tleft(new std::shared_ptr<Axel[]>[cuty]);
+	std::shared_ptr<std::shared_ptr<Pixel[]>[]> tleft(new std::shared_ptr<Pixel[]>[cuty]);
 	for(int x = 0; x < cuty; x++)
 	{
-		std::shared_ptr<Axel[]> row(new Axel[cutx]);
+		std::shared_ptr<Pixel[]> row(new Pixel[cutx]);
 		for(int y = 0; y < cutx; y++)
 		{
 			row[y] = this->data[x][y];	
@@ -197,10 +197,10 @@ void Split::cut()
 	this->children.push_back(std::make_shared<Split>(tleft, cuty, cutx));
 	
 	//BLeft
-  	std::shared_ptr<std::shared_ptr<Axel[]>[]> bleft(new std::shared_ptr<Axel[]>[rows-cuty]);
+  	std::shared_ptr<std::shared_ptr<Pixel[]>[]> bleft(new std::shared_ptr<Pixel[]>[rows-cuty]);
 	for(int x = cuty; x < rows; x++)
 	{
-		std::shared_ptr<Axel[]> row(new Axel[cutx]);
+		std::shared_ptr<Pixel[]> row(new Pixel[cutx]);
 		for(int y = 0; y < cutx; y++)
 		{
 
@@ -211,10 +211,10 @@ void Split::cut()
 	this->children.push_back(std::make_shared<Split>(bleft, rows-cuty, cutx));
 
 	//TRight
-	std::shared_ptr<std::shared_ptr<Axel[]>[]> tright(new std::shared_ptr<Axel[]>[cuty]);
+	std::shared_ptr<std::shared_ptr<Pixel[]>[]> tright(new std::shared_ptr<Pixel[]>[cuty]);
 	for(int x = 0; x < cuty; x++)
 	{
-		std::shared_ptr<Axel[]> row(new Axel[cols-cutx]);
+		std::shared_ptr<Pixel[]> row(new Pixel[cols-cutx]);
 		for(int y = cutx; y < cols; y++)
 		{
 			row[y-cutx] = this->data[x][y];
@@ -224,10 +224,10 @@ void Split::cut()
 	this->children.push_back(std::make_shared<Split>(tright, cuty, cols-cutx));
 
 	//BRight
-	std::shared_ptr<std::shared_ptr<Axel[]>[]> bright(new std::shared_ptr<Axel[]>[rows-cuty]);
+	std::shared_ptr<std::shared_ptr<Pixel[]>[]> bright(new std::shared_ptr<Pixel[]>[rows-cuty]);
 	for(int x = cuty; x < rows; x++)
 	{
-		std::shared_ptr<Axel[]> row(new Axel[cols-cutx]);
+		std::shared_ptr<Pixel[]> row(new Pixel[cols-cutx]);
 		for(int y = cutx; y < cols; y++)
 		{
 			row[y-cutx] = this->data[x][y];
