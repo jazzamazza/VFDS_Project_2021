@@ -32,28 +32,56 @@ int main(void)
 	set[2][0] = Pixel(2,0,0);
 	set[2][1] = Pixel(2,1,0);
 	set[2][2] = Pixel(2,2,0);
-	
+
+	set[7][9] = Pixel(7,9,0);
+	set[8][9] = Pixel(8,9,0);
+	set[9][9] = Pixel(9,9,0);
+	set[10][9] = Pixel(10,9,0);
+
 	//Start Split and merge
-	Split s(set, r, c);
-	std::cout << s << "\n" << std::endl;
-	
+	Split MotherSplit(set, r, c);
+	std::cout << MotherSplit << "\n" << std::endl;
+
 	//initiate collection
-	std::vector<Split> coll;
+	std::vector<Split> collection;
 
 	//test before collect
-	s.test();
+	MotherSplit.test();
 
 	//collect 
-	func::collect(s,coll);
-
-	std::cout << "collected" << std::endl;
-
+	func::collect(MotherSplit, collection);
 
 	//print
-	func::printCollection(coll);
+	//std::cout << "collected" << std::endl;
+	//func::printCollection(collection);
+		
+	std::vector<int> MSDim = MotherSplit.getDim();
+	std::shared_ptr<int[]> flatGrid(new int[MSDim[0]*MSDim[1]]);
 
 	//group into fractures
-	//for(std::vector<Split>::iterator i = coll.begin(); i != coll.end(); ++i)
+	int count = 0;
+	for(std::vector<Split>::iterator i = collection.begin(); i != collection.end(); ++i)
+	{
+		std::cout << "Split " << count++ << "\n" << *i << std::endl;
+		std::vector<Pixel> boundary = i->getBoundary();	
+		for(std::vector<Pixel>::iterator b = boundary.begin(); b != boundary.end(); ++b)
+		{
+			int index = (MSDim[1]*b->getX())+b->getY();
+			if(flatGrid[index] == 0)
+			{
+				flatGrid[index] = count;
+			}
+		}
+	}
+
+	for(int l=0;l < MSDim[0]*MSDim[1]; l++)
+	{
+		std::cout << flatGrid[l] << " ";
+		if((l+1)%MSDim[1] == 0)
+		{
+			std::cout << "" << std::endl;
+		}
+	}
 	
 	
 

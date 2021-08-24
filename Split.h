@@ -35,8 +35,11 @@ class Split
 		bool getAllFrac();
 		bool getSomeFrac();
 		std::shared_ptr< std::shared_ptr<Pixel[]>[] > getData();
-		std::vector<int> getDim();
+		int getRows();
+		int getCols();
+		std::vector<int> getDim(); //remove (in use)
 		std::vector<std::shared_ptr<Split>> getKids();
+		std::vector<Pixel> getBoundary();
 		friend std::ostream & operator<<(std::ostream & out, Split & s);
 		
 

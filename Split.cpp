@@ -137,6 +137,16 @@ std::vector<int> Split::getDim()
 	return ret;
 }
 
+int Split::getRows()
+{
+	return this->rows;
+}
+
+int Split::getCols()
+{
+	return this->cols;
+}
+
 std::shared_ptr< std::shared_ptr<Pixel[]>[] > Split::getData()
 {
 	return this->data;
@@ -242,6 +252,30 @@ void Split::cut()
 	}
 	this->data.reset();
 }
+
+std::vector<Pixel> Split::getBoundary()
+{
+	std::vector<Pixel> boundary;
+	if(this->data != nullptr)
+	{
+		for(int x=0; x < this->rows; x++)
+		{
+			for(int y=0; y < this->cols; y++)
+			{
+				if( (x==0) || (x==(this->rows-1)) )
+				{
+					boundary.push_back(this->data[x][y]);
+				}
+				else if( (y==0) || (y==(this->cols-1)) )
+				{
+					boundary.push_back(this->data[x][y]);
+				}
+			}
+		}
+	}
+	return boundary;
+}
+
 
 std::ostream & operator<<(std::ostream & out, Split & s)
 {
