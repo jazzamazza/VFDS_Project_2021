@@ -17,6 +17,7 @@ class Split
 	private:
 		std::shared_ptr< std::shared_ptr<Pixel[]>[] > data;
 		int rows, cols;
+		bool allFracture, someFracture; 
 		std::vector<std::shared_ptr<Split>> children;
 	public:
 		//constructors
@@ -30,8 +31,9 @@ class Split
 		Split& operator=(Split && s);
 		
 		void cut();
-		bool test();
-		bool fracTest();
+		void test();
+		bool getAllFrac();
+		bool getSomeFrac();
 		std::shared_ptr< std::shared_ptr<Pixel[]>[] > getData();
 		std::vector<int> getDim();
 		std::vector<std::shared_ptr<Split>> getKids();

@@ -6,16 +6,16 @@
 #include "Split.h"
 
 //Default
-Split::Split(): data(nullptr), rows(0), cols(0){}
+Split::Split(): data(nullptr), allFracture(NULL), someFracture(NULL), rows(0), cols(0){}
 
 //Destructor
 Split::~Split(){}
 
 //Custom
-Split::Split(std::shared_ptr<std::shared_ptr<Pixel[]>[]> & data, int rows, int cols): data(data), rows(rows), cols(cols){}
+Split::Split(std::shared_ptr<std::shared_ptr<Pixel[]>[]> & data, int rows, int cols): data(data), allFracture(NULL), someFracture(NULL), rows(rows), cols(cols){}
 
 //Copy Constructor
-Split::Split(const Split & s): data(nullptr), rows(s.rows), cols(s.cols)
+Split::Split(const Split & s): data(nullptr), allFracture(s.allFracture), someFracture(s.someFracture), rows(s.rows), cols(s.cols)
 {
 	if(s.data != nullptr)
 	{
@@ -50,6 +50,8 @@ Split& Split::operator=(const Split & s)
 			}
 			this->data.reset();
 		}
+		this->allFracture = s.allFracture;
+		this->someFracture = s.someFracture;
 		this->rows = s.rows;
 		this->cols = s.cols;
 		
@@ -78,7 +80,7 @@ Split& Split::operator=(const Split & s)
 }
 
 //Move Constructor 
-Split::Split(Split && s): data(nullptr), rows(s.rows), cols(s.cols)
+Split::Split(Split && s): data(nullptr), allFracture(s.allFracture), someFracture(s.someFracture), rows(s.rows), cols(s.cols)
 {
 	for(std::vector<std::shared_ptr<Split>>::iterator i = s.children.begin(); i != s.children.end(); ++i)
 	{
@@ -109,7 +111,8 @@ Split& Split::operator=(Split && s)
 		{
 			this->data = std::move(s.data);
 		}
-
+		this->allFracture = s.allFracture;
+		this->someFracture = s.someFracture;
                 this->rows = s.rows;
                 this->cols = s.cols;
 
@@ -138,39 +141,34 @@ std::shared_ptr< std::shared_ptr<Pixel[]>[] > Split::getData()
 	return this->data;
 }
 
-bool Split::test()
+void Split::test()
 {
-	bool ret = false;
-
+	this->someFracture = false;
+	this->allFracture = true;
 	for(int y=0; y < this->rows; y++)
 	{
 		for(int x = 0; x < this->cols; x++)
 		{
 			if (this->data[y][x].getIntensity() == 0)
 			{
-				ret = true;
+				this->someFracture = true;
+			}
+			if (this->data[y][x].getIntensity() != 0)
+			{
+				this->allFracture = false;
 			}			
 		}
 	}
-	return ret;
 }
 
-bool Split::fracTest()
+bool Split::getAllFrac()
 {
-	bool ret = true;
+	return this->allFracture;
+}
 
-        for(int y=0; y < this->rows; y++)
-        {
-                for(int x = 0; x < this->cols; x++)
-                {
-                        if (this->data[y][x].getIntensity() != 0)
-                        {
-                                ret = false;
-                        }
-                }
-        }
-        return ret;
-
+bool Split::getSomeFrac()
+{
+	return this->someFracture;
 }
 
 void Split::cut()

@@ -30,6 +30,8 @@ int main(void)
 	Split s(set, r, c);
 	std::cout << s << "\n" << std::endl;
 	std::vector<Split> coll;
+	s.test();
+
 	func::collect(s,coll);
 	for(std::vector<Split>::iterator i = coll.begin(); i != coll.end(); ++i)
 	{
