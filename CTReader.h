@@ -3,6 +3,7 @@
 #ifndef CTREADER_H
 #define CTREADER_H
 
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <memory>

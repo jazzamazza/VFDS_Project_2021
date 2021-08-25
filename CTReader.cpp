@@ -23,11 +23,13 @@ imgdata::Voxel*** imgread::CTReader::readPGMStack(const std::string& header, con
 
     // read the PGM files in
     // iterate through the files based on their index
-    for(int z = 0; z < dim; ++z) {
+    for(int depth = 0; depth < dim; ++depth) {
         
-        std::string filename = header + std::to_string(z) + ".pgm";
+        // this treats the CT location as a directory with the name template: [shape][dim]
+        std::string filepath = header+std::to_string(dim);
+        std::string filename = header + std::to_string(depth) + ".pgm";
         //read the PGM file in, the index is appended to the filename
-        std::ifstream in(filename, std::ios::binary);
+        std::ifstream in(filepath+"/"+filename, std::ios::binary);
         std::string line = "";
 
         //check if file is PGM from opening line
@@ -47,7 +49,39 @@ imgdata::Voxel*** imgread::CTReader::readPGMStack(const std::string& header, con
         std::getline(in, line);
         std::getline(in, line);
 
+        for(int cols = 0; cols < dim; ++cols) {
+            //create a buffer to read in the pgm binary data
+            char* buffer = new char[dim];
+            in.read(buffer, dim);
+
+            for(int rows = 0; rows < dim; ++rows) {
+                // Insert a Voxel item into the 3D array containing each coordinate point and the intensity at that point of the PGM image
+                // Necessary for split and merge algorithm
+                imgArr3D[depth][cols][rows] = imgdata::Voxel(rows, cols, depth, (unsigned char)buffer[rows]);
+            }
+            // delete the dynamically allocated buffer
+            delete[] buffer;
+        }
+        // close filestream
+        in.close();
+
     }
+
+    return imgArr3D;
 }
 
+int main(void) {
+    imgread::CTReader ctr;
+    imgdata::Voxel*** vox = ctr.imgread::CTReader::readPGMStack("cross", 128);
+    /** Leaving main() in for testing purposes
+    for(int i = 0; i < 128; ++i) {
+        std::cout << "test" << std::endl;
+        for(int j = 0; j < 128; ++j) {
+            for(int k = 0; k < 128; ++k) {
+                std::cout << vox[k][j][i].getX() << std::endl;
+            }
+        }
+    }*/
+    return 0;
+}
 
