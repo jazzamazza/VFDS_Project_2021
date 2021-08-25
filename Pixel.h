@@ -6,6 +6,8 @@
 #ifndef PIXEL_H
 #define PIXEL_H
 
+#include <ostream>
+
 class Pixel
 {
 	private:
@@ -25,6 +27,7 @@ class Pixel
 		int getX();
 		int getY();
 		unsigned char getIntensity();
+		friend std::ostream & operator<<(std::ostream & out, Pixel & a);
 
 };
 

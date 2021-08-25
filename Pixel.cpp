@@ -54,3 +54,8 @@ unsigned char Pixel::getIntensity()
 	return this->intensity;
 }
 
+std::ostream & operator<<(std::ostream & out, Pixel & a)
+{
+	out << "(" << a.x << ", " << a.y << ")-> " << int(a.intensity);
+	return out;
+}

@@ -12,6 +12,7 @@ namespace func
 {
 	void collect(Split & parent, std::vector<Split> & collector);
 	void printCollection(std::vector<Split> & coll);
+	void plotNeighbours(std::shared_ptr<int[]> & flatGrid, int index, int val, std::vector<int> dim);
 }
 
 
