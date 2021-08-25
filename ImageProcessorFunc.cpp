@@ -48,3 +48,31 @@ void func::printCollection(std::vector<Split> & coll)
 
 }
 
+
+void func::plotNeighbours(std::shared_ptr<int[]> & flatGrid, int index, int val, std::vector<int> dim)
+{
+	std::vector<int> actions = {-1, 1, -dim[1], dim[1]};
+	if(index%dim[1] == 0)
+	{
+		actions[0] = 0;	
+	}
+	if(index%dim[1] == dim[1]-1)
+	{
+		actions[1] = 0;
+	}
+	if(index/dim[1]==0)
+	{
+		actions[2] = 0;
+	}
+	if(index/dim[1] == dim[0]-1)
+	{
+		actions[3] = 0;
+	}
+	for(std::vector<int>::iterator a = actions.begin(); a != actions.end(); ++a)
+	{
+		int nIndex = index + *a;
+		flatGrid[nIndex] = val;
+
+	}
+}
+
