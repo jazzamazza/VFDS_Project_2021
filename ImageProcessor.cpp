@@ -48,6 +48,8 @@ int main(void)
 	set[9][9] = Pixel(9,9,0);
 	set[10][9] = Pixel(10,9,0);
 
+
+
 	//Start Split and merge
 	Split MotherSplit(set, r, c);
 	std::cout << MotherSplit << "\n" << std::endl;
