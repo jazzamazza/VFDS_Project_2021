@@ -4,32 +4,51 @@
  */
 
 #include "Split.h"
-
+using namespace imgdata;
 //Default
-Split::Split(): data(nullptr), allFracture(NULL), someFracture(NULL), rows(0), cols(0){}
+Split::Split(): data(nullptr), allFracture(NULL), someFracture(NULL), depth(0), rows(0), cols(0){}
 
 //Destructor
-Split::~Split(){}
+Split::~Split()
+{
+	if(this->data != nullptr)
+	{
+		for(int z = 0; z < this->depth; z++)
+		{
+			for(int x = 0; x < this->rows; x++)
+			{
+				delete [] data[z][x];
+			}
+			delete [] data[z];
+		}
+		delete [] data;	
+	}
+}
 
 //Custom
-Split::Split(std::shared_ptr<std::shared_ptr<Pixel[]>[]> & data, int rows, int cols): data(data), allFracture(NULL), someFracture(NULL), rows(rows), cols(cols){}
+Split::Split(Voxel*** & data, int depth, int rows, int cols): data(data), allFracture(NULL), someFracture(NULL), depth(depth), rows(rows), cols(cols){}
 
 //Copy Constructor
-Split::Split(const Split & s): data(nullptr), allFracture(s.allFracture), someFracture(s.someFracture), rows(s.rows), cols(s.cols)
+Split::Split(const Split & s): data(nullptr), allFracture(s.allFracture), someFracture(s.someFracture), depth(s.depth), rows(s.rows), cols(s.cols)
 {
 	if(s.data != nullptr)
 	{
-		std::shared_ptr<std::shared_ptr<Pixel[]>[]> temp(new std::shared_ptr<Pixel[]>[this->rows]);
-                for(int x = 0; x < this->rows; x++)
-                {
-                	std::shared_ptr<Pixel[]> row(new Pixel[this->cols]);
-                        for(int y = 0; y < this->cols; y++)
-                        {
-                        	row[y] = s.data[x][y];
-                        }
-                        temp[x] = row;
-                }
-                this->data = std::move(temp);
+		Voxel*** cube = new Voxel** [this->depth];
+		for(int z = 0; z < this->depth; z++)
+		{
+			Voxel** grid = new Voxel* [this->rows];
+                	for(int x = 0; x < this->rows; x++)
+                	{
+                		Voxel* row = new Voxel[this->cols];
+                        	for(int y = 0; y < this->cols; y++)
+                        	{
+                        		row[y] = s.data[z][x][y];
+                        	}
+                        	grid[x] = row;
+                	}
+			cube[z] = grid;
+		}
+                this->data = std::move(cube);
 	}
 	for(std::vector<std::shared_ptr<Split>>::const_iterator i = s.children.begin(); i != s.children.end(); ++i)
 	{
@@ -45,14 +64,20 @@ Split& Split::operator=(const Split & s)
 	{
 		if(this->data != nullptr)
 		{
-			for(int x = 0; x < this->rows; x++)
-			{
-				this->data[x].reset();
-			}
-			this->data.reset();
-		}
+                	for(int z = 0; z < this->depth; z++)
+                	{
+                       		for(int x = 0; x < this->rows; x++)
+                       		{
+                               		delete [] data[z][x];
+                       		}
+                       		delete [] data[z];
+                	}
+                	delete [] data;
+        	}
+
 		this->allFracture = s.allFracture;
 		this->someFracture = s.someFracture;
+		this->depth = s.depth;
 		this->rows = s.rows;
 		this->cols = s.cols;
 		
@@ -64,24 +89,29 @@ Split& Split::operator=(const Split & s)
 		
 		if(s.data != nullptr)
 		{
-			std::shared_ptr<std::shared_ptr<Pixel[]>[]> temp(new std::shared_ptr<Pixel[]>[this->rows]);
-        	        for(int x = 0; x < this->rows; x++)
+			Voxel*** cube = new Voxel** [this->depth];
+                	for(int z = 0; z < this->depth; z++)
                 	{
-                        	std::shared_ptr<Pixel[]> row(new Pixel[this->cols]);
-                        	for(int y = 0; y < this->cols; y++)
+                        	Voxel** grid = new Voxel* [this->rows];
+                        	for(int x = 0; x < this->rows; x++)
                         	{
-                                	row[y] = s.data[x][y];
-                        	}
-                        	temp[x] = row;
+                                	Voxel* row = new Voxel[this->cols];
+                                	for(int y = 0; y < this->cols; y++)
+                                	{
+                                	        row[y] = s.data[z][x][y];
+                                	}
+                                	grid[x] = row;
+                        	}	
+                        	cube[z] = grid;
                 	}
-			this->data = std::move(temp);	
+                	this->data = std::move(cube);
 		}
 	}
 	return *this;
 }
 
 //Move Constructor 
-Split::Split(Split && s): data(nullptr), allFracture(s.allFracture), someFracture(s.someFracture), rows(s.rows), cols(s.cols)
+Split::Split(Split && s): data(nullptr), allFracture(s.allFracture), someFracture(s.someFracture), depth(s.depth), rows(s.rows), cols(s.cols)
 {
 	for(std::vector<std::shared_ptr<Split>>::iterator i = s.children.begin(); i != s.children.end(); ++i)
 	{
@@ -102,11 +132,15 @@ Split& Split::operator=(Split && s)
 	{
 		if(this->data != nullptr)
 		{
-			for(int x = 0; x < this->rows; x++)
+			for(int z = 0; z < this->depth; z++)
                         {
-                                this->data[x].reset();
+                                for(int x = 0; x < this->rows; x++)
+                                {
+                                        delete [] data[z][x];
+                                }
+                                delete [] data[z];
                         }
-                        this->data.reset();
+                        delete [] data;
 		}
 		if(s.data != nullptr)
 		{
@@ -114,6 +148,7 @@ Split& Split::operator=(Split && s)
 		}
 		this->allFracture = s.allFracture;
 		this->someFracture = s.someFracture;
+		this->depth = s.depth;
                 this->rows = s.rows;
                 this->cols = s.cols;
 
@@ -133,8 +168,13 @@ std::vector<std::shared_ptr<Split>> Split::getKids()
 
 std::vector<int> Split::getDim()
 {
-	std::vector<int> ret({this->rows, this->cols});
+	std::vector<int> ret({this->depth, this->rows, this->cols});
 	return ret;
+}
+
+int Split::getDepth()
+{
+	return this->depth;
 }
 
 int Split::getRows()
@@ -147,7 +187,7 @@ int Split::getCols()
 	return this->cols;
 }
 
-std::shared_ptr< std::shared_ptr<Pixel[]>[] > Split::getData()
+Voxel*** Split::getData()
 {
 	return this->data;
 }
@@ -156,20 +196,23 @@ void Split::test()
 {
 	this->someFracture = false;
 	this->allFracture = true;
-	for(int y=0; y < this->rows; y++)
+	for(int z=0; z<this->depth; z++)
 	{
-		for(int x = 0; x < this->cols; x++)
+		for(int x=0; x < this->rows; x++)
 		{
-			if (this->data[y][x].getIntensity() == 0)
+			for(int y = 0; y < this->cols; y++)
 			{
-				this->someFracture = true;
+				if (this->data[z][x][y].getIntensity() == 0)
+				{
+					this->someFracture = true;
+				}
+				if (this->data[z][x][y].getIntensity() != 0)
+				{
+					this->allFracture = false;
+				}			
 			}
-			if (this->data[y][x].getIntensity() != 0)
-			{
-				this->allFracture = false;
-			}			
 		}
-	}
+	}	
 }
 
 bool Split::getAllFrac()
@@ -184,91 +227,194 @@ bool Split::getSomeFrac()
 
 void Split::cut()
 {
-	
 	//get cut spot
-	int cutx = cols/2;
-	int cuty = rows/2;
-	
+	int cuty = cols/2;
+	int cutx = rows/2;
+	int cutz = depth/2;
 		
-	//4 Regions
+	//8 Regions
 		
-	//TLeft
-	std::shared_ptr<std::shared_ptr<Pixel[]>[]> tleft(new std::shared_ptr<Pixel[]>[cuty]);
-	for(int x = 0; x < cuty; x++)
+	//1 TBL - Top Back Left
+	Voxel*** TBLcube = new Voxel**[cutz];
+	for(int z = 0; z < cutz; z++)
 	{
-		std::shared_ptr<Pixel[]> row(new Pixel[cutx]);
-		for(int y = 0; y < cutx; y++)
+		Voxel** grid = new Voxel*[cutx];
+		for(int x = 0; x < cutx; x++)
 		{
-			row[y] = this->data[x][y];	
+			Voxel* row = new Voxel[cuty];
+			for(int y = 0; y < cuty; y++)
+			{
+				row[y] = this->data[z][x][y];	
+			}
+			grid[x] = row;
 		}
-		tleft[x] = row;
+		TBLcube[z] = grid;
 	}
-	this->children.push_back(std::make_shared<Split>(tleft, cuty, cutx));
+	this->children.push_back(std::make_shared<Split>(TBLcube, cutz, cutx, cuty));
+
+	//2 TBR - Top Back Right
+	Voxel*** TBRcube = new Voxel**[cutz];
+        for(int z = 0; z < cutz; z++)
+        {
+                Voxel** grid = new Voxel*[cutx];
+                for(int x = 0; x < cutx; x++)
+                {
+                        Voxel* row = new Voxel[cols-cuty];
+                        for(int y = cuty; y < cols; y++)
+                        {
+                                row[y] = this->data[z][x][y];
+                        }
+                        grid[x] = row;
+                }
+                TBRcube[z] = grid;
+        }
+        this->children.push_back(std::make_shared<Split>(TBRcube, cutz, cutx, cols-cuty)); 
 	
-	//BLeft
-  	std::shared_ptr<std::shared_ptr<Pixel[]>[]> bleft(new std::shared_ptr<Pixel[]>[rows-cuty]);
-	for(int x = cuty; x < rows; x++)
-	{
-		std::shared_ptr<Pixel[]> row(new Pixel[cutx]);
-		for(int y = 0; y < cutx; y++)
-		{
+	//3 TFL - Top Front Left
+	Voxel*** TFLcube = new Voxel**[cutz];
+        for(int z = 0; z < cutz; z++)
+        {
+                Voxel** grid = new Voxel*[rows-cutx];
+                for(int x = cutx; x < rows; x++)
+                {
+                        Voxel* row = new Voxel[cuty];
+                        for(int y = 0; y < cuty; y++)
+                        {
+                                row[y] = this->data[z][x][y];
+                        }
+                        grid[x] = row;
+                }
+                TFLcube[z] = grid;
+        }
+        this->children.push_back(std::make_shared<Split>(TFLcube, cutz, rows-cutx, cuty));
+	
+	//4 TFR - Top Front Right
+	Voxel*** TFRcube = new Voxel**[cutz];
+        for(int z = 0; z < cutz; z++)
+        {
+                Voxel** grid = new Voxel*[rows-cutx];
+                for(int x = cutx; x < rows; x++)
+                {
+                        Voxel* row = new Voxel[cols-cuty];
+                        for(int y = cuty; y < cols; y++)
+                        {
+                                row[y] = this->data[z][x][y];
+                        }
+                        grid[x] = row;
+                }
+                TFRcube[z] = grid;
+        }
+        this->children.push_back(std::make_shared<Split>(TFRcube, cutz, rows-cutx, cols-cuty));
 
-			row[y] = this->data[x][y];
-		}
-		bleft[x-cuty] = row;
-	}
-	this->children.push_back(std::make_shared<Split>(bleft, rows-cuty, cutx));
+	//5 BBL - Bottom Back Left
+	Voxel*** BBLcube = new Voxel**[depth-cutz];
+        for(int z = cutz; z < depth; z++)
+        {
+                Voxel** grid = new Voxel*[cutx];
+                for(int x = 0; x < cutx; x++)
+                {
+                        Voxel* row = new Voxel[cuty];
+                        for(int y = 0; y < cuty; y++)
+                        {
+                                row[y] = this->data[z][x][y];
+                        }
+                        grid[x] = row;
+                }
+                BBLcube[z] = grid;
+        }
+        this->children.push_back(std::make_shared<Split>(BBLcube, depth-cutz, cutx, cuty));
 
-	//TRight
-	std::shared_ptr<std::shared_ptr<Pixel[]>[]> tright(new std::shared_ptr<Pixel[]>[cuty]);
-	for(int x = 0; x < cuty; x++)
-	{
-		std::shared_ptr<Pixel[]> row(new Pixel[cols-cutx]);
-		for(int y = cutx; y < cols; y++)
-		{
-			row[y-cutx] = this->data[x][y];
-		}
-		tright[x] = row;
-	}
-	this->children.push_back(std::make_shared<Split>(tright, cuty, cols-cutx));
+	//6 BBR - Bottom Back Right
+	Voxel*** BBRcube = new Voxel**[depth-cutz];
+        for(int z = cutz; z < depth; z++)
+        {
+                Voxel** grid = new Voxel*[cutx];
+                for(int x = 0; x < cutx; x++)
+                {
+                        Voxel* row = new Voxel[cols-cuty];
+                        for(int y = cols; y < cuty; y++)
+                        {
+                                row[y] = this->data[z][x][y];
+                        }
+                        grid[x] = row;
+                }
+                BBRcube[z] = grid;
+        }
+        this->children.push_back(std::make_shared<Split>(BBRcube, depth-cutz, cutx, cols-cuty));
 
-	//BRight
-	std::shared_ptr<std::shared_ptr<Pixel[]>[]> bright(new std::shared_ptr<Pixel[]>[rows-cuty]);
-	for(int x = cuty; x < rows; x++)
-	{
-		std::shared_ptr<Pixel[]> row(new Pixel[cols-cutx]);
-		for(int y = cutx; y < cols; y++)
-		{
-			row[y-cutx] = this->data[x][y];
-		}
-		bright[x-cuty] = row;
-	}
-	this->children.push_back(std::make_shared<Split>(bright, rows-cuty, cols-cutx));
+	//7 BFL - Bottom Front Left
+	Voxel*** BFLcube = new Voxel**[depth-cutz];
+        for(int z = cutz; z < depth; z++)
+        {
+                Voxel** grid = new Voxel*[rows-cutx];
+                for(int x = cutx; x < rows; x++)
+                {
+                        Voxel* row = new Voxel[cuty];
+                        for(int y = 0; y < cuty; y++)
+                        {
+                                row[y] = this->data[z][x][y];
+                        }
+                        grid[x] = row;
+                }
+                BFLcube[z] = grid;
+        }
+        this->children.push_back(std::make_shared<Split>(BFLcube, depth-cutz, rows-cutx, cuty));
+
+	//8 BFR - Bottom Front Right
+	Voxel*** BFRcube = new Voxel**[depth-cutz];
+        for(int z = cutz; z < depth; z++)
+        {
+                Voxel** grid = new Voxel*[rows-cutx];
+                for(int x = cutx; x < rows; x++)
+                {
+                        Voxel* row = new Voxel[cols-cuty];
+                        for(int y = cuty; y < cols; y++)
+                        {
+                                row[y] = this->data[z][x][y];
+                        }
+                        grid[x] = row;
+                }
+                BFRcube[z] = grid;
+        }
+        this->children.push_back(std::make_shared<Split>(BFRcube, depth-cutz, rows-cutx, cols-cuty));
 
 	//delete parent data
-	for(int x = 0; x < this->rows; x++)
-	{
-		this->data[x].reset();
-	}
-	this->data.reset();
+	for(int z = 0; z < this->depth; z++)
+        {
+        	for(int x = 0; x < this->rows; x++)
+                {
+                	delete [] data[z][x];
+                }
+                delete [] data[z];
+        }
+        delete [] data;
+
+	
 }
 
-std::vector<Pixel> Split::getBoundary()
+std::vector<Voxel> Split::getBoundary()
 {
-	std::vector<Pixel> boundary;
+	std::vector<Voxel> boundary;
 	if(this->data != nullptr)
 	{
-		for(int x=0; x < this->rows; x++)
+		for(int z=0; z < this->depth; z++)
 		{
-			for(int y=0; y < this->cols; y++)
+			for(int x=0; x < this->rows; x++)
 			{
-				if( (x==0) || (x==(this->rows-1)) )
-				{
-					boundary.push_back(this->data[x][y]);
-				}
-				else if( (y==0) || (y==(this->cols-1)) )
-				{
-					boundary.push_back(this->data[x][y]);
+				for(int y=0; y < this->cols; y++)
+				{	
+					if( (z==0) || (z==(this->depth-1)) )
+					{
+						boundary.push_back(this->data[z][x][y]);
+					}
+					else if( (x==0) || (x==(this->rows-1)) )
+					{
+						boundary.push_back(this->data[z][x][y]);
+					}
+					else if( (y==0) || (y==(this->cols-1)) )
+					{
+						boundary.push_back(this->data[z][x][y]);
+					}
 				}
 			}
 		}
@@ -279,16 +425,23 @@ std::vector<Pixel> Split::getBoundary()
 
 std::ostream & operator<<(std::ostream & out, Split & s)
 {
-	for(int x = 0; x < s.rows; x++)
-        {
-                for(int y = 0; y < s.cols; y++)
-                {
-                        out << int(s.data[x][y].getIntensity()) << " ";
-                }
-                if(x < s.rows-1)
-                {
-                        out << std::endl;
-                }
+	for(int z = 0; z < s.depth; z++)
+	{
+		for(int x = 0; x < s.rows; x++)
+        	{
+                	for(int y = 0; y < s.cols; y++)
+                	{
+                        	out << int(s.data[x][y].getIntensity()) << " ";
+                	}
+                	if(x < s.rows-1)
+                	{
+                        	out << std::endl;
+                	}
+		}
+		if(z < s.depth-1)
+		{
+			out << "\n" << std::endl;
+		}	
         }
         return out;
 

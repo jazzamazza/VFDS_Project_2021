@@ -4,26 +4,33 @@
  */
 
 #include "Split.h"
+#include "Voxel.h"
 #include "ImageProcessorFunc.h"
-
+using namespace imgdata;
 int main(void)
 {
 	//construct Set
+	int d = 11;
 	int r = 11;
 	int c = 11;
-	std::shared_ptr< std::shared_ptr<Pixel[]>[] > set(new std::shared_ptr<Pixel[]>[r]);
-	int u = 1;
-	for(int i = 0; i < r; i++)
+
+	Voxel*** cube = new Voxel**[d];
+	for(int z = 0; z < d; z++)
 	{
-		std::shared_ptr<Pixel[]> row(new Pixel[c]);
-		for(int p = 0; p < c; p++)
+		Voxel** set = new Voxel*[r];
+		for(int x = 0; x < r; x++)
 		{
-			row[p] = Pixel(i,p,1);
+			Voxel * row = new Voxel[c];
+			for(int y = 0; y < c; y++)
+			{
+				row[y] = Voxel(z,x,y,1);
+			}
+			set[x] = row;
 		}
-		set[i] = row;
+		cube[z] = set;
 	}
 	//make fracture
-	set[0][0] = Pixel(0,0,0);
+	/*set[0][0] = Pixel(0,0,0);
 	set[0][1] = Pixel(0,1,0);
 	set[0][2] = Pixel(0,2,0);
 	set[0][3] = Pixel(0,3,0);
@@ -46,14 +53,14 @@ int main(void)
 	set[7][9] = Pixel(7,9,0);
 	set[8][9] = Pixel(8,9,0);
 	set[9][9] = Pixel(9,9,0);
-	set[10][9] = Pixel(10,9,0);
+	set[10][9] = Pixel(10,9,0);*/
 
 
 
 	//Start Split and merge
-	Split MotherSplit(set, r, c);
+	Split MotherSplit(cube, d, r, c);
 	std::cout << MotherSplit << "\n" << std::endl;
-
+/*
 	//initiate collection
 	std::vector<Split> collection;
 
@@ -139,14 +146,14 @@ int main(void)
 	}
 
 
-	/*for(int l=0;l < MSDim[0]*MSDim[1]; l++)
+	for(int l=0;l < MSDim[0]*MSDim[1]; l++)
 	{
 		std::cout << flatGrid[l] << " ";
 		if((l+1)%MSDim[1] == 0)
 		{
 			std::cout << "" << std::endl;
 		}
-	}*/
+	}
 
 	for(int t =0; t < fractures.size();t++)
 	{
@@ -154,7 +161,7 @@ int main(void)
 		func::printCollection(fractures[t]);
 		
 	}
-
+*/
 	
 	
 
