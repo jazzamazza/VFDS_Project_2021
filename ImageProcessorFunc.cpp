@@ -5,7 +5,7 @@
 
 #include "ImageProcessorFunc.h"
 #include "Split.h"
-
+/*
 void func::collect(Split & parent, std::vector<Split> & collector)
 {
         if(parent.getAllFrac()) //if all 0's
@@ -75,4 +75,4 @@ void func::plotNeighbours(std::shared_ptr<int[]> & flatGrid, int index, int val,
 
 	}
 }
-
+*/

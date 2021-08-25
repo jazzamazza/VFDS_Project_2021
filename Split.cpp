@@ -431,7 +431,7 @@ std::ostream & operator<<(std::ostream & out, Split & s)
         	{
                 	for(int y = 0; y < s.cols; y++)
                 	{
-                        	out << int(s.data[x][y].getIntensity()) << " ";
+                        	out << int(s.data[x][y][z].getIntensity()) << " ";
                 	}
                 	if(x < s.rows-1)
                 	{

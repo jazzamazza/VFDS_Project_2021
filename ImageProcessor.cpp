@@ -6,9 +6,10 @@
 #include "Split.h"
 #include "Voxel.h"
 #include "ImageProcessorFunc.h"
-using namespace imgdata;
+
 int main(void)
 {
+	using namespace imgdata;
 	//construct Set
 	int d = 11;
 	int r = 11;
