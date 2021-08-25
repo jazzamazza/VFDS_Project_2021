@@ -1,8 +1,12 @@
 // Header file for the CTReader class
 
+#ifndef CTREADER_H
+#define CTREADER_H
+
 #include <iostream>
 #include <string>
 #include <memory>
+#include "Voxel.h"
 
 namespace imgread {
     class CTReader {
@@ -11,7 +15,9 @@ namespace imgread {
             CTReader(void);
             ~CTReader();
 
-            std::vector< std::vector < std::vector<unsigned char[]>[]>[]> readPGMStack(const std::string header, const int dim);
+            imgdata::Voxel*** readPGMStack(const std::string& header, const int& dim);
 
     };
 }
+
+#endif
