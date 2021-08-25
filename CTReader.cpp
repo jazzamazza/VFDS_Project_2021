@@ -7,6 +7,7 @@
 imgread::CTReader::CTReader(void) {}
 imgread::CTReader::~CTReader() {}
 
+// Reads a PGM stack into a dynamically allocated 3d array of Voxel objects and returns it
 imgdata::Voxel*** imgread::CTReader::readPGMStack(const std::string& header, const int& dim) {
     
     // declare a dynamic 3D array of Voxels
@@ -70,6 +71,17 @@ imgdata::Voxel*** imgread::CTReader::readPGMStack(const std::string& header, con
     return imgArr3D;
 }
 
+// iteratively deletes the 3D Voxel array
+void imgread::CTReader::deletePGMStack(imgdata::Voxel***& imgArr3D, int dim) {
+    for(int i=0; i < dim; ++i) {
+        for(int j=0; j < dim; ++j) {
+            delete[] imgArr3D[i][j];
+        }
+        delete[] imgArr3D[i];
+    }
+    delete[] imgArr3D;
+}
+
 int main(void) {
     imgread::CTReader ctr;
     imgdata::Voxel*** vox = ctr.imgread::CTReader::readPGMStack("cross", 128);
@@ -82,6 +94,7 @@ int main(void) {
             }
         }
     }*/
+    ctr.imgread::CTReader::deletePGMStack(vox, 128);
     return 0;
 }
 
