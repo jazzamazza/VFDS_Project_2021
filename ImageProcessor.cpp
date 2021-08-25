@@ -31,37 +31,23 @@ int main(void)
 		cube[z] = set;
 	}
 	//make fracture
-	/*set[0][0] = Pixel(0,0,0);
-	set[0][1] = Pixel(0,1,0);
-	set[0][2] = Pixel(0,2,0);
-	set[0][3] = Pixel(0,3,0);
-
-	set[1][0] = Pixel(1,0,0);
-	set[1][1] = Pixel(1,1,0);
-	set[1][2] = Pixel(1,2,0);
-	set[1][3] = Pixel(1,3,0);
-
-	set[2][0] = Pixel(2,0,0);
-	set[2][1] = Pixel(2,1,0);
-	set[2][2] = Pixel(2,2,0);
-	set[2][3] = Pixel(2,3,0);
-
-	set[3][0] = Pixel(3,0,0);
-	set[3][1] = Pixel(3,1,0);
-	set[3][2] = Pixel(3,2,0);
-	set[3][3] = Pixel(3,3,0);
-
-	set[7][9] = Pixel(7,9,0);
-	set[8][9] = Pixel(8,9,0);
-	set[9][9] = Pixel(9,9,0);
-	set[10][9] = Pixel(10,9,0);*/
+	for(int z = 3; z < 7; z++)
+        {
+                for(int x = 3; x < 7; x++)
+                {
+                        for(int y = 3; y < 7; y++)
+                        {
+                                cube[z][x][y] = Voxel(z,x,y,0);
+                        }
+                }
+        }
 
 
 
 	//Start Split and merge
 	Split MotherSplit(cube, d, r, c);
 	std::cout << MotherSplit << "\n" << std::endl;
-/*
+
 	//initiate collection
 	std::vector<Split> collection;
 
@@ -72,9 +58,11 @@ int main(void)
 	func::collect(MotherSplit, collection);
 
 	//print
-	//std::cout << "collected" << std::endl;
-	//func::printCollection(collection);
-		
+	std::cout << "collected" << std::endl;
+	func::printCollection(collection);
+	
+	
+	/*	
 	std::vector<int> MSDim = MotherSplit.getDim();
 	std::shared_ptr<int[]> flatGrid(new int[MSDim[0]*MSDim[1]]); // {rows, cols}
 	

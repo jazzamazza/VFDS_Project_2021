@@ -11,18 +11,18 @@ Split::Split(): data(nullptr), allFracture(NULL), someFracture(NULL), depth(0), 
 //Destructor
 Split::~Split()
 {
-	if(this->data != nullptr)
+/*	if(this->data != nullptr)
 	{
 		for(int z = 0; z < this->depth; z++)
 		{
 			for(int x = 0; x < this->rows; x++)
 			{
-				delete [] data[z][x];
+				delete [] this->data[z][x];
 			}
-			delete [] data[z];
+			delete [] this->data[z];
 		}
-		delete [] data;	
-	}
+		delete [] this->data;	
+	}*/
 }
 
 //Custom
@@ -68,11 +68,11 @@ Split& Split::operator=(const Split & s)
                 	{
                        		for(int x = 0; x < this->rows; x++)
                        		{
-                               		delete [] data[z][x];
+                               		delete [] this->data[z][x];
                        		}
-                       		delete [] data[z];
+                       		delete [] this->data[z];
                 	}
-                	delete [] data;
+                	delete [] this->data;
         	}
 
 		this->allFracture = s.allFracture;
@@ -136,11 +136,11 @@ Split& Split::operator=(Split && s)
                         {
                                 for(int x = 0; x < this->rows; x++)
                                 {
-                                        delete [] data[z][x];
+                                        delete [] this->data[z][x];
                                 }
-                                delete [] data[z];
+                                delete [] this->data[z];
                         }
-                        delete [] data;
+                        delete [] this->data;
 		}
 		if(s.data != nullptr)
 		{
@@ -262,7 +262,7 @@ void Split::cut()
                         Voxel* row = new Voxel[cols-cuty];
                         for(int y = cuty; y < cols; y++)
                         {
-                                row[y] = this->data[z][x][y];
+                                row[y-cuty] = this->data[z][x][y];
                         }
                         grid[x] = row;
                 }
@@ -282,7 +282,7 @@ void Split::cut()
                         {
                                 row[y] = this->data[z][x][y];
                         }
-                        grid[x] = row;
+                        grid[x-cutx] = row;
                 }
                 TFLcube[z] = grid;
         }
@@ -298,9 +298,9 @@ void Split::cut()
                         Voxel* row = new Voxel[cols-cuty];
                         for(int y = cuty; y < cols; y++)
                         {
-                                row[y] = this->data[z][x][y];
+                                row[y-cuty] = this->data[z][x][y];
                         }
-                        grid[x] = row;
+                        grid[x-cutx] = row;
                 }
                 TFRcube[z] = grid;
         }
@@ -320,7 +320,7 @@ void Split::cut()
                         }
                         grid[x] = row;
                 }
-                BBLcube[z] = grid;
+                BBLcube[z-cutz] = grid;
         }
         this->children.push_back(std::make_shared<Split>(BBLcube, depth-cutz, cutx, cuty));
 
@@ -334,11 +334,11 @@ void Split::cut()
                         Voxel* row = new Voxel[cols-cuty];
                         for(int y = cols; y < cuty; y++)
                         {
-                                row[y] = this->data[z][x][y];
+                                row[y-cuty] = this->data[z][x][y];
                         }
                         grid[x] = row;
                 }
-                BBRcube[z] = grid;
+                BBRcube[z-cutz] = grid;
         }
         this->children.push_back(std::make_shared<Split>(BBRcube, depth-cutz, cutx, cols-cuty));
 
@@ -354,9 +354,9 @@ void Split::cut()
                         {
                                 row[y] = this->data[z][x][y];
                         }
-                        grid[x] = row;
+                        grid[x-cutx] = row;
                 }
-                BFLcube[z] = grid;
+                BFLcube[z-cutz] = grid;
         }
         this->children.push_back(std::make_shared<Split>(BFLcube, depth-cutz, rows-cutx, cuty));
 
@@ -370,24 +370,24 @@ void Split::cut()
                         Voxel* row = new Voxel[cols-cuty];
                         for(int y = cuty; y < cols; y++)
                         {
-                                row[y] = this->data[z][x][y];
+                                row[y-cuty] = this->data[z][x][y];
                         }
-                        grid[x] = row;
+                        grid[x-cutx] = row;
                 }
-                BFRcube[z] = grid;
+                BFRcube[z-cutz] = grid;
         }
         this->children.push_back(std::make_shared<Split>(BFRcube, depth-cutz, rows-cutx, cols-cuty));
 
 	//delete parent data
-	for(int z = 0; z < this->depth; z++)
+	/*for(int z = 0; z < this->depth; z++)
         {
         	for(int x = 0; x < this->rows; x++)
                 {
-                	delete [] data[z][x];
+                	delete [] this->data[z][x];
                 }
-                delete [] data[z];
+                delete [] this->data[z];
         }
-        delete [] data;
+        delete [] this->data;*/
 
 	
 }
@@ -431,17 +431,11 @@ std::ostream & operator<<(std::ostream & out, Split & s)
         	{
                 	for(int y = 0; y < s.cols; y++)
                 	{
-                        	out << int(s.data[x][y][z].getIntensity()) << " ";
+                        	out << int(s.data[z][x][y].getIntensity()) << " ";
                 	}
-                	if(x < s.rows-1)
-                	{
-                        	out << std::endl;
-                	}
+                        out << std::endl;
 		}
-		if(z < s.depth-1)
-		{
-			out << "\n" << std::endl;
-		}	
+		out << "" << std::endl;
         }
         return out;
 

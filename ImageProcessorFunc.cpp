@@ -5,7 +5,7 @@
 
 #include "ImageProcessorFunc.h"
 #include "Split.h"
-/*
+using namespace imgdata;
 void func::collect(Split & parent, std::vector<Split> & collector)
 {
         if(parent.getAllFrac()) //if all 0's
@@ -16,11 +16,14 @@ void func::collect(Split & parent, std::vector<Split> & collector)
         }
         else
         {
+		std::cout << "Parent\n" << parent << std::endl;
                 parent.cut();
                 std::vector<std::shared_ptr<Split>> vec = parent.getKids();
                 for(std::vector<std::shared_ptr<Split>>::iterator i = vec.begin(); i != vec.end(); ++i)
                 {
                         std::shared_ptr<Split> kid = *i;
+			std::cout << "Kid" << std::endl;
+			std::cout << *kid << std::endl;
 			kid->test();
                         if(kid->getSomeFrac()) //if any 0's
                         {
@@ -35,20 +38,23 @@ void func::printCollection(std::vector<Split> & coll)
 {
 	for(std::vector<Split>::iterator i = coll.begin(); i != coll.end(); ++i)
         {
-                std::shared_ptr< std::shared_ptr<Pixel[]>[] > temp = i->getData();
+                Voxel*** temp = i->getData();
 		std::vector<int> dims = i->getDim();
-                for(int x = 0; x < dims[0]; x++)
+		for(int z = 0; z < dims[0]; z++)
 		{
-			for(int y = 0; y < dims[1]; y++)
+                	for(int x = 0; x < dims[1]; x++)
 			{
-				std::cout << temp[x][y] << std::endl;
+				for(int y = 0; y < dims[2]; y++)
+				{
+					std::cout << temp[z][x][y].getZ() << std::endl;
+				}
 			}	
 		}
         }
 
 }
 
-
+/*
 void func::plotNeighbours(std::shared_ptr<int[]> & flatGrid, int index, int val, std::vector<int> dim)
 {
 	std::vector<int> actions = {-1, 1, -dim[1], dim[1]};
@@ -74,5 +80,4 @@ void func::plotNeighbours(std::shared_ptr<int[]> & flatGrid, int index, int val,
 		flatGrid[nIndex] = val;
 
 	}
-}
-*/
+}*/
