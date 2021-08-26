@@ -34,7 +34,7 @@ imgdata::Fracture& imgdata::Fracture::operator=(const imgdata::Fracture& rhs) {
 }
 
 // move constructor
-imgdata::Fracture::Fracture(Fracture&& f) : numVoxels(f.numVoxels), fid(f.fid), colour(f.colour) {
+imgdata::Fracture::Fracture(Fracture&& f) : coords(f.coords), numVoxels(f.numVoxels), fid(f.fid), colour(f.colour) {
         
     // clear the rhs vector of all coordinate values
     f.coords.clear();
@@ -95,6 +95,10 @@ int imgdata::Fracture::getVoxels(void) const {
 
 int imgdata::Fracture::getID(void) const {
     return this->fid;
+}
+
+std::string imgdata::Fracture::getColour(void) const {
+    return this->colour;
 }
 
 std::vector<imgdata::Voxel> imgdata::Fracture::getCoords(void) const {

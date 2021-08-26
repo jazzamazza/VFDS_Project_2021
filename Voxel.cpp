@@ -36,7 +36,7 @@ imgdata::Voxel& imgdata::Voxel::operator=(const imgdata::Voxel& rhs) {
 }
 
 // move constructor
-imgdata::Voxel::Voxel(imgdata::Voxel&& v) : coords(coords), intensity(intensity) {
+imgdata::Voxel::Voxel(imgdata::Voxel&& v) : coords(v.coords), intensity(v.intensity) {
     v.coords.clear();
     v.intensity = 0;
 }
@@ -70,11 +70,22 @@ const unsigned char imgdata::Voxel::getIntensity() const {
 }
 
 const int imgdata::Voxel::getX() const{
-    return this->coords[0];
+    if(coords.size()==3)
+        return this->coords[0];
+    else
+        return -1;
 }
+
 const int imgdata::Voxel::getY() const{
-    return this->coords[1];
+    if(coords.size()==3)
+        return this->coords[1];
+    else
+        return -1;
 }
-const int imgdata::Voxel::getZ() const{
-    return this->coords[2];
+
+const int imgdata::Voxel::getZ() const {
+    if(coords.size()==3)
+        return this->coords[2];
+    else
+        return -1;
 }
