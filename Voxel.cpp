@@ -7,7 +7,7 @@
 // default constructor
 imgdata::Voxel::Voxel(void) : coords(std::vector<int>()), intensity(0) {}
 // custom constructor
-imgdata::Voxel::Voxel(int x, int y, int z, int intensity) : intensity(intensity), coords(std::vector<int>()) {
+imgdata::Voxel::Voxel(int x, int y, int z, unsigned char intensity) : intensity(intensity), coords(std::vector<int>()) {
     coords.push_back(x);
     coords.push_back(y);
     coords.push_back(z);
@@ -63,6 +63,10 @@ imgdata::Voxel& imgdata::Voxel::operator=(imgdata::Voxel&& rhs) {
 
 const std::vector<int> imgdata::Voxel::getCoords() const{
     return this->coords;
+}
+
+const unsigned char imgdata::Voxel::getIntensity() const {
+    return this->intensity;
 }
 
 const int imgdata::Voxel::getX() const{

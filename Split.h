@@ -10,20 +10,20 @@
 #include <memory>
 #include <iostream>
 
-#include "Pixel.h"
+#include "Voxel.h"
 
 class Split
 {
 	private:
-		std::shared_ptr< std::shared_ptr<Pixel[]>[] > data;
-		int rows, cols;
+		imgdata::Voxel*** data;
+		int depth, rows, cols;
 		bool allFracture, someFracture; 
-		std::vector<std::shared_ptr<Split>> children;
+		std::vector< std::shared_ptr<Split> > children;
 	public:
 		//constructors
 		Split();
 		~Split();
-		Split(std::shared_ptr<std::shared_ptr<Pixel[]>[]> & data, int rows, int cols);
+		Split(imgdata::Voxel*** & data, int depth, int rows, int cols);
 		//other 4
 		Split(const Split & s);
 		Split& operator=(const Split & s);
@@ -34,12 +34,13 @@ class Split
 		void test();
 		bool getAllFrac();
 		bool getSomeFrac();
-		std::shared_ptr< std::shared_ptr<Pixel[]>[] > getData();
+		imgdata::Voxel *** getData();
+		int getDepth();
 		int getRows();
 		int getCols();
-		std::vector<int> getDim(); //remove (in use)
+		std::vector<int> getDim();
 		std::vector<std::shared_ptr<Split>> getKids();
-		std::vector<Pixel> getBoundary();
+		std::vector<imgdata::Voxel> getBoundary();
 		friend std::ostream & operator<<(std::ostream & out, Split & s);
 		
 
