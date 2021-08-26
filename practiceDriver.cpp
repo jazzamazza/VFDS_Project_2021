@@ -56,5 +56,5 @@ int main(void)
                 }
         }*/
 
-	func::splitMerge(cube, r, c, d);
+	std::vector<Fracture> frac = func::splitMerge(cube, r, c, d);
 }

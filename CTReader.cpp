@@ -81,20 +81,3 @@ void imgread::CTReader::deletePGMStack(imgdata::Voxel***& imgArr3D, int dim) {
     }
     delete[] imgArr3D;
 }
-
-int main(void) {
-    imgread::CTReader ctr;
-    imgdata::Voxel*** vox = ctr.imgread::CTReader::readPGMStack("cross", 128);
-    /** Leaving main() in for testing purposes
-    for(int i = 0; i < 128; ++i) {
-        std::cout << "test" << std::endl;
-        for(int j = 0; j < 128; ++j) {
-            for(int k = 0; k < 128; ++k) {
-                std::cout << vox[k][j][i].getX() << std::endl;
-            }
-        }
-    }*/
-    ctr.imgread::CTReader::deletePGMStack(vox, 128);
-    return 0;
-}
-
