@@ -72,9 +72,18 @@ namespace imgdata {
 // output stream operator overload
     std::ostream & operator<<(std::ostream& out, imgdata::Fracture& rhs) {
         if(rhs.getID()==-1)
+	{
             out << "null" << std::endl;
+	}
         else
-            out << "Fracture ID: " << rhs.getID() << ", Number of voxels: " << rhs.getVoxels();
+	{
+        	out << "Fracture ID: " << rhs.getID() << ", Number of voxels: " << rhs.getVoxels() << std::endl;
+		for(std::vector<Voxel>::iterator i = rhs.coords.begin(); i != rhs.coords.end(); ++i)
+		{
+			std::cout << "("  << i->getX() << "," << i->getY() << "," << i->getZ() << ")" << std::endl;
+		}
+	}	    	
+		
         
         return out;
     }

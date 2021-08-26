@@ -168,7 +168,7 @@ std::vector<std::shared_ptr<Split>> Split::getKids()
 
 std::vector<int> Split::getDim()
 {
-	std::vector<int> ret({this->depth, this->rows, this->cols});
+	std::vector<int> ret({this->rows, this->cols, this->depth});
 	return ret;
 }
 

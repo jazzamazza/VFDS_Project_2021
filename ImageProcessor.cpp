@@ -60,36 +60,37 @@ int main(void)
 
 	//print
 	//std::cout << "collected" << std::endl;
-	func::printCollection(collection);
+	//func::printCollection(collection);
 	
 		
 	std::vector<int> MSDim = MotherSplit.getDim();
-	std::shared_ptr<int[]> flatGrid(new int[MSDim[0]*MSDim[1]]); // {rows, cols}
+	std::shared_ptr<int[]> flatGrid(new int[MSDim[0]*MSDim[1]*MSDim[2]]); // {rows, cols,depth}
 	
 	//fracture class for now
-	std::vector<Fracture> fractures;
+	std::vector<Fracture> existingFractures;
 	std::vector< std::vector<int> > fracIDs;
 	
-	/*
+	
 	//group into fractures
 	int count = 0;
+	int IDcount = 0;
 	//iterate through the collected Split Objects. Each Split object is only made up of 0s(fractured pixels)
 	for(std::vector<Split>::iterator i = collection.begin(); i != collection.end(); ++i)
 	{
 		count++;//incremenet to 1
 
 		//only use the boundary pixels of the split
-		std::vector<Pixel> boundary = i->getBoundary();	
+		std::vector<Voxel> boundary = i->getBoundary();	
 
 		//this split has not been pushed back yet
 		bool pushedBack = false;
 
 		//iterate through the boundary pixels
-		for(std::vector<Pixel>::iterator b = boundary.begin(); b != boundary.end(); ++b)
+		for(std::vector<Voxel>::iterator b = boundary.begin(); b != boundary.end(); ++b)
 		{
 
-			//get 1D index from 2D location
-			int index = (MSDim[1]*b->getX())+b->getY();
+			//get 1D index from 3D location
+			int index = (MSDim[1]*b->getX()) + b->getY() + b->getZ()*(MSDim[0]*MSDim[1]);
 			
 			//plot point in if nothing is present already
 			if(flatGrid[index] == 0)
@@ -108,7 +109,7 @@ int main(void)
 							if(!pushedBack)
 							{
 								fracIDs[f].push_back(count);
-								fractures[f].push_back(*i);
+								func::addSplit(existingFractures[f], *i); //implement
 								pushedBack = true;
 							}
 						}
@@ -123,9 +124,12 @@ int main(void)
 		if(!pushedBack)
 		{
 			//make new fracture
-			std::vector<Split> newFracture;
-			newFracture.push_back(*i);
-			fractures.push_back(newFracture);
+			Fracture newFracture(IDcount++, "blank");
+
+			func::addSplit(newFracture, *i);
+
+			existingFractures.push_back(newFracture);
+
 			//add to FracIDs
 			std::vector<int> newFracIDs;
 			newFracIDs.push_back(count);
@@ -134,7 +138,7 @@ int main(void)
 	}
 
 
-	for(int l=0;l < MSDim[0]*MSDim[1]; l++)
+	/*for(int l=0;l < MSDim[0]*MSDim[1]; l++)
 	{
 		std::cout << flatGrid[l] << " ";
 		if((l+1)%MSDim[1] == 0)
@@ -142,16 +146,15 @@ int main(void)
 			std::cout << "" << std::endl;
 		}
 	}
-
-	for(int t =0; t < fractures.size();t++)
+*/
+	for(int t =0; t < existingFractures.size(); t++)
 	{
-		std::cout << "\nFracture " << t << std::endl;
-		func::printCollection(fractures[t]);
+		std::cout << "\nFracture " << t << "\n" << existingFractures[t] << std::endl;
 		
 	}
 	
 	
-*/
+
 
 	return 0;
 }
