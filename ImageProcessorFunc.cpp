@@ -4,8 +4,7 @@
  */
 
 #include "ImageProcessorFunc.h"
-#include "Split.h"
-
+using namespace imgdata;
 void func::collect(Split & parent, std::vector<Split> & collector)
 {
         if(parent.getAllFrac()) //if all 0's
@@ -35,14 +34,19 @@ void func::printCollection(std::vector<Split> & coll)
 {
 	for(std::vector<Split>::iterator i = coll.begin(); i != coll.end(); ++i)
         {
-                std::shared_ptr< std::shared_ptr<Pixel[]>[] > temp = i->getData();
+                Voxel*** temp = i->getData();
 		std::vector<int> dims = i->getDim();
-                for(int x = 0; x < dims[0]; x++)
+		for(int z = 0; z < dims[2]; z++)
 		{
-			for(int y = 0; y < dims[1]; y++)
+                	for(int x = 0; x < dims[0]; x++)
 			{
-				std::cout << temp[x][y] << std::endl;
-			}	
+				for(int y = 0; y < dims[1]; y++)
+				{
+					std::cout << "(" << temp[z][x][y].getZ() << ","<< temp[z][x][y].getX() << "," << temp[z][x][y].getY() << ")";
+				}
+				std::cout << "" << std::endl;
+			}
+			std::cout << "\n";	
 		}
         }
 
@@ -51,7 +55,9 @@ void func::printCollection(std::vector<Split> & coll)
 
 void func::plotNeighbours(std::shared_ptr<int[]> & flatGrid, int index, int val, std::vector<int> dim)
 {
-	std::vector<int> actions = {-1, 1, -dim[1], dim[1]};
+	std::vector<int> actions = {-1, 1, -dim[1], dim[1], -dim[1]*dim[0], dim[1]*dim[0]};
+	
+	//left and right
 	if(index%dim[1] == 0)
 	{
 		actions[0] = 0;	
@@ -60,13 +66,25 @@ void func::plotNeighbours(std::shared_ptr<int[]> & flatGrid, int index, int val,
 	{
 		actions[1] = 0;
 	}
-	if(index/dim[1]==0)
+
+	//forward and back
+	int layer = index / (dim[0]*dim[1]);
+	int tempIndex = index - dim[0]*dim[1]*layer;
+	if(tempIndex/dim[1]==0)
 	{
 		actions[2] = 0;
 	}
-	if(index/dim[1] == dim[0]-1)
+	if(tempIndex/dim[1] == dim[0]-1)
 	{
 		actions[3] = 0;
+	}
+	if(index/ (dim[1]*dim[0]) == 0)
+	{
+		actions[4] = 0;
+	}
+	if(index/(dim[1]*dim[0]) == dim[2]-1)
+	{
+		actions[5] = 0;
 	}
 	for(std::vector<int>::iterator a = actions.begin(); a != actions.end(); ++a)
 	{
@@ -76,3 +94,18 @@ void func::plotNeighbours(std::shared_ptr<int[]> & flatGrid, int index, int val,
 	}
 }
 
+void func::addSplit(Fracture & fracture, Split & split)
+{
+	Voxel *** dataSet = split.getData();
+	std::vector<int> d = split.getDim();
+	for(int z = 0; z < d[2]; z++)
+	{
+		for(int x = 0; x < d[0]; x++)
+		{
+			for(int y = 0; y < d[1]; y++)
+			{
+				fracture.insertVoxel(dataSet[z][x][y]);
+			}
+		}	
+	}
+}

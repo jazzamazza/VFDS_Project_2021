@@ -4,52 +4,61 @@
  */
 
 #include "Split.h"
+#include "Voxel.h"
 #include "ImageProcessorFunc.h"
+#include "Fracture.h"
 
 int main(void)
 {
+	using namespace imgdata;
 	//construct Set
-	int r = 11;
-	int c = 11;
-	std::shared_ptr< std::shared_ptr<Pixel[]>[] > set(new std::shared_ptr<Pixel[]>[r]);
-	int u = 1;
-	for(int i = 0; i < r; i++)
+	int d = 5;
+	int r = 5;
+	int c = 5;
+
+	Voxel*** cube = new Voxel**[d];
+	for(int z = 0; z < d; z++)
 	{
-		std::shared_ptr<Pixel[]> row(new Pixel[c]);
-		for(int p = 0; p < c; p++)
+		Voxel** set = new Voxel*[r];
+		for(int x = 0; x < r; x++)
 		{
-			row[p] = Pixel(i,p,1);
+			Voxel * row = new Voxel[c];
+			for(int y = 0; y < c; y++)
+			{
+				row[y] = Voxel(x,y,z,1);
+			}
+			set[x] = row;
 		}
-		set[i] = row;
+		cube[z] = set;
 	}
-	//make fracture
-	set[0][0] = Pixel(0,0,0);
-	set[0][1] = Pixel(0,1,0);
-	set[0][2] = Pixel(0,2,0);
-	set[0][3] = Pixel(0,3,0);
 
-	set[1][0] = Pixel(1,0,0);
-	set[1][1] = Pixel(1,1,0);
-	set[1][2] = Pixel(1,2,0);
-	set[1][3] = Pixel(1,3,0);
+	//make fracture 0
+	for(int z = 0; z < 5; z++)
+        {
+                for(int x = 1; x < 3 ; x++)
+                {
+                        for(int y = 1; y < 3; y++)
+                        {
+                                cube[z][x][y] = Voxel(x,y,z,0);
+                        }
+                }
+        }
 
-	set[2][0] = Pixel(2,0,0);
-	set[2][1] = Pixel(2,1,0);
-	set[2][2] = Pixel(2,2,0);
-	set[2][3] = Pixel(2,3,0);
+	//make fracture 1
+	for(int z = 3; z < 5; z++)
+        {
+                for(int x = 3; x < 5 ; x++)
+                {
+                        for(int y = 0; y < 5; y++)
+                        {
+                                cube[z][x][y] = Voxel(x,y,z,0);
+                        }
+                }
+        }
 
-	set[3][0] = Pixel(3,0,0);
-	set[3][1] = Pixel(3,1,0);
-	set[3][2] = Pixel(3,2,0);
-	set[3][3] = Pixel(3,3,0);
-
-	set[7][9] = Pixel(7,9,0);
-	set[8][9] = Pixel(8,9,0);
-	set[9][9] = Pixel(9,9,0);
-	set[10][9] = Pixel(10,9,0);
 
 	//Start Split and merge
-	Split MotherSplit(set, r, c);
+	Split MotherSplit(cube, d, r, c);
 	std::cout << MotherSplit << "\n" << std::endl;
 
 	//initiate collection
@@ -64,35 +73,51 @@ int main(void)
 	//print
 	//std::cout << "collected" << std::endl;
 	//func::printCollection(collection);
+	
 		
 	std::vector<int> MSDim = MotherSplit.getDim();
-	std::shared_ptr<int[]> flatGrid(new int[MSDim[0]*MSDim[1]]); // {rows, cols}
+	std::shared_ptr<int[]> flatGrid(new int[MSDim[0]*MSDim[1]*MSDim[2]]); // {rows, cols,depth}
 	
-	//fracture class for now////////////////
-	std::vector< std::vector<Split> > fractures;
+	//fracture class for now
+	std::vector<Fracture> existingFractures;
 	std::vector< std::vector<int> > fracIDs;
-	/////////////////////////////////////
 	
 	
 	//group into fractures
 	int count = 0;
+	int IDcount = 0;
 	//iterate through the collected Split Objects. Each Split object is only made up of 0s(fractured pixels)
 	for(std::vector<Split>::iterator i = collection.begin(); i != collection.end(); ++i)
 	{
 		count++;//incremenet to 1
 
 		//only use the boundary pixels of the split
-		std::vector<Pixel> boundary = i->getBoundary();	
+		std::vector<Voxel> boundary = i->getBoundary();	
 
 		//this split has not been pushed back yet
 		bool pushedBack = false;
 
 		//iterate through the boundary pixels
-		for(std::vector<Pixel>::iterator b = boundary.begin(); b != boundary.end(); ++b)
+		for(std::vector<Voxel>::iterator b = boundary.begin(); b != boundary.end(); ++b)
 		{
+			//get 1D index from 3D location
+			int index = (MSDim[1]*b->getX()) + b->getY() + b->getZ()*(MSDim[0]*MSDim[1]);
 
-			//get 1D index from 2D location
-			int index = (MSDim[1]*b->getX())+b->getY();
+			/*std::cout << "Flat Grid " <<  index <<std::endl;
+			for(int p = 0; p < MSDim[0]*MSDim[1]*MSDim[2]; p++)
+			{
+				std::cout << flatGrid[p] << " ";
+				if((p+1)%(MSDim[1])==0)
+				{
+					std::cout << "" << std::endl;
+				}
+				if((p+1)%(MSDim[1]*MSDim[0])==0)
+				{
+					std::cout << "\n" << std::endl;
+				}
+			}
+			std::cout << "\n";*/
+
 			
 			//plot point in if nothing is present already
 			if(flatGrid[index] == 0)
@@ -111,7 +136,7 @@ int main(void)
 							if(!pushedBack)
 							{
 								fracIDs[f].push_back(count);
-								fractures[f].push_back(*i);
+								func::addSplit(existingFractures[f], *i); //implement
 								pushedBack = true;
 							}
 						}
@@ -126,9 +151,12 @@ int main(void)
 		if(!pushedBack)
 		{
 			//make new fracture
-			std::vector<Split> newFracture;
-			newFracture.push_back(*i);
-			fractures.push_back(newFracture);
+			Fracture newFracture(IDcount++, "blank");
+
+			func::addSplit(newFracture, *i);
+
+			existingFractures.push_back(newFracture);
+
 			//add to FracIDs
 			std::vector<int> newFracIDs;
 			newFracIDs.push_back(count);
@@ -137,25 +165,14 @@ int main(void)
 	}
 
 
-	/*for(int l=0;l < MSDim[0]*MSDim[1]; l++)
+	//print fractures
+	for(int t =0; t < existingFractures.size(); t++)
 	{
-		std::cout << flatGrid[l] << " ";
-		if((l+1)%MSDim[1] == 0)
-		{
-			std::cout << "" << std::endl;
-		}
-	}*/
-
-	for(int t =0; t < fractures.size();t++)
-	{
-		std::cout << "\nFracture " << t << std::endl;
-		func::printCollection(fractures[t]);
+		std::cout << existingFractures[t] << std::endl;
 		
 	}
-
+	std::cout << "DONE" << std::endl;
 	
-	
-
 
 	return 0;
 }
