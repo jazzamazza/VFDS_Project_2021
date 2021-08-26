@@ -15,6 +15,7 @@ namespace func
 	void printCollection(std::vector<Split> & coll);
 	void plotNeighbours(std::shared_ptr<int[]> & flatGrid, int index, int val, std::vector<int> dim);
 	void addSplit(imgdata::Fracture & fracture, Split & split);
+	std::vector<imgdata::Fracture> splitMerge(imgdata::Voxel*** & imgArr3D, int rows, int cols, int depth);
 }
 
 
