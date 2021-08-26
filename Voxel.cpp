@@ -5,7 +5,11 @@
 #include "Voxel.h"
 
 // default constructor
-imgdata::Voxel::Voxel(void) : coords(std::vector<int>()), intensity(0) {}
+imgdata::Voxel::Voxel(void) : coords(std::vector<int>()), intensity(0) {
+    for(i=0; i < 3; ++i) {
+        coords.push_back(0);
+    }
+}
 // custom constructor
 imgdata::Voxel::Voxel(int x, int y, int z, unsigned char intensity) : intensity(intensity), coords(std::vector<int>()) {
     coords.push_back(x);
