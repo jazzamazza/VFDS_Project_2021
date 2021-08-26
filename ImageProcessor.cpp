@@ -62,16 +62,15 @@ int main(void)
 	//std::cout << "collected" << std::endl;
 	func::printCollection(collection);
 	
-	/*	
+		
 	std::vector<int> MSDim = MotherSplit.getDim();
 	std::shared_ptr<int[]> flatGrid(new int[MSDim[0]*MSDim[1]]); // {rows, cols}
 	
-	//fracture class for now////////////////
+	//fracture class for now
 	std::vector<Fracture> fractures;
 	std::vector< std::vector<int> > fracIDs;
-	/////////////////////////////////////
 	
-	
+	/*
 	//group into fractures
 	int count = 0;
 	//iterate through the collected Split Objects. Each Split object is only made up of 0s(fractured pixels)

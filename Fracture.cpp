@@ -30,6 +30,7 @@ imgdata::Fracture& imgdata::Fracture::operator=(const imgdata::Fracture& rhs) {
         if(!rhs.coords.empty())
             this->coords = rhs.coords;
     }
+    return *this;
 }
 
 // move constructor
@@ -64,6 +65,7 @@ imgdata::Fracture& imgdata::Fracture::operator=(imgdata::Fracture&& rhs) {
         rhs.fid = -1;
         rhs.colour = "null";
     }
+    return *this;
 }
 
 namespace imgdata {
