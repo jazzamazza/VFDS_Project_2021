@@ -6,19 +6,19 @@
 #define PARTDATA_H
 
 #include "ImageDataClass.h"
-#include "Pixel.h"
+#include "Voxel.h"
 
 namespace imgdata {
     class PartData : public ImageDataClass {
         
         private:
-            std::vector<Pixel> shape;
+            std::vector<Voxel> shape;
         public:
             PartData(void);
             PartData(unsigned char intensity);
             ~PartData();
 
-            const std::vector<Pixel> getShape() const;
+            const std::vector<Voxel> getShape() const;
 
     };
 }
