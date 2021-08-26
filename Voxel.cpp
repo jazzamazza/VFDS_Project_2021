@@ -6,7 +6,7 @@
 
 // default constructor
 imgdata::Voxel::Voxel(void) : coords(std::vector<int>()), intensity(0) {
-    for(i=0; i < 3; ++i) {
+    for(int i=0; i < 3; ++i) {
         coords.push_back(0);
     }
 }
