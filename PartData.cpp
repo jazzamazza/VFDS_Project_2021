@@ -4,14 +4,14 @@
 #include "PartData.h"
 
 // default constructor
-imgdata::PartData::PartData(void) : imgdata::ImageDataClass(0), shape(std::vector<Pixel>()) {}
+imgdata::PartData::PartData(void) : imgdata::ImageDataClass(0), shape(std::vector<imgdata::Voxel>()) {}
 
 // custom constructor
-imgdata::PartData::PartData(unsigned char intensity) : imgdata::ImageDataClass(intensity), shape(std::vector<Pixel>()) {}
+imgdata::PartData::PartData(unsigned char intensity) : imgdata::ImageDataClass(intensity), shape(std::vector<Voxel>()) {}
 
 // destructor
 imgdata::PartData::~PartData() {}
 
-const std::vector<Pixel> imgdata::PartData::getShape() const{
+const std::vector<imgdata::Voxel> imgdata::PartData::getShape() const{
     return this->shape;
 }
