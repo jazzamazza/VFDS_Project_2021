@@ -91,7 +91,7 @@ TEST_CASE ("imgdata: BackgroundData class") {
 }
 
 TEST_CASE ("imgdata: PartData class") {
-        SECTION("Default Constructor") {
+    SECTION("Default Constructor") {
         imgdata::PartData pd = imgdata::PartData();
         REQUIRE(pd.imgdata::PartData::getIntensity() == 0.0);
         // test that the vector of voxels is initialised to be empty by default
@@ -115,5 +115,188 @@ TEST_CASE ("imgdata: PartData class") {
         REQUIRE(testshape[1].imgdata::Voxel::getX() == 4);
         REQUIRE(testshape[1].imgdata::Voxel::getY() == 5);
         REQUIRE(testshape[1].imgdata::Voxel::getZ() == 6);
+    }
+}
+
+TEST_CASE ("imgdata: Fracture class") {
+    SECTION("Default Constructor") {
+        imgdata::Fracture f = imgdata::Fracture();
+        REQUIRE(f.imgdata::Fracture::getVoxels() == 0);
+        REQUIRE(f.imgdata::Fracture::getID() == -1);
+        REQUIRE(f.getColour() == "null");
+
+         // Test that the coords vector of voxels initialises correctly
+        auto testcoords = f.imgdata::Fracture::getCoords();
+        REQUIRE(testcoords.empty());
+    }
+
+    SECTION("Custom Constructor") {
+        imgdata::Fracture f = imgdata::Fracture(1, (std::string)"blue");
+        // populate the vector of coords with 2 Voxels
+        imgdata::Voxel v1(1,2,3,155.0);
+        imgdata::Voxel v2(4,5,6,255.0);
+        f.imgdata::Fracture::insertVoxel(v1);
+        f.imgdata::Fracture::insertVoxel(v2);
+
+        REQUIRE(f.imgdata::Fracture::getVoxels() == 2);
+        REQUIRE(f.imgdata::Fracture::getID() == 1);
+        REQUIRE(f.imgdata::Fracture::getColour() == "blue");
+
+        // Test that the coords vector of voxels initialises correctly
+        auto testcoords = f.imgdata::Fracture::getCoords();
+        // test that the voxel at index 0 is correct
+        REQUIRE(testcoords[0].imgdata::Voxel::getIntensity() == 155.0);
+        REQUIRE(testcoords[0].imgdata::Voxel::getX() == 1);
+        REQUIRE(testcoords[0].imgdata::Voxel::getY() == 2);
+        REQUIRE(testcoords[0].imgdata::Voxel::getZ() == 3);
+        // test that the voxel at index 1 is correct
+        REQUIRE(testcoords[1].imgdata::Voxel::getIntensity() == 255.0);
+        REQUIRE(testcoords[1].imgdata::Voxel::getX() == 4);
+        REQUIRE(testcoords[1].imgdata::Voxel::getY() == 5);
+        REQUIRE(testcoords[1].imgdata::Voxel::getZ() == 6);
+    }
+
+    SECTION("Copy Constructor") {
+        imgdata::Fracture f = imgdata::Fracture(1, (std::string)"blue");
+        // populate the vector of coords with 2 Voxels
+        imgdata::Voxel v1(1,2,3,155.0);
+        imgdata::Voxel v2(4,5,6,255.0);
+        f.imgdata::Fracture::insertVoxel(v1);
+        f.imgdata::Fracture::insertVoxel(v2);
+
+        // call the copy constructor
+        imgdata::Fracture fcpy(f);
+
+        REQUIRE(fcpy.imgdata::Fracture::getVoxels() == 2);
+        REQUIRE(fcpy.imgdata::Fracture::getID() == 1);
+        REQUIRE(fcpy.imgdata::Fracture::getColour() == "blue");
+
+        // Test that the coords vector of voxels initialises correctly
+        auto testcoords = fcpy.imgdata::Fracture::getCoords();
+        // test that the voxel at index 0 is correct
+        REQUIRE(testcoords[0].imgdata::Voxel::getIntensity() == 155.0);
+        REQUIRE(testcoords[0].imgdata::Voxel::getX() == 1);
+        REQUIRE(testcoords[0].imgdata::Voxel::getY() == 2);
+        REQUIRE(testcoords[0].imgdata::Voxel::getZ() == 3);
+        // test that the voxel at index 1 is correct
+        REQUIRE(testcoords[1].imgdata::Voxel::getIntensity() == 255.0);
+        REQUIRE(testcoords[1].imgdata::Voxel::getX() == 4);
+        REQUIRE(testcoords[1].imgdata::Voxel::getY() == 5);
+        REQUIRE(testcoords[1].imgdata::Voxel::getZ() == 6);
+    }
+    
+    SECTION("Copy Assignment Operator") {
+        imgdata::Fracture f = imgdata::Fracture(1, (std::string)"blue");
+        // populate the vector of coords with 2 Voxels
+        imgdata::Voxel v1(1,2,3,155.0);
+        imgdata::Voxel v2(4,5,6,255.0);
+        f.imgdata::Fracture::insertVoxel(v1);
+        f.imgdata::Fracture::insertVoxel(v2);
+
+        // call the copy assignment operator
+        imgdata::Fracture fcpy = f;
+        
+        REQUIRE(fcpy.imgdata::Fracture::getVoxels() == 2);
+        REQUIRE(fcpy.imgdata::Fracture::getID() == 1);
+        REQUIRE(fcpy.imgdata::Fracture::getColour() == "blue");
+
+        // Test that the coords vector of voxels initialises correctly
+        auto testcoords = fcpy.imgdata::Fracture::getCoords();
+        // test that the voxel at index 0 is correct
+        REQUIRE(testcoords[0].imgdata::Voxel::getIntensity() == 155.0);
+        REQUIRE(testcoords[0].imgdata::Voxel::getX() == 1);
+        REQUIRE(testcoords[0].imgdata::Voxel::getY() == 2);
+        REQUIRE(testcoords[0].imgdata::Voxel::getZ() == 3);
+        // test that the voxel at index 1 is correct
+        REQUIRE(testcoords[1].imgdata::Voxel::getIntensity() == 255.0);
+        REQUIRE(testcoords[1].imgdata::Voxel::getX() == 4);
+        REQUIRE(testcoords[1].imgdata::Voxel::getY() == 5);
+        REQUIRE(testcoords[1].imgdata::Voxel::getZ() == 6);
+    }
+
+    SECTION("Move Constructor") {
+        imgdata::Fracture f = imgdata::Fracture(1, (std::string)"blue");
+        // populate the vector of coords with 2 Voxels
+        imgdata::Voxel v1(1,2,3,155.0);
+        imgdata::Voxel v2(4,5,6,255.0);
+        f.imgdata::Fracture::insertVoxel(v1);
+        f.imgdata::Fracture::insertVoxel(v2);
+        
+        // call the move constructor
+        imgdata::Fracture fmove(std::move(f));
+
+        REQUIRE(fmove.imgdata::Fracture::getVoxels() == 2);
+        REQUIRE(fmove.imgdata::Fracture::getID() == 1);
+        REQUIRE(fmove.imgdata::Fracture::getColour() == "blue");
+
+        // Test that the coords vector of voxels initialises correctly
+        auto testcoords = fmove.imgdata::Fracture::getCoords();
+        // test that the voxel at index 0 is correct
+        REQUIRE(testcoords[0].imgdata::Voxel::getIntensity() == 155.0);
+        REQUIRE(testcoords[0].imgdata::Voxel::getX() == 1);
+        REQUIRE(testcoords[0].imgdata::Voxel::getY() == 2);
+        REQUIRE(testcoords[0].imgdata::Voxel::getZ() == 3);
+        // test that the voxel at index 1 is correct
+        REQUIRE(testcoords[1].imgdata::Voxel::getIntensity() == 255.0);
+        REQUIRE(testcoords[1].imgdata::Voxel::getX() == 4);
+        REQUIRE(testcoords[1].imgdata::Voxel::getY() == 5);
+        REQUIRE(testcoords[1].imgdata::Voxel::getZ() == 6);
+
+        REQUIRE(f.imgdata::Fracture::getVoxels() == 0);
+        REQUIRE(f.imgdata::Fracture::getID() == -1);
+        REQUIRE(f.imgdata::Fracture::getColour() == "null");
+         // Test that the coords vector of voxels has been cleared
+        auto testorigcoords = f.imgdata::Fracture::getCoords();
+        REQUIRE(testorigcoords.empty());
+    }
+
+    SECTION("Move Assignment Operator") {
+        imgdata::Fracture f = imgdata::Fracture(1, (std::string)"blue");
+        // populate the vector of coords with 2 Voxels
+        imgdata::Voxel v1(1,2,3,155.0);
+        imgdata::Voxel v2(4,5,6,255.0);
+        f.imgdata::Fracture::insertVoxel(v1);
+        f.imgdata::Fracture::insertVoxel(v2);
+        
+        // call the move assignment operator
+        imgdata::Fracture fmove = std::move(f);
+
+        REQUIRE(fmove.imgdata::Fracture::getVoxels() == 2);
+        REQUIRE(fmove.imgdata::Fracture::getID() == 1);
+        REQUIRE(fmove.imgdata::Fracture::getColour() == "blue");
+
+        // Test that the coords vector of voxels initialises correctly
+        auto testcoords = fmove.imgdata::Fracture::getCoords();
+        // test that the voxel at index 0 is correct
+        REQUIRE(testcoords[0].imgdata::Voxel::getIntensity() == 155.0);
+        REQUIRE(testcoords[0].imgdata::Voxel::getX() == 1);
+        REQUIRE(testcoords[0].imgdata::Voxel::getY() == 2);
+        REQUIRE(testcoords[0].imgdata::Voxel::getZ() == 3);
+        // test that the voxel at index 1 is correct
+        REQUIRE(testcoords[1].imgdata::Voxel::getIntensity() == 255.0);
+        REQUIRE(testcoords[1].imgdata::Voxel::getX() == 4);
+        REQUIRE(testcoords[1].imgdata::Voxel::getY() == 5);
+        REQUIRE(testcoords[1].imgdata::Voxel::getZ() == 6);
+
+        REQUIRE(f.imgdata::Fracture::getVoxels() == 0);
+        REQUIRE(f.imgdata::Fracture::getID() == -1);
+        REQUIRE(f.imgdata::Fracture::getColour() == "null");
+         // Test that the coords vector of voxels has been cleared
+        auto testorigcoords = f.imgdata::Fracture::getCoords();
+        REQUIRE(testorigcoords.empty());
+    }
+
+    SECTION("insertVoxel Member Function") {
+        imgdata::Fracture f = imgdata::Fracture(1, (std::string)"blue");
+        // populate the vector of coords with 1 Voxel
+        imgdata::Voxel v1(1,2,3,155.0);
+        // call the insertVoxel function
+        f.imgdata::Fracture::insertVoxel(v1);
+        // Test that voxel has been inserted correctly
+        auto testcoords = f.imgdata::Fracture::getCoords();
+        REQUIRE(testcoords[0].imgdata::Voxel::getIntensity() == 155.0);
+        REQUIRE(testcoords[0].imgdata::Voxel::getX() == 1);
+        REQUIRE(testcoords[0].imgdata::Voxel::getY() == 2);
+        REQUIRE(testcoords[0].imgdata::Voxel::getZ() == 3);
     }
 }
