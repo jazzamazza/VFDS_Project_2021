@@ -34,6 +34,7 @@ namespace imgdata {
 
             int getVoxels(void) const;
             int getID(void) const;
+            std::string getColour(void) const;
             std::vector<Voxel> getCoords(void) const;
 
             void insertVoxel(imgdata::Voxel& vox);

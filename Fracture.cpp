@@ -97,6 +97,10 @@ int imgdata::Fracture::getID(void) const {
     return this->fid;
 }
 
+std::string imgdata::Fracture::getColour(void) const {
+    return this->colour;
+}
+
 std::vector<imgdata::Voxel> imgdata::Fracture::getCoords(void) const {
     return this->coords;
 }
