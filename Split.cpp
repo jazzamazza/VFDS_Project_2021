@@ -11,7 +11,7 @@ Split::Split(): data(nullptr), allFracture(NULL), someFracture(NULL), depth(0), 
 //Destructor
 Split::~Split()
 {
-/*	if(this->data != nullptr)
+	if(this->data != nullptr)
 	{
 		for(int z = 0; z < this->depth; z++)
 		{
@@ -22,7 +22,7 @@ Split::~Split()
 			delete [] this->data[z];
 		}
 		delete [] this->data;	
-	}*/
+	}
 }
 
 //Custom
@@ -379,15 +379,6 @@ void Split::cut()
         this->children.push_back(std::make_shared<Split>(BFRcube, depth-cutz, rows-cutx, cols-cuty));
 
 	//delete parent data
-	/*for(int z = 0; z < this->depth; z++)
-        {
-        	for(int x = 0; x < this->rows; x++)
-                {
-                	delete [] this->data[z][x];
-                }
-                delete [] this->data[z];
-        }
-        delete [] this->data;*/
 
 	
 }

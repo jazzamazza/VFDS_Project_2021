@@ -31,7 +31,8 @@ int main(void)
 		}
 		cube[z] = set;
 	}
-	//make fracture
+
+	//make fracture 0
 	for(int z = 0; z < 5; z++)
         {
                 for(int x = 1; x < 3 ; x++)
@@ -43,6 +44,17 @@ int main(void)
                 }
         }
 
+	//make fracture 1
+	for(int z = 3; z < 5; z++)
+        {
+                for(int x = 3; x < 5 ; x++)
+                {
+                        for(int y = 0; y < 5; y++)
+                        {
+                                cube[z][x][y] = Voxel(x,y,z,0);
+                        }
+                }
+        }
 
 
 	//Start Split and merge
@@ -88,9 +100,24 @@ int main(void)
 		//iterate through the boundary pixels
 		for(std::vector<Voxel>::iterator b = boundary.begin(); b != boundary.end(); ++b)
 		{
-
 			//get 1D index from 3D location
 			int index = (MSDim[1]*b->getX()) + b->getY() + b->getZ()*(MSDim[0]*MSDim[1]);
+
+			/*std::cout << "Flat Grid " <<  index <<std::endl;
+			for(int p = 0; p < MSDim[0]*MSDim[1]*MSDim[2]; p++)
+			{
+				std::cout << flatGrid[p] << " ";
+				if((p+1)%(MSDim[1])==0)
+				{
+					std::cout << "" << std::endl;
+				}
+				if((p+1)%(MSDim[1]*MSDim[0])==0)
+				{
+					std::cout << "\n" << std::endl;
+				}
+			}
+			std::cout << "\n";*/
+
 			
 			//plot point in if nothing is present already
 			if(flatGrid[index] == 0)
@@ -138,23 +165,14 @@ int main(void)
 	}
 
 
-	/*for(int l=0;l < MSDim[0]*MSDim[1]; l++)
-	{
-		std::cout << flatGrid[l] << " ";
-		if((l+1)%MSDim[1] == 0)
-		{
-			std::cout << "" << std::endl;
-		}
-	}
-*/
+	//print fractures
 	for(int t =0; t < existingFractures.size(); t++)
 	{
-		std::cout << "\nFracture " << t << "\n" << existingFractures[t] << std::endl;
+		std::cout << existingFractures[t] << std::endl;
 		
 	}
+	std::cout << "DONE" << std::endl;
 	
-	
-
 
 	return 0;
 }
