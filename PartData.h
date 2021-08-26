@@ -12,13 +12,13 @@ namespace imgdata {
     class PartData : public ImageDataClass {
         
         private:
-            std::vector<Voxel> shape;
+            std::vector<imgdata::Voxel> shape;
         public:
             PartData(void);
-            PartData(unsigned char intensity);
+            PartData(unsigned char intensity, std::vector<imgdata::Voxel> shape);
             ~PartData();
 
-            const std::vector<Voxel> getShape() const;
+            const std::vector<imgdata::Voxel> getShape() const;
 
     };
 }

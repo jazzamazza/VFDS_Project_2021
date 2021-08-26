@@ -7,7 +7,7 @@
 imgdata::PartData::PartData(void) : imgdata::ImageDataClass(0), shape(std::vector<imgdata::Voxel>()) {}
 
 // custom constructor
-imgdata::PartData::PartData(unsigned char intensity) : imgdata::ImageDataClass(intensity), shape(std::vector<Voxel>()) {}
+imgdata::PartData::PartData(unsigned char intensity, std::vector<imgdata::Voxel> shape) : imgdata::ImageDataClass(intensity), shape(shape) {}
 
 // destructor
 imgdata::PartData::~PartData() {}
