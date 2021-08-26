@@ -332,7 +332,7 @@ void Split::cut()
                 for(int x = 0; x < cutx; x++)
                 {
                         Voxel* row = new Voxel[cols-cuty];
-                        for(int y = cols; y < cuty; y++)
+                        for(int y = cuty; y < cols; y++)
                         {
                                 row[y-cuty] = this->data[z][x][y];
                         }

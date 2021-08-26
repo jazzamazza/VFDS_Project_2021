@@ -6,14 +6,15 @@
 #include "Split.h"
 #include "Voxel.h"
 #include "ImageProcessorFunc.h"
+#include "Fracture.h"
 
 int main(void)
 {
 	using namespace imgdata;
 	//construct Set
-	int d = 11;
-	int r = 11;
-	int c = 11;
+	int d = 5;
+	int r = 5;
+	int c = 5;
 
 	Voxel*** cube = new Voxel**[d];
 	for(int z = 0; z < d; z++)
@@ -24,20 +25,20 @@ int main(void)
 			Voxel * row = new Voxel[c];
 			for(int y = 0; y < c; y++)
 			{
-				row[y] = Voxel(z,x,y,1);
+				row[y] = Voxel(x,y,z,1);
 			}
 			set[x] = row;
 		}
 		cube[z] = set;
 	}
 	//make fracture
-	for(int z = 3; z < 7; z++)
+	for(int z = 0; z < 5; z++)
         {
-                for(int x = 3; x < 7; x++)
+                for(int x = 1; x < 3 ; x++)
                 {
-                        for(int y = 3; y < 7; y++)
+                        for(int y = 1; y < 3; y++)
                         {
-                                cube[z][x][y] = Voxel(z,x,y,0);
+                                cube[z][x][y] = Voxel(x,y,z,0);
                         }
                 }
         }
@@ -58,16 +59,15 @@ int main(void)
 	func::collect(MotherSplit, collection);
 
 	//print
-	std::cout << "collected" << std::endl;
+	//std::cout << "collected" << std::endl;
 	func::printCollection(collection);
-	
 	
 	/*	
 	std::vector<int> MSDim = MotherSplit.getDim();
 	std::shared_ptr<int[]> flatGrid(new int[MSDim[0]*MSDim[1]]); // {rows, cols}
 	
 	//fracture class for now////////////////
-	std::vector< std::vector<Split> > fractures;
+	std::vector<Fracture> fractures;
 	std::vector< std::vector<int> > fracIDs;
 	/////////////////////////////////////
 	
@@ -150,10 +150,9 @@ int main(void)
 		func::printCollection(fractures[t]);
 		
 	}
+	
+	
 */
-	
-	
-
 
 	return 0;
 }
