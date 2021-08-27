@@ -1,6 +1,3 @@
-exe: ImageProcessor.o Split.o Voxel.o practiceDriver.o Fracture.o
-	g++ ImageProcessor.o Split.o Voxel.o practiceDriver.o Fracture.o -o exe -std=c++2a
-
 drv: Driver.o CTReader.o Voxel.o ImageProcessor.o Split.o Fracture.o
 	g++ Driver.o CTReader.o Voxel.o ImageProcessor.o Split.o Fracture.o -o drv -std=c++2a
 
@@ -25,5 +22,11 @@ practiceDriver.o: practiceDriver.cpp
 Fracture.o: Fracture.cpp
 	g++ -c Fracture.cpp -o Fracture.o -std=c++2a
 
+utest: unit_test.cpp ImageDataClass.o PartData.o BackgroundData.o Voxel.o CTReader.o Fracture.o
+	g++ unit_test.cpp ImageDataClass.o PartData.o BackgroundData.o Voxel.o Fracture.o CTReader.o -o utest -std=c++2a
+
+unit_test.o: unit_test.cpp
+	g++ -c unit_test.cpp -o unit_test.o -std=c++2a
+
 clean:
-	rm *.o exe drv
+	rm *.o drv utest
