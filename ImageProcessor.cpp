@@ -123,7 +123,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
         MotherSplit.test();
 
         //collect 
-        func::collect(MotherSplit, collection);
+        //func::collect(MotherSplit, collection);
 
         //print
         //std::cout << "collected" << std::endl;
@@ -137,7 +137,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
         std::vector<Fracture> existingFractures;
         std::vector< std::vector<int> > fracIDs;
 
-	//group into fractures
+	/*group into fractures
         int count = 0;
         int IDcount = 0;
         //iterate through the collected Split Objects. Each Split object is only made up of 0s(fractured pixels)
@@ -157,7 +157,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
                         //get 1D index from 3D location
                         int index = (MSDim[1]*b->getX()) + b->getY() + b->getZ()*(MSDim[0]*MSDim[1]);
 
-                        /*std::cout << "Flat Grid " <<  index <<std::endl;
+                        std::cout << "Flat Grid " <<  index <<std::endl;
                         for(int p = 0; p < MSDim[0]*MSDim[1]*MSDim[2]; p++)
                         {
                                 std::cout << flatGrid[p] << " ";
@@ -170,7 +170,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
                                         std::cout << "\n" << std::endl;
                                 }
                         }
-                        std::cout << "\n";*/
+                        std::cout << "\n";
 
 
 
@@ -225,7 +225,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
                 std::cout << existingFractures[t] << std::endl;
 
         }
-
+*/
 	return existingFractures;
 
 }

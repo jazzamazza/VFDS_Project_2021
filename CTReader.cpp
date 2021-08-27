@@ -81,4 +81,3 @@ void imgread::CTReader::deletePGMStack(imgdata::Voxel***& imgArr3D, int dim) {
     }
     delete[] imgArr3D;
 }
-
