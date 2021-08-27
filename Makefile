@@ -16,6 +16,9 @@ Split.o: Split.cpp
 Voxel.o: Voxel.cpp
 	g++ -c Voxel.cpp -o Voxel.o -std=c++2a
 
+pracExe: practiceDriver.o Voxel.o ImageProcessor.o Split.o Fracture.o
+	g++ practiceDriver.o Voxel.o ImageProcessor.o Split.o Fracture.o -o pracExe -std=c++2a
+
 practiceDriver.o: practiceDriver.cpp
 	g++ -c practiceDriver.cpp -o practiceDriver.o -std=c++2a
 
@@ -29,4 +32,4 @@ unit_test.o: unit_test.cpp
 	g++ -c unit_test.cpp -o unit_test.o -std=c++2a
 
 clean:
-	rm *.o drv utest
+	rm *.o drv utest pracExe

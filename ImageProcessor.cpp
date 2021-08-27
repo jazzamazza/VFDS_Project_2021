@@ -114,7 +114,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 {
 	//Start Split and merge
         Split MotherSplit(imgArr3D, depth, rows, cols);
-        //std::cout << MotherSplit << "\n" << std::endl;
+        //std::cout << MotherSplit << "\n" << std::endl;    //uncomment for case demo
 
         //initiate collection
         std::vector<Split> collection;
@@ -137,7 +137,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
         std::vector<Fracture> existingFractures;
         std::vector< std::vector<int> > fracIDs;
 
-	/*group into fractures
+	/*group into fractures    //uncomment for demo
         int count = 0;
         int IDcount = 0;
         //iterate through the collected Split Objects. Each Split object is only made up of 0s(fractured pixels)
@@ -157,20 +157,20 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
                         //get 1D index from 3D location
                         int index = (MSDim[1]*b->getX()) + b->getY() + b->getZ()*(MSDim[0]*MSDim[1]);
 
-                        std::cout << "Flat Grid " <<  index <<std::endl;
-                        for(int p = 0; p < MSDim[0]*MSDim[1]*MSDim[2]; p++)
-                        {
-                                std::cout << flatGrid[p] << " ";
-                                if((p+1)%(MSDim[1])==0)
-                                {
-                                        std::cout << "" << std::endl;
-                                }
-                                if((p+1)%(MSDim[1]*MSDim[0])==0)
-                                {
-                                        std::cout << "\n" << std::endl;
-                                }
-                        }
-                        std::cout << "\n";
+//                        std::cout << "Flat Grid " <<  index <<std::endl;
+//                        for(int p = 0; p < MSDim[0]*MSDim[1]*MSDim[2]; p++)
+//                        {
+//                                std::cout << flatGrid[p] << " ";
+//                                if((p+1)%(MSDim[1])==0)
+//                                {
+//                                        std::cout << "" << std::endl;
+//                                }
+//                                if((p+1)%(MSDim[1]*MSDim[0])==0)
+//                                {
+//                                        std::cout << "\n" << std::endl;
+//                                }
+//                        }
+//                        std::cout << "\n";
 
 
 
@@ -219,13 +219,8 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
                 }
         }
 
-	//print fractures
-        for(int t =0; t < existingFractures.size(); t++)
-        {
-                std::cout << existingFractures[t] << std::endl;
+	*/  //uncomment for demo
 
-        }
-*/
 	return existingFractures;
 
 }

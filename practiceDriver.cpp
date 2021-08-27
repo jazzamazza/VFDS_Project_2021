@@ -57,4 +57,12 @@ int main(void)
         }*/
 
 	std::vector<Fracture> frac = func::splitMerge(cube, r, c, d);
+
+	//print fractures
+        for(int t =0; t < frac.size(); t++)
+        {
+                std::cout << frac[t] << std::endl;
+
+        }
+
 }
