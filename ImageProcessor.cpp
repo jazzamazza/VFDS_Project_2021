@@ -123,7 +123,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
         MotherSplit.test();
 
         //collect 
-        //func::collect(MotherSplit, collection);
+        func::collect(MotherSplit, collection);
 
         //print
         //std::cout << "collected" << std::endl;
