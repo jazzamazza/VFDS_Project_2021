@@ -31,5 +31,8 @@ utest: unit_test.cpp ImageDataClass.o PartData.o BackgroundData.o Voxel.o CTRead
 unit_test.o: unit_test.cpp
 	g++ -c unit_test.cpp -o unit_test.o -std=c++2a
 
+ws:
+	g++ -c WS/Water.cpp -o water.o -std=c++2a;
+
 clean:
 	rm *.o drv utest pracExe

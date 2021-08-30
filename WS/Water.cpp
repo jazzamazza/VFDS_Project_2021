@@ -26,7 +26,7 @@ WS::Water & WS::Water::operator=(const WS::Water & w) //copy assignment operator
 	return *this;
 }
 
-WS::Water(WS::Water && w): pool(w.pool), ID(w.ID) //move constructor
+WS::Water::Water(WS::Water && w): pool(w.pool), ID(w.ID) //move constructor
 {
 	w.ID = -1;
 	w.pool.clear();
@@ -46,12 +46,38 @@ WS::Water & WS::Water::operator=(WS::Water && w) //move assigment operator
 } 
 
 // get
-std::vector<std::pair<int>> WS::Water::getPool(){}
-int WS::Water::getID(){}
+std::vector<std::pair<int,int>> WS::Water::getPool()
+{
+	return this->pool;
+}
+
+int WS::Water::getID()
+{
+	return this->ID;
+}
 
 // set
-void WS::Water::setID(int ID){}
+void WS::Water::setID(int ID)
+{
+	this->ID = ID;
+}
 
 // friends
-friend ostream & WS::Water::operator<<(ostream & out, Water && w){}
+std::ostream & WS::operator<<(std::ostream & out, const WS::Water & w)
+{
+	out << "Water ID: " << w.ID << ". Water located at:" << std::endl;
+	int count = 0;
+	for(std::vector<std::pair<int,int>>::const_iterator i = w.pool.begin(); i != w.pool.end(); ++i)
+	{
+		std::pair<int,int> temp = *i;
+	//	out << "(" << temp.get(0) << ", " << temp.get(1) << ")";
+
+		count++;
+		if(count == 5)
+		{
+			out << "\n";
+		}
+	}
+	return out;
+}
 

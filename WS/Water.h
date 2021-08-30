@@ -7,15 +7,14 @@
 #define WATER_H
 
 #include <vector>
-#include <pair>
-#include <ostream>
+#include <iostream>
 
 namespace WS
 {
 	class Water
 	{
 		private:
-			std::vector<std::pair<int>> pool;
+			std::vector<std::pair<int,int>> pool;
 			int ID;
 		public:
 			// core 3
@@ -30,14 +29,14 @@ namespace WS
 			Water & operator=(Water && w); //move assigment operator
 			       		
 			// get
-			std::vector<std::pair<int>> getPool();
+			std::vector<std::pair<int,int>> getPool();
 			int getID();
 	
 			// set
 			void setID(int ID);
 	
 			// friends
-			friend ostream & operator<<(ostream & out, Water && w);
+			friend std::ostream & operator<<(std::ostream & out, const Water & w);
 	};
 }
 
