@@ -133,37 +133,39 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 
 
         std::vector<int> MSDim = MotherSplit.getDim();
-        std::shared_ptr<int[]> flatGrid(new int[MSDim[0]*MSDim[1]*MSDim[2]]); // {rows, cols,depth}
 
         //fracture class for now
         std::vector<Fracture> existingFractures;
         std::vector< std::vector<int> > fracIDs;
 
-	/*group into fractures    //uncomment for demo
+	//group into fractures    //uncomment for demo
         int count = 0;
         int IDcount = 0;
-        //iterate through the collected Split Objects. Each Split object is only made up of 0s(fractured pixels)
+
+        //iterate through the collected Split Objects. Each Split object is only made up of 0s (fractured pixels)
         for(std::vector<Split>::iterator i = collection.begin(); i != collection.end(); ++i)
         {
-                count++;//incremenet to 1
+		Split s1(*i);
+                count++; //incremenet to 1
 
-                //only use the boundary pixels of the split
-                std::vector<Voxel> boundary = i->getBoundary();
-
-                //this split has not been pushed back yet
-                bool pushedBack = false;
-
-                //iterate through the boundary pixels
-                for(std::vector<Voxel>::iterator b = boundary.begin(); b != boundary.end(); ++b)
-                {
-                        //get 1D index from 3D location
-                        //int index = (MSDim[1]*b->getX()) + b->getY() + b->getZ()*(MSDim[0]*MSDim[1]);
-
-
+               	//only use the boundary pixels of the split
+               	std::vector<Voxel> boundary = i->getBoundary();
+	
+		for(std::vector<Split>::iterator p = collection.begin(); p != collections.end(); ++p)
+		{
+			Split s2(*p);
+			if(s1 != s2) //implement
+			{
+       	 	        	//iterate through the boundary pixels
+       	        		for(std::vector<Voxel>::iterator b = boundary.begin(); b != boundary.end(); ++b)
+                		{
+							
+				}
+			}
 		}
-	}*/
-	return existingFractures;
+	}
 
+	return existingFractures;
 }
 
 //global
