@@ -171,11 +171,15 @@ std::vector<Voxel> directions = {Voxel(1,0,0,0), Voxel(-1,0,0,0), Voxel(0,1,0,0)
 
 bool func::touching(const Voxel & a, const Voxel & b)
 {
+	std::cout << a << std::endl;
 	std::vector<Voxel> aNeighbours;
 	for(std::vector<Voxel>::iterator i = directions.begin(); i != directions.end(); i++)
 	{
+		Voxel v = *i+a;
+		std::cout << v << std::endl;
 		aNeighbours.push_back(*i+a);
 	}
+	
 	bool ret = false;
 
 	
