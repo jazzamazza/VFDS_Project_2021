@@ -55,8 +55,16 @@ int main(void)
                         }
                 }
         }*/
-
+	
+	//splitMerge
 	std::vector<Fracture> frac = func::splitMerge(cube, r, c, d);
+	
+	Voxel a(1,1,1,0);
+	Voxel b(-20,-30,-50,0);
+
+	Voxel v = a+b;
+
+	std::cout << v.getX() << v.getY() << v.getZ() << std::endl;
 
 	//print fractures
         for(int t =0; t < frac.size(); t++)

@@ -30,6 +30,7 @@ namespace imgdata {
             const int getX() const;
             const int getY() const;
             const int getZ() const;
+	    Voxel operator+(const Voxel & b);
     };
 }
 

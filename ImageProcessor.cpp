@@ -4,7 +4,9 @@
  */
 
 #include "ImageProcessor.h"
+
 using namespace imgdata;
+
 void func::collect(Split & parent, std::vector<Split> & collector)
 {
         if(parent.getAllFrac()) //if all 0's
@@ -114,7 +116,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 {
 	//Start Split and merge
         Split MotherSplit(imgArr3D, depth, rows, cols);
-        //std::cout << MotherSplit << "\n" << std::endl;    //uncomment for case demo
+        std::cout << MotherSplit << "\n" << std::endl;    //uncomment for case demo
 
         //initiate collection
         std::vector<Split> collection;
@@ -155,72 +157,27 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
                 for(std::vector<Voxel>::iterator b = boundary.begin(); b != boundary.end(); ++b)
                 {
                         //get 1D index from 3D location
-                        int index = (MSDim[1]*b->getX()) + b->getY() + b->getZ()*(MSDim[0]*MSDim[1]);
-
-//                        std::cout << "Flat Grid " <<  index <<std::endl;
-//                        for(int p = 0; p < MSDim[0]*MSDim[1]*MSDim[2]; p++)
-//                        {
-//                                std::cout << flatGrid[p] << " ";
-//                                if((p+1)%(MSDim[1])==0)
-//                                {
-//                                        std::cout << "" << std::endl;
-//                                }
-//                                if((p+1)%(MSDim[1]*MSDim[0])==0)
-//                                {
-//                                        std::cout << "\n" << std::endl;
-//                                }
-//                        }
-//                        std::cout << "\n";
+                        //int index = (MSDim[1]*b->getX()) + b->getY() + b->getZ()*(MSDim[0]*MSDim[1]);
 
 
-
-                        //plot point in if nothing is present already
-                        if(flatGrid[index] == 0)
-                        {
-                                flatGrid[index] = count;
-                        }
-                        //if something is present - add to present fracture and add count to present fracture ID(diff count values) list(unless already happened)
-                        else if(flatGrid[index] != 0)
-                        {
-                                for(int f=0; f<fracIDs.size();f++)
-                                {
-                                        for(int ID=0; ID < fracIDs[f].size(); ID++)
-                                        {
-                                                if(flatGrid[index] == fracIDs[f][ID])
-                                                {
-                                                        if(!pushedBack)
-                                                        {
-                                                                fracIDs[f].push_back(count);
-                                                                func::addSplit(existingFractures[f], *i); //implement
-                                                                pushedBack = true;
-                                                        }
-                                                }
-                                        }
-                                }
-                        }
-                        //plot neighbours
-                        func::plotNeighbours(flatGrid, index, count, MSDim);
-
-                }
-                //if not pushed back then this is split is apart of a new fracture
-                if(!pushedBack)
-                {
-                        //make new fracture
-                        Fracture newFracture(IDcount++, "blank");
-
-                        func::addSplit(newFracture, *i);
-
-                        existingFractures.push_back(newFracture);
-
-                        //add to FracIDs
-                        std::vector<int> newFracIDs;
-                        newFracIDs.push_back(count);
-                        fracIDs.push_back(newFracIDs);
-                }
-        }
-
-	*/  //uncomment for demo
-
+		}
+	}*/
 	return existingFractures;
 
+}
+
+//global
+std::vector<Voxel> directions = {Voxel(1,0,0,0), Voxel(-1,0,0,0), Voxel(0,1,0,0), Voxel(0,-1,0,0), Voxel(0,0,1,0), Voxel(0,0,-1,0)};
+
+bool func::touching(const Voxel & a, const Voxel & b)
+{
+	std::vector<Voxel> aNeighbours;
+	for(std::vector<Voxel>::iterator i = directions.begin(); i != directions.end(); i++)
+	{
+		aNeighbours.push_back(*i+a);
+	}
+	bool ret = false;
+
+	
+	return ret;	
 }

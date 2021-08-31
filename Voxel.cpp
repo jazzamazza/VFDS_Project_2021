@@ -89,3 +89,13 @@ const int imgdata::Voxel::getZ() const {
     else
         return -1;
 }
+
+imgdata::Voxel imgdata::Voxel::operator+(const Voxel & b)
+{
+	Voxel temp(*this);
+	temp.coords[0] += b.coords[0];
+	temp.coords[1] += b.coords[1];
+	temp.coords[2] += b.coords[2];
+
+	return temp;
+}
