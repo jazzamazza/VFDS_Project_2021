@@ -105,3 +105,15 @@ std::ostream & imgdata::operator<<(std::ostream & out, const Voxel & v)
 	out << "(" << v.coords[0] << ", " << v.coords[1] << ", " << v.coords[2] << ")-> " << int(v.intensity);   
 	return out;
 }
+
+bool imgdata::Voxel::operator==(const imgdata::Voxel & v) const
+{
+	Voxel temp(*this);
+	bool ret = false;
+	if( (temp.coords[0] == v.coords[0]) && (temp.coords[1] == v.coords[1]) && (temp.coords[2] == v.coords[2]) && (temp.intensity == v.intensity) )
+	{
+		ret = true;
+	}
+
+	return ret;
+}

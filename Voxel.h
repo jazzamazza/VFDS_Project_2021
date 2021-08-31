@@ -33,6 +33,7 @@ namespace imgdata {
             const int getZ() const;
 	    Voxel operator+(const Voxel & v);
 	    friend std::ostream & operator<<(std::ostream & out, const Voxel & v);
+	    bool operator==(const Voxel & v) const;
     };
 }
 
