@@ -44,7 +44,7 @@ int main(void)
                 }
         }
 
-	/*make fracture 1 uncomment to see logic error
+	//make fracture 1 uncomment to see logic error
 	for(int z = 3; z < 5; z++)
         {
                 for(int x = 3; x < 5 ; x++)
@@ -54,11 +54,10 @@ int main(void)
                                 cube[z][x][y] = Voxel(x,y,z,0);
                         }
                 }
-        }*/
+        }
 	
 	//splitMerge
 	std::vector<Fracture> frac = func::splitMerge(cube, r, c, d);
-
 
 	
 	//print fractures
@@ -66,6 +65,6 @@ int main(void)
         {
                 std::cout << frac[t] << std::endl;
 
-        }
+	}
 
 }
