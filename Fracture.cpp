@@ -77,11 +77,11 @@ namespace imgdata {
 	}
         else
 	{
-        	out << "Fracture ID: " << rhs.getID() << ", Number of voxels: " << rhs.getVoxels() << std::endl;
-		for(std::vector<Voxel>::iterator i = rhs.coords.begin(); i != rhs.coords.end(); ++i)
+        	out << "Fracture ID: " << rhs.getID() << ", Number of voxels: " << rhs.getVoxels();
+		/*for(std::vector<Voxel>::iterator i = rhs.coords.begin(); i != rhs.coords.end(); ++i)
 		{
 			std::cout << "("  << i->getX() << "," << i->getY() << "," << i->getZ() << ")" << std::endl;
-		}
+		}*/
 	}	    	
 		
         

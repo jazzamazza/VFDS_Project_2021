@@ -107,7 +107,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 {
 	//Start Split and merge
         Split MotherSplit(imgArr3D, depth, rows, cols);
-        std::cout << MotherSplit << "\n" << std::endl;    //uncomment for case demo
+        //std::cout << MotherSplit << "\n" << std::endl;    //uncomment for case demo
 
         //initiate collection
         std::vector<Fracture> collection;
@@ -189,7 +189,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 											i->join(*p);
 											change = true;
 											usedIDs.push_back(f2.getID());
-											toErase.push_back(f2.getID()); //
+											toErase.push_back(f2.getID());
 											inserted = true;
 											break;
 										}
