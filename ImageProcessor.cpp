@@ -4,13 +4,20 @@
  */
 
 #include "ImageProcessor.h"
+
 using namespace imgdata;
-void func::collect(Split & parent, std::vector<Split> & collector)
+
+//global
+int ID = 0;
+
+void func::collect(Split & parent, std::vector<Fracture> & collector)
 {
         if(parent.getAllFrac()) //if all 0's
         {
 		//std::cout << "all\n" << parent << std::endl;
-                collector.push_back(parent);
+		Fracture f(ID++, "black");
+		f.insertSplit(parent);
+                collector.push_back(f);
 
         }
         else
@@ -30,26 +37,12 @@ void func::collect(Split & parent, std::vector<Split> & collector)
         }
 }
 
-void func::printCollection(std::vector<Split> & coll)
+void func::printCollection(std::vector<Fracture> & coll)
 {
-	for(std::vector<Split>::iterator i = coll.begin(); i != coll.end(); ++i)
-        {
-                Voxel*** temp = i->getData();
-		std::vector<int> dims = i->getDim();
-		for(int z = 0; z < dims[2]; z++)
-		{
-                	for(int x = 0; x < dims[0]; x++)
-			{
-				for(int y = 0; y < dims[1]; y++)
-				{
-					std::cout << "(" << temp[z][x][y].getZ() << ","<< temp[z][x][y].getX() << "," << temp[z][x][y].getY() << ")";
-				}
-				std::cout << "" << std::endl;
-			}
-			std::cout << "\n";	
-		}
-        }
-
+	for(std::vector<Fracture>::iterator i = coll.begin(); i != coll.end(); ++i)
+	{
+		std::cout << *i << std::endl;
+	}
 }
 
 
@@ -117,7 +110,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
         //std::cout << MotherSplit << "\n" << std::endl;    //uncomment for case demo
 
         //initiate collection
-        std::vector<Split> collection;
+        std::vector<Fracture> collection;
 
         //test before collect
         MotherSplit.test();
@@ -130,97 +123,120 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
         //func::printCollection(collection);
 
 
-        std::vector<int> MSDim = MotherSplit.getDim();
-        std::shared_ptr<int[]> flatGrid(new int[MSDim[0]*MSDim[1]*MSDim[2]]); // {rows, cols,depth}
+	//loop
+	bool change(true);
+	while(change)
+	{
+		change = false;
+		std::vector<int> usedIDs;
+		std::vector<int> toErase;
 
-        //fracture class for now
-        std::vector<Fracture> existingFractures;
-        std::vector< std::vector<int> > fracIDs;
+		//group into fractures   
+        	int count(0);
+	
+	        //iterate through the collected fracture Objects. (fractured pixels)
+	        for(std::vector<Fracture>::iterator i = collection.begin(); i != collection.end(); ++i)
+	        {
+			Fracture f1(*i);
+		
+			//check if this split has been used
+			bool used(false);
+			for(std::vector<int>::iterator u = usedIDs.begin(); u != usedIDs.end(); ++u)
+			{
+				if(*u == f1.getID())
+				{
+					used = true;
+				}
+			}
+			if(!used)
+			{
+               			std::vector<Voxel> f1Coords = f1.getCoords();
+				for(std::vector<Fracture>::iterator p = collection.begin(); p != collection.end(); ++p)
+				{
+					Fracture f2(*p);
+					
+					bool used2(false);
+					for(std::vector<int>::iterator u = usedIDs.begin(); u != usedIDs.end(); ++u)
+					{
+						if(*u == f2.getID())
+						{
+							used2 = true;
+						}	
+					}
+					if(!used2)
+					{
+						bool inserted(false);
+	
+						//only use boundary
+						std::vector<Voxel> f2Coords = f2.getCoords();
+			
+						if(f1.getID() != f2.getID()) //doesnt check against itself
+						{
+       		 		        		//iterate through the boundary pixels of main split
+       		        				for(std::vector<Voxel>::iterator v1 = f1Coords.begin(); v1 != f1Coords.end(); ++v1)
+        	        				{
+								if(inserted)
+								{
+									//only needs 1 match
+									break;
+								}
+								else
+								{
+									for(std::vector<Voxel>::iterator v2 = f2Coords.begin(); v2 != f2Coords.end(); ++v2)
+									{
+										if(func::touching(*v1,*v2))
+										{
+											i->join(*p);
+											change = true;
+											usedIDs.push_back(f2.getID());
+											toErase.push_back(f2.getID());
+											inserted = true;
+											break;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		for(std::vector<int>::iterator i = toErase.begin(); i != toErase.end(); ++i)
+		{
+			for(std::vector<Fracture>::iterator p = collection.begin(); p != collection.end(); ++p)
+			{
+				if(p->getID() == *i)
+				{
+					collection.erase(p);
+					break;
+				}
+			}
+		}
 
-	/*group into fractures    //uncomment for demo
-        int count = 0;
-        int IDcount = 0;
-        //iterate through the collected Split Objects. Each Split object is only made up of 0s(fractured pixels)
-        for(std::vector<Split>::iterator i = collection.begin(); i != collection.end(); ++i)
-        {
-                count++;//incremenet to 1
-
-                //only use the boundary pixels of the split
-                std::vector<Voxel> boundary = i->getBoundary();
-
-                //this split has not been pushed back yet
-                bool pushedBack = false;
-
-                //iterate through the boundary pixels
-                for(std::vector<Voxel>::iterator b = boundary.begin(); b != boundary.end(); ++b)
-                {
-                        //get 1D index from 3D location
-                        int index = (MSDim[1]*b->getX()) + b->getY() + b->getZ()*(MSDim[0]*MSDim[1]);
-
-//                        std::cout << "Flat Grid " <<  index <<std::endl;
-//                        for(int p = 0; p < MSDim[0]*MSDim[1]*MSDim[2]; p++)
-//                        {
-//                                std::cout << flatGrid[p] << " ";
-//                                if((p+1)%(MSDim[1])==0)
-//                                {
-//                                        std::cout << "" << std::endl;
-//                                }
-//                                if((p+1)%(MSDim[1]*MSDim[0])==0)
-//                                {
-//                                        std::cout << "\n" << std::endl;
-//                                }
-//                        }
-//                        std::cout << "\n";
+	}
+	return collection;
 
 
+}
 
-                        //plot point in if nothing is present already
-                        if(flatGrid[index] == 0)
-                        {
-                                flatGrid[index] = count;
-                        }
-                        //if something is present - add to present fracture and add count to present fracture ID(diff count values) list(unless already happened)
-                        else if(flatGrid[index] != 0)
-                        {
-                                for(int f=0; f<fracIDs.size();f++)
-                                {
-                                        for(int ID=0; ID < fracIDs[f].size(); ID++)
-                                        {
-                                                if(flatGrid[index] == fracIDs[f][ID])
-                                                {
-                                                        if(!pushedBack)
-                                                        {
-                                                                fracIDs[f].push_back(count);
-                                                                func::addSplit(existingFractures[f], *i); //implement
-                                                                pushedBack = true;
-                                                        }
-                                                }
-                                        }
-                                }
-                        }
-                        //plot neighbours
-                        func::plotNeighbours(flatGrid, index, count, MSDim);
+//global
+std::vector<Voxel> directions = {Voxel(1,0,0,0), Voxel(-1,0,0,0), Voxel(0,1,0,0), Voxel(0,-1,0,0), Voxel(0,0,1,0), Voxel(0,0,-1,0)};
 
-                }
-                //if not pushed back then this is split is apart of a new fracture
-                if(!pushedBack)
-                {
-                        //make new fracture
-                        Fracture newFracture(IDcount++, "blank");
-
-                        func::addSplit(newFracture, *i);
-
-                        existingFractures.push_back(newFracture);
-
-                        //add to FracIDs
-                        std::vector<int> newFracIDs;
-                        newFracIDs.push_back(count);
-                        fracIDs.push_back(newFracIDs);
-                }
-        }
-
-	*/  //uncomment for demo
-
-	return existingFractures;
-
+bool func::touching(const Voxel & a, const Voxel & b) //change to split memeber function
+{
+	std::vector<Voxel> aNeighbours;
+	bool ret = false;
+	for(std::vector<Voxel>::iterator i = directions.begin(); i != directions.end(); i++)
+	{
+		aNeighbours.push_back(*i+a);
+	}
+	for(std::vector<Voxel>::iterator i = aNeighbours.begin(); i != aNeighbours.end(); ++i)
+	{
+		Voxel v(*i);
+		if(b == v)
+		{
+			ret = true;
+		}
+	}
+	return ret;	
 }

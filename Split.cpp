@@ -6,7 +6,7 @@
 #include "Split.h"
 using namespace imgdata;
 //Default
-Split::Split(): data(nullptr), allFracture(NULL), someFracture(NULL), depth(0), rows(0), cols(0){}
+Split::Split(): data(nullptr), allFracture(NULL), someFracture(NULL), depth(0), rows(0), cols(0), ID(-1){}
 
 //Destructor
 Split::~Split()
@@ -26,10 +26,10 @@ Split::~Split()
 }
 
 //Custom
-Split::Split(Voxel*** & data, int depth, int rows, int cols): data(data), allFracture(NULL), someFracture(NULL), depth(depth), rows(rows), cols(cols){}
+Split::Split(Voxel*** & data, int depth, int rows, int cols): data(data), allFracture(NULL), someFracture(NULL), depth(depth), rows(rows), cols(cols), ID(-1){}
 
 //Copy Constructor
-Split::Split(const Split & s): data(nullptr), allFracture(s.allFracture), someFracture(s.someFracture), depth(s.depth), rows(s.rows), cols(s.cols)
+Split::Split(const Split & s): data(nullptr), allFracture(s.allFracture), someFracture(s.someFracture), depth(s.depth), rows(s.rows), cols(s.cols), ID(s.ID)
 {
 	if(s.data != nullptr)
 	{
@@ -80,6 +80,7 @@ Split& Split::operator=(const Split & s)
 		this->depth = s.depth;
 		this->rows = s.rows;
 		this->cols = s.cols;
+		this->ID = s.ID;
 		
 		for(std::vector<std::shared_ptr<Split>>::const_iterator i = s.children.begin(); i != s.children.end(); ++i)
         	{
@@ -111,7 +112,7 @@ Split& Split::operator=(const Split & s)
 }
 
 //Move Constructor 
-Split::Split(Split && s): data(nullptr), allFracture(s.allFracture), someFracture(s.someFracture), depth(s.depth), rows(s.rows), cols(s.cols)
+Split::Split(Split && s): data(nullptr), allFracture(s.allFracture), someFracture(s.someFracture), depth(s.depth), rows(s.rows), cols(s.cols), ID(s.ID)
 {
 	for(std::vector<std::shared_ptr<Split>>::iterator i = s.children.begin(); i != s.children.end(); ++i)
 	{
@@ -151,6 +152,7 @@ Split& Split::operator=(Split && s)
 		this->depth = s.depth;
                 this->rows = s.rows;
                 this->cols = s.cols;
+		this->ID = s.ID;
 
 		for(std::vector<std::shared_ptr<Split>>::iterator i = s.children.begin(); i != s.children.end(); ++i)
         	{
@@ -185,6 +187,11 @@ int Split::getRows()
 int Split::getCols()
 {
 	return this->cols;
+}
+
+int Split::getID()
+{
+	return this->ID;
 }
 
 Voxel*** Split::getData()
@@ -430,4 +437,19 @@ std::ostream & operator<<(std::ostream & out, Split & s)
         }
         return out;
 
+}
+
+void Split::setID(int ID)
+{
+	this->ID = ID;
+}
+
+bool Split::operator!=(Split & s)
+{
+	bool ret = false;
+	if(this->ID != s.ID)
+	{
+		ret = true;
+	}
+	return ret;
 }

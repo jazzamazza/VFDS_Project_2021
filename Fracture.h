@@ -9,6 +9,7 @@
 #include <string>
 #include <iostream>
 #include "Voxel.h"
+#include "Split.h"
 
 namespace imgdata {
     class Fracture {
@@ -37,7 +38,10 @@ namespace imgdata {
             std::string getColour(void) const;
             std::vector<Voxel> getCoords(void) const;
 
+	    void join(Fracture & f);
             void insertVoxel(imgdata::Voxel& vox);
+	    void insertSplit(Split & s);
+
             /* 
             To be implemented at a later point
 

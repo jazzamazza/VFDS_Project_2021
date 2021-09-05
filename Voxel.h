@@ -6,6 +6,7 @@
 #define VOXEL_H
 
 #include <vector>
+#include <ostream>
 
 namespace imgdata {
     class Voxel {
@@ -30,6 +31,9 @@ namespace imgdata {
             const int getX() const;
             const int getY() const;
             const int getZ() const;
+	    Voxel operator+(const Voxel & v);
+	    friend std::ostream & operator<<(std::ostream & out, const Voxel & v);
+	    bool operator==(const Voxel & v) const;
     };
 }
 

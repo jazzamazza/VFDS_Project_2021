@@ -16,11 +16,17 @@ Split.o: Split.cpp
 Voxel.o: Voxel.cpp
 	g++ -c Voxel.cpp -o Voxel.o -std=c++2a
 
-pracExe: practiceDriver.o Voxel.o ImageProcessor.o Split.o Fracture.o
-	g++ practiceDriver.o Voxel.o ImageProcessor.o Split.o Fracture.o -o pracExe -std=c++2a
+smtest: SplitMergeTesting.o Voxel.o ImageProcessor.o Split.o Fracture.o
+	g++ SplitMergeTesting.o Voxel.o ImageProcessor.o Split.o Fracture.o -o smtest -std=c++2a
 
-practiceDriver.o: practiceDriver.cpp
-	g++ -c practiceDriver.cpp -o practiceDriver.o -std=c++2a
+mexe: misc.o Voxel.o ImageProcessor.o Split.o Fracture.o
+	g++ misc.o Voxel.o ImageProcessor.o Split.o Fracture.o -o mexe -std=c++2a
+
+misc.o: misc.cpp
+	g++ -c misc.cpp -o misc.o -std=c++2a
+
+SplitMergeTesting.o: SplitMergeTesting.cpp
+	g++ -c SplitMergeTesting.cpp -o SplitMergeTesting.o -std=c++2a
 
 Fracture.o: Fracture.cpp
 	g++ -c Fracture.cpp -o Fracture.o -std=c++2a
@@ -31,5 +37,8 @@ utest: unit_test.cpp ImageDataClass.o PartData.o BackgroundData.o Voxel.o CTRead
 unit_test.o: unit_test.cpp
 	g++ -c unit_test.cpp -o unit_test.o -std=c++2a
 
+ws:
+	g++ -c WS/Water.cpp -o water.o -std=c++2a;
+
 clean:
-	rm *.o drv utest pracExe
+	rm *.o drv utest smtest mexe

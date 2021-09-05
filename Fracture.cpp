@@ -77,11 +77,11 @@ namespace imgdata {
 	}
         else
 	{
-        	out << "Fracture ID: " << rhs.getID() << ", Number of voxels: " << rhs.getVoxels() << std::endl;
-		for(std::vector<Voxel>::iterator i = rhs.coords.begin(); i != rhs.coords.end(); ++i)
+        	out << "Fracture ID: " << rhs.getID() << ", Number of voxels: " << rhs.getVoxels();
+		/*for(std::vector<Voxel>::iterator i = rhs.coords.begin(); i != rhs.coords.end(); ++i)
 		{
 			std::cout << "("  << i->getX() << "," << i->getY() << "," << i->getZ() << ")" << std::endl;
-		}
+		}*/
 	}	    	
 		
         
@@ -113,4 +113,29 @@ void imgdata::Fracture::insertVoxel(imgdata::Voxel& vox) {
 
     //increment the count of pixels
     this->numVoxels++;
+}
+
+void imgdata::Fracture::join(Fracture & f)
+{
+	for(std::vector<Voxel>::iterator i = f.coords.begin(); i != f.coords.end(); ++i)
+	{
+		this->insertVoxel(*i);
+	}
+}
+
+void imgdata::Fracture::insertSplit(Split & s)
+{
+	imgdata::Voxel*** data = s.getData();
+	std::vector<int> d = s.getDim();
+
+	for(int z = 0; z < d[2]; z++)
+	{
+		for(int x = 0; x < d[0]; x++)
+		{
+			for(int y = 0; y < d[1]; y++)
+			{
+				this->insertVoxel(data[z][x][y]);
+			}
+		}
+	}
 }
