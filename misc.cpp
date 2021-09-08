@@ -7,8 +7,8 @@ int main(void)
 	using namespace imgdata;
 	//construct Set
 	int d(5);
-	int r(5);
-	int c(5);
+	int r(11);
+	int c(11);
 	Voxel*** cube = new Voxel**[d];
 	for(int z = 0; z < d; z++)
 	{
@@ -18,34 +18,43 @@ int main(void)
 			Voxel * row = new Voxel[c];
 			for(int y = 0; y < c; y++)
 			{
-				row[y] = Voxel(x,y,z,1);
+				if(11 > (x-5)*(x-5) + (y-5)*(y-5))
+				{
+					if((z!=0)&&(z!=d-1))
+					{
+						row[y] = Voxel(x,y,z,1);
+					}
+				}
+				else
+				{
+					row[y] = Voxel(x,y,z,0);
+				}
+					
 			}
 			set[x] = row;
 		}
 		cube[z] = set;
 	}
-
-	int x(4);
-	int y(4);
-	int z(0);
-	for(int i = 0; i < 5; i++)
+	/*make fracture
+	for(int z = 2; z < 3; z++)
 	{
-		cube[z][x][y] = Voxel(x,y,z,0);
-		if(z < 4)
+		Voxel** set = new Voxel*[r];
+		for(int x = 0; x < r; x++)
 		{
-			cube[z+1][x][y] = Voxel(x,y,z+1,0);
+			Voxel * row = new Voxel[c];
+			for(int y = 5; y < 6; y++)
+			{
+				cube[z][x][y] = Voxel(x,y,z,0);
+			}
 		}
-		if(y>0)
-		{
-		//	cube[z][x][y-1] = Voxel(x,y-1,z,0);
-		}	
-		x--,y--,z++;
+	
+	}*/
+	
+	Split s(cube,d,r,c);
+	std::cout << s << std::endl;
 
-	}	
-	std::vector<Fracture> frac = func::splitMerge(cube, r, c, d);
-	for(std::vector<Fracture>::iterator i = frac.begin(); i != frac.end(); ++i)
-	{
-		std::cout << *i << std::endl;
-	}
+	func::paintBackground(cube,11,11,5);
+	//Split s1(cube,d,r,c);
+	//std::cout << s1 << std::endl;
 
 }

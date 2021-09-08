@@ -219,6 +219,103 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 
 }
 
+std::vector<Voxel> func::getBlock(Voxel ** & layer, int r, int c, int sizeX, int sizeY)
+{
+	std::vector<Voxel> ret;
+	for(int x = r; x < r+sizeX; x++)
+	{
+		for(int y = c; y < c+sizeY; y++)
+		{
+			ret.push_back(layer[x][c]);
+		}
+	}
+	return ret;
+}
+
+void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
+{
+	for(int z = 0; z < depth; z++)
+	{
+
+		Voxel ** layer = cube[z];	
+
+		//top side (left to right)
+		int r(0);
+		int c(0);		
+		bool hit(false);
+		while( r < rows)
+		{
+			int rowSize;
+			if(r + 3 < rows)
+			{
+				rowSize = 3;
+			}
+			else
+			{
+				rowSize = rows-r;
+			}
+
+			while( (!hit) && (c < cols) )
+			{
+				//t
+				for(int tr = 0; tr < rows; tr++)
+				{
+					for(int tc = 0; tc < cols; tc++)
+					{
+						std::cout << int(layer[tr][tc].getIntensity()) << " ";
+					}
+					std::cout << "\n";
+				}
+				std::cout << "\n";
+				//end t
+
+				std::vector<Voxel> block;
+				int colSize;
+				if(c+3 < cols)
+				{
+					colSize = 3;
+					block = func::getBlock(layer, r, c, rowSize, colSize);
+				}
+				else
+				{
+					colSize = cols-c;
+					block = func::getBlock(layer, r, c, rowSize, colSize);
+				}
+
+				for(int i = 0; i < block.size(); i++)
+				{
+					if(block[i].getIntensity() == 0)
+					{
+						cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+					}
+					else if(block[i].getIntensity() != 0)
+					{
+						hit = true;
+					}
+				}
+				c += 3;
+			}
+			c = 0;
+			r += 3;
+		}	
+		//bottom side
+		//left side
+		//rightside
+		
+		for(int tr = 0; tr < rows; tr++)
+		{
+			for(int tc = 0; tc < cols; tc++)
+			{
+				std::cout << int(layer[tr][tc].getIntensity()) << " ";
+			}
+			std::cout << "\n";
+		}
+		std::cout << "\n";
+
+	}
+	
+}
+
 //global
 std::vector<Voxel> directions = {Voxel(1,0,0,0), Voxel(-1,0,0,0), Voxel(0,1,0,0), Voxel(0,-1,0,0), Voxel(0,0,1,0), Voxel(0,0,-1,0)};
 

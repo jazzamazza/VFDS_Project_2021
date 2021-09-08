@@ -18,6 +18,8 @@ namespace func
 	void addSplit(imgdata::Fracture & fracture, Split & split);
 	std::vector<imgdata::Fracture> splitMerge(imgdata::Voxel*** & imgArr3D, int rows, int cols, int depth);
 	bool touching(const imgdata::Voxel & a, const imgdata::Voxel & b);
+	void paintBackground(imgdata::Voxel*** & cube, int rows, int cols, int depth);
+	std::vector<imgdata::Voxel> getBlock(imgdata::Voxel ** & layer, int r, int c, int sizeX, int sizeY);
 }
 
 
