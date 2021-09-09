@@ -226,7 +226,7 @@ std::vector<Voxel> func::getBlock(Voxel ** & layer, int r, int c, int sizeX, int
 	{
 		for(int y = c; y < c+sizeY; y++)
 		{
-			ret.push_back(layer[x][c]);
+			ret.push_back(layer[x][y]);
 		}
 	}
 	return ret;
@@ -239,9 +239,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
 
 		Voxel ** layer = cube[z];	
 
-		//top side (left to right)
+		//left side (left to right)
+		
 		int r(0);
-		int c(0);		
+		int c(0);
+
 		bool hit(false);
 		while( r < rows)
 		{
@@ -257,18 +259,6 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
 
 			while( (!hit) && (c < cols) )
 			{
-				//t
-				for(int tr = 0; tr < rows; tr++)
-				{
-					for(int tc = 0; tc < cols; tc++)
-					{
-						std::cout << int(layer[tr][tc].getIntensity()) << " ";
-					}
-					std::cout << "\n";
-				}
-				std::cout << "\n";
-				//end t
-
 				std::vector<Voxel> block;
 				int colSize;
 				if(c+3 < cols)
@@ -295,22 +285,65 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
 				}
 				c += 3;
 			}
+			hit = false;
 			c = 0;
 			r += 3;
-		}	
-		//bottom side
-		//left side
+		}
 		//rightside
 		
-		for(int tr = 0; tr < rows; tr++)
-		{
-			for(int tc = 0; tc < cols; tc++)
-			{
-				std::cout << int(layer[tr][tc].getIntensity()) << " ";
-			}
-			std::cout << "\n";
-		}
-		std::cout << "\n";
+		r = 0;
+               	c = cols-3;
+
+                hit = false;
+                while( r < rows)
+                {
+                        int rowSize;
+                        if(r + 3 < rows)
+                        {
+                                rowSize = 3;
+                        }
+                        else
+                        {
+                                rowSize = rows-r;
+                        }
+			
+                        while( (!hit) && (c >= 0) )
+                        {
+                                int colSize;
+				std::vector<Voxel> rblock;
+				int jump;
+                                if(c-3 >= 0)
+                                {
+                                        colSize = 3;
+					jump = 3;
+                                        rblock = func::getBlock(layer, r, c, rowSize, colSize);
+                                }
+                                else
+                                {
+                                        colSize = 3;
+					jump = c;
+                                        rblock = func::getBlock(layer, r, c, rowSize, colSize);
+                                }
+
+                                for(int i = 0; i < rblock.size(); i++)
+                                {
+                                        if(rblock[i].getIntensity() == 0)
+                                        {
+                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+                                        }
+                                        else if(rblock[i].getIntensity() != 0)
+                                        {
+                                                hit = true;
+                                        }
+                                }
+                                c -= jump;
+                        }
+                        hit = false;
+                        c = cols-3;
+                        r += 3;
+                }
+
+		
 
 	}
 	

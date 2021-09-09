@@ -35,7 +35,7 @@ int main(void)
 		}
 		cube[z] = set;
 	}
-	/*make fracture
+	//make fracture
 	for(int z = 2; z < 3; z++)
 	{
 		Voxel** set = new Voxel*[r];
@@ -48,13 +48,24 @@ int main(void)
 			}
 		}
 	
-	}*/
+	}
+	//print
+	for(int z = 0; z < d; z++)
+        {
+                for(int x = 0; x < r; x++)
+                {
+                        for(int y = 0; y < c; y++)
+                        {
+				std::cout << int(cube[z][x][y].getIntensity()) << " ";
+			}
+			std::cout << "\n";
+                }
+		std::cout << "\n";
+        }
 	
-	Split s(cube,d,r,c);
-	std::cout << s << std::endl;
 
 	func::paintBackground(cube,11,11,5);
-	//Split s1(cube,d,r,c);
-	//std::cout << s1 << std::endl;
+	Split s1(cube,d,r,c);
+	std::cout << s1 << std::endl;
 
 }
