@@ -7,8 +7,8 @@ int main(void)
 	using namespace imgdata;
 	//construct Set
 	int d(5);
-	int r(11);
-	int c(11);
+	int r(20);
+	int c(20);
 	Voxel*** cube = new Voxel**[d];
 	for(int z = 0; z < d; z++)
 	{
@@ -64,7 +64,7 @@ int main(void)
         }
 	
 
-	func::paintBackground(cube,11,11,5);
+	func::paintBackground(cube,r,c,d);
 	Split s1(cube,d,r,c);
 	std::cout << s1 << std::endl;
 

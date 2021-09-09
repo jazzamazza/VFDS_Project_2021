@@ -236,14 +236,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
 {
 	for(int z = 0; z < depth; z++)
 	{
-
 		Voxel ** layer = cube[z];	
 
 		//left side (left to right)
-		
 		int r(0);
 		int c(0);
-
 		bool hit(false);
 		while( r < rows)
 		{
@@ -278,7 +275,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
 					{
 						cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
 					}
-					else if(block[i].getIntensity() != 0)
+					else
 					{
 						hit = true;
 					}
@@ -290,7 +287,6 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
 			r += 3;
 		}
 		//rightside
-		
 		r = 0;
                	c = cols-3;
 
@@ -321,7 +317,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
                                 else
                                 {
                                         colSize = 3;
-					jump = c;
+					jump = c+1; //revisit this line
                                         rblock = func::getBlock(layer, r, c, rowSize, colSize);
                                 }
 
@@ -331,8 +327,8 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
                                         {
                                                 cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
                                         }
-                                        else if(rblock[i].getIntensity() != 0)
-                                        {
+                                        else 
+					{ 
                                                 hit = true;
                                         }
                                 }
@@ -342,9 +338,113 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
                         c = cols-3;
                         r += 3;
                 }
+		//top side
+		r = 0;
+                c = 0;
+                hit = false;
+                while( c < cols)
+                {
+                        int colSize;
+                        if(c + 3 < cols)
+                        {
+                                colSize = 3;
+                        }
+                        else
+                        {
+                                colSize = cols-c;
+                        }
 
-		
+                        while( (!hit) && (r < rows) )
+                        {
+                                std::vector<Voxel> block;
+                                int rowSize;
+                                if(r+3 < rows)
+                                {
+                                        rowSize = 3;
+                                        block = func::getBlock(layer, r, c, rowSize, colSize);
+                                }
+                                else
+                                {
+                                        rowSize = rows-r;
+                                        block = func::getBlock(layer, r, c, rowSize, colSize);
+                                }
 
+                                for(int i = 0; i < block.size(); i++)
+                                {
+                                        if(block[i].getIntensity() == 0)
+                                        {
+                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+                                        }
+                                        else
+                                        {
+						if(block[i].getIntensity() != 2)
+						{
+                                                	hit = true;
+						}
+                                        }
+                                }
+                                r += 3;
+                        }
+                        hit = false;
+                        r = 0;
+                        c += 3;
+                }
+		//bottom
+		r = rows-3;
+                c = 0;
+
+                hit = false;
+                while( c < cols)
+                {
+                        int colSize;
+                        if(c + 3 < cols)
+                        {
+                                colSize = 3;
+                        }
+                        else
+                        {
+                                colSize = cols-c;
+                        }
+                        
+                        while( (!hit) && (r >= 0) )
+                        {
+                                int rowSize;
+                                std::vector<Voxel> rblock;
+                                int jump;
+                                if(r-3 >= 0)
+                                {
+                                        rowSize = 3;
+                                        jump = 3;
+                                        rblock = func::getBlock(layer, r, c, rowSize, colSize);
+                                }
+                                else
+                                {
+                                        rowSize = 3;
+                                        jump = r+1; //revisit this line
+                                        rblock = func::getBlock(layer, r, c, rowSize, colSize);
+                                }
+
+                                for(int i = 0; i < rblock.size(); i++)
+                                {
+                                        if(rblock[i].getIntensity() == 0)
+                                        {
+                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+                                        }
+                                        else
+                                        {
+						if(rblock[i].getIntensity() != 2)
+						{
+                                                	hit = true;
+						}
+                                        }
+                                }
+                                r -= jump;
+                        }
+                        hit = false;
+                        r = rows-3;
+                        c += 3;
+                }
+	
 	}
 	
 }
