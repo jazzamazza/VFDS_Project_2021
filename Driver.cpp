@@ -71,9 +71,20 @@ int main(int argc, char* argv[])
         std::cout << "CTReader start" << std::endl;
         imgdata::Voxel*** vox = ctr.imgread::CTReader::readPGMStack(shape, dim);
         std::cout << "CTReader end" << std::endl;
+
+	std::cout << "Paint Background start" << std::endl;
+	func::paintBackground(vox, dim, dim, dim);
+	std::cout << "Paint Background end" << std::endl;
+
+
         std::cout << "Split/Merge start" << std::endl;
         std::vector<imgdata::Fracture> frac = func::splitMerge(vox, dim, dim, dim);
         std::cout << "Split/Merge end" << std::endl;
+
+	for(std::vector<imgdata::Fracture>::iterator i = frac.begin(); i != frac.end(); ++i)
+	{
+		std::cout << *i << std::endl;
+	}
         //std::cout << "delete pgm stack" << std::endl;
         //ctr.imgread::CTReader::deletePGMStack(vox, 128);   
     }

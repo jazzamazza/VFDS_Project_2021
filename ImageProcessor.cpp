@@ -9,7 +9,7 @@ using namespace imgdata;
 
 //global
 int ID = 0;
-
+int check(0);
 void func::collect(Split & parent, std::vector<Fracture> & collector)
 {
         if(parent.getAllFrac()) //if all 0's
@@ -119,27 +119,34 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
         func::collect(MotherSplit, collection);
 
         //print
-        //std::cout << "collected" << std::endl;
-        //func::printCollection(collection);
+        std::cout << "collected" << std::endl;
+        func::printCollection(collection);
 
 
 	//loop
 	bool change(true);
 	while(change)
 	{
+		std::cout << change << std::endl;
 		change = false;
 		std::vector<int> usedIDs;
 		std::vector<int> toErase;
 
 		//group into fractures   
         	int count(0);
+		int joined(0);
 	
 	        //iterate through the collected fracture Objects. (fractured pixels)
 	        for(std::vector<Fracture>::iterator i = collection.begin(); i != collection.end(); ++i)
 	        {
 			Fracture f1(*i);
+			if(joined > 500)
+			{
+				std::cout << "join 100" << std::endl;
+				break;
+			}
 		
-			//check if this split has been used
+			//check if this fracture has been used
 			bool used(false);
 			for(std::vector<int>::iterator u = usedIDs.begin(); u != usedIDs.end(); ++u)
 			{
@@ -186,7 +193,9 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 									{
 										if(func::touching(*v1,*v2))
 										{
+											std::cout << p->getID()  << " joining " << i->getID() << std::endl;
 											i->join(*p);
+											joined++;
 											change = true;
 											usedIDs.push_back(f2.getID());
 											toErase.push_back(f2.getID());
@@ -201,12 +210,14 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 				}
 			}
 		}
+		std::cout << "Erasing" << std::endl;
 		for(std::vector<int>::iterator i = toErase.begin(); i != toErase.end(); ++i)
 		{
 			for(std::vector<Fracture>::iterator p = collection.begin(); p != collection.end(); ++p)
 			{
 				if(p->getID() == *i)
 				{
+					std::cout << p->getID() << " gone" << std::endl;
 					collection.erase(p);
 					break;
 				}
@@ -217,6 +228,240 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 	return collection;
 
 
+}
+
+std::vector<Voxel> func::getBlock(Voxel ** & layer, int r, int c, int sizeX, int sizeY)
+{
+	std::vector<Voxel> ret;
+	for(int x = r; x < r+sizeX; x++)
+	{
+		for(int y = c; y < c+sizeY; y++)
+		{
+			ret.push_back(layer[x][y]);
+		}
+	}
+	return ret;
+}
+
+void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
+{
+	for(int z = 0; z < depth; z++)
+	{
+		Voxel ** layer = cube[z];	
+
+		//left side (left to right)
+		int r(0);
+		int c(0);
+		bool hit(false);
+		while( r < rows)
+		{
+			int rowSize;
+			if(r + 3 < rows)
+			{
+				rowSize = 3;
+			}
+			else
+			{
+				rowSize = rows-r;
+			}
+
+			while( (!hit) && (c < cols) )
+			{
+				std::vector<Voxel> block;
+				int colSize;
+				if(c+3 < cols)
+				{
+					colSize = 3;
+					block = func::getBlock(layer, r, c, rowSize, colSize);
+				}
+				else
+				{
+					colSize = cols-c;
+					block = func::getBlock(layer, r, c, rowSize, colSize);
+				}
+
+				for(int i = 0; i < block.size(); i++)
+				{
+					if(block[i].getIntensity() == 0)
+					{
+						cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+					}
+					else
+					{
+						hit = true;
+					}
+				}
+				c += 3;
+			}
+			hit = false;
+			c = 0;
+			r += 3;
+		}
+		//rightside
+		r = 0;
+               	c = cols-3;
+
+                hit = false;
+                while( r < rows)
+                {
+                        int rowSize;
+                        if(r + 3 < rows)
+                        {
+                                rowSize = 3;
+                        }
+                        else
+                        {
+                                rowSize = rows-r;
+                        }
+			
+                        while( (!hit) && (c >= 0) )
+                        {
+                                int colSize;
+				std::vector<Voxel> rblock;
+				int jump;
+                                if(c-3 >= 0)
+                                {
+                                        colSize = 3;
+					jump = 3;
+                                        rblock = func::getBlock(layer, r, c, rowSize, colSize);
+                                }
+                                else
+                                {
+                                        colSize = 3;
+					jump = c; //revisit this line
+                                        rblock = func::getBlock(layer, r, c, rowSize, colSize);
+                                }
+
+                                for(int i = 0; i < rblock.size(); i++)
+                                {
+                                        if(rblock[i].getIntensity() == 0)
+                                        {
+                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+                                        }
+                                        else 
+					{ 
+                                                hit = true;
+                                        }
+                                }
+                                c -= jump;
+                        }
+                        hit = false;
+                        c = cols-3;
+                        r += 3;
+                }
+		//top side
+		r = 0;
+                c = 0;
+                hit = false;
+                while( c < cols)
+                {
+                        int colSize;
+                        if(c + 3 < cols)
+                        {
+                                colSize = 3;
+                        }
+                        else
+                        {
+                                colSize = cols-c;
+                        }
+
+                        while( (!hit) && (r < rows) )
+                        {
+                                std::vector<Voxel> block;
+                                int rowSize;
+                                if(r+3 < rows)
+                                {
+                                        rowSize = 3;
+                                        block = func::getBlock(layer, r, c, rowSize, colSize);
+                                }
+                                else
+                                {
+                                        rowSize = rows-r;
+                                        block = func::getBlock(layer, r, c, rowSize, colSize);
+                                }
+
+                                for(int i = 0; i < block.size(); i++)
+                                {
+                                        if(block[i].getIntensity() == 0)
+                                        {
+                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+                                        }
+                                        else
+                                        {
+						if(block[i].getIntensity() != 2)
+						{
+                                                	hit = true;
+						}
+                                        }
+                                }
+                                r += 3;
+                        }
+                        hit = false;
+                        r = 0;
+                        c += 3;
+                }
+		//bottom
+		r = rows-3;
+                c = 0;
+
+                hit = false;
+                while( c < cols)
+                {
+                        int colSize;
+                        if(c + 3 < cols)
+                        {
+                                colSize = 3;
+                        }
+                        else
+                        {
+                                colSize = cols-c;
+                        }
+                        
+                        while( (!hit) && (r >= 0) )
+                        {
+                                int rowSize;
+                                std::vector<Voxel> rblock;
+                                int jump;
+                                if(r-3 >= 0)
+                                {
+                                        rowSize = 3;
+                                        jump = 3;
+                                        rblock = func::getBlock(layer, r, c, rowSize, colSize);
+                                }
+                                else
+                                {
+                                        rowSize = 3;
+                                        jump = r; //revisit this line
+					if(jump == 0)
+					{
+						jump++;	
+					}
+                                        rblock = func::getBlock(layer, r, c, rowSize, colSize);
+                                }
+
+                                for(int i = 0; i < rblock.size(); i++)
+                                {
+                                        if(rblock[i].getIntensity() == 0)
+                                        {
+                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+                                        }
+                                        else
+                                        {
+						if(rblock[i].getIntensity() != 2)
+						{
+                                                	hit = true;
+						}
+                                        }
+                                }
+                                r -= jump;
+                        }
+                        hit = false;
+                        r = rows-3;
+                        c += 3;
+                }
+	
+	}
+	
 }
 
 //global
