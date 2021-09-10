@@ -9,7 +9,7 @@ using namespace imgdata;
 
 //global
 int ID = 0;
-
+int check(0);
 void func::collect(Split & parent, std::vector<Fracture> & collector)
 {
         if(parent.getAllFrac()) //if all 0's
@@ -119,7 +119,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
         func::collect(MotherSplit, collection);
 
         //print
-        //std::cout << "collected" << std::endl;
+        std::cout << "collected" << std::endl;
         //func::printCollection(collection);
 
 
@@ -127,6 +127,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 	bool change(true);
 	while(change)
 	{
+		std::cout << change << std::endl;
 		change = false;
 		std::vector<int> usedIDs;
 		std::vector<int> toErase;
@@ -186,6 +187,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 									{
 										if(func::touching(*v1,*v2))
 										{
+											std::cout << "check" << check++ << std::endl;
 											i->join(*p);
 											change = true;
 											usedIDs.push_back(f2.getID());
@@ -317,7 +319,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
                                 else
                                 {
                                         colSize = 3;
-					jump = c+1; //revisit this line
+					jump = c; //revisit this line
                                         rblock = func::getBlock(layer, r, c, rowSize, colSize);
                                 }
 
@@ -420,7 +422,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
                                 else
                                 {
                                         rowSize = 3;
-                                        jump = r+1; //revisit this line
+                                        jump = r; //revisit this line
+					if(jump == 0)
+					{
+						jump++;	
+					}
                                         rblock = func::getBlock(layer, r, c, rowSize, colSize);
                                 }
 

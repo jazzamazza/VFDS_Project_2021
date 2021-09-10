@@ -6,9 +6,9 @@ int main(void)
 {
 	using namespace imgdata;
 	//construct Set
-	int d(5);
-	int r(20);
-	int c(20);
+	int d(128);
+	int r(128);
+	int c(128);
 	Voxel*** cube = new Voxel**[d];
 	for(int z = 0; z < d; z++)
 	{
@@ -36,10 +36,10 @@ int main(void)
 		cube[z] = set;
 	}
 	//make fracture
-	for(int z = 2; z < 3; z++)
+	for(int z = 0; z < 128; z++)
 	{
 		Voxel** set = new Voxel*[r];
-		for(int x = 0; x < r; x++)
+		for(int x = 5; x < 6; x++)
 		{
 			Voxel * row = new Voxel[c];
 			for(int y = 5; y < 6; y++)
@@ -65,7 +65,11 @@ int main(void)
 	
 
 	func::paintBackground(cube,r,c,d);
-	Split s1(cube,d,r,c);
-	std::cout << s1 << std::endl;
+	std::vector<Fracture> fractures = func::splitMerge(cube, r, c, d);
+
+	for(std::vector<Fracture>::iterator i = fractures.begin(); i != fractures.end(); ++i)
+	{
+		std::cout << *i << std::endl;
+	}
 
 }
