@@ -120,7 +120,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 
         //print
         std::cout << "collected" << std::endl;
-        //func::printCollection(collection);
+        func::printCollection(collection);
 
 
 	//loop
@@ -134,13 +134,19 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 
 		//group into fractures   
         	int count(0);
+		int joined(0);
 	
 	        //iterate through the collected fracture Objects. (fractured pixels)
 	        for(std::vector<Fracture>::iterator i = collection.begin(); i != collection.end(); ++i)
 	        {
 			Fracture f1(*i);
+			if(joined > 500)
+			{
+				std::cout << "join 100" << std::endl;
+				break;
+			}
 		
-			//check if this split has been used
+			//check if this fracture has been used
 			bool used(false);
 			for(std::vector<int>::iterator u = usedIDs.begin(); u != usedIDs.end(); ++u)
 			{
@@ -187,8 +193,9 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 									{
 										if(func::touching(*v1,*v2))
 										{
-											std::cout << "check" << check++ << std::endl;
+											std::cout << p->getID()  << " joining " << i->getID() << std::endl;
 											i->join(*p);
+											joined++;
 											change = true;
 											usedIDs.push_back(f2.getID());
 											toErase.push_back(f2.getID());
@@ -203,12 +210,14 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 				}
 			}
 		}
+		std::cout << "Erasing" << std::endl;
 		for(std::vector<int>::iterator i = toErase.begin(); i != toErase.end(); ++i)
 		{
 			for(std::vector<Fracture>::iterator p = collection.begin(); p != collection.end(); ++p)
 			{
 				if(p->getID() == *i)
 				{
+					std::cout << p->getID() << " gone" << std::endl;
 					collection.erase(p);
 					break;
 				}

@@ -78,13 +78,13 @@ int main(int argc, char* argv[])
 
 
         std::cout << "Split/Merge start" << std::endl;
-        //std::vector<imgdata::Fracture> frac = func::splitMerge(vox, dim, dim, dim);
+        std::vector<imgdata::Fracture> frac = func::splitMerge(vox, dim, dim, dim);
         std::cout << "Split/Merge end" << std::endl;
 
-	/*for(std::vector<imgdata::Fracture>::iterator i = frac.begin(); i != frac.end(); ++i)
+	for(std::vector<imgdata::Fracture>::iterator i = frac.begin(); i != frac.end(); ++i)
 	{
 		std::cout << *i << std::endl;
-	}*/
+	}
         //std::cout << "delete pgm stack" << std::endl;
         //ctr.imgread::CTReader::deletePGMStack(vox, 128);   
     }
