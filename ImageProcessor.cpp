@@ -119,8 +119,8 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
         func::collect(MotherSplit, collection);
 
         //print
-        std::cout << "collected" << std::endl;
-        func::printCollection(collection);
+        //std::cout << "collected" << std::endl;
+        //func::printCollection(collection);
 
 
 	//loop
@@ -136,7 +136,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 			{
 				change = true;
 				collection[i].join(collection[i+1]);
-				std::cout << "PB " << i +1 << std::endl;
+				//std::cout << "PB " << i +1 << std::endl;
 				toErase.push_back(i+1);
 			}
 			else
@@ -150,15 +150,52 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 			}
 		}
 		//func::printCollection(collection);
-		std::cout << "erasing" << std::endl;
+		//std::cout << "erasing" << std::endl;
 		for(int e = toErase.size()-1; e >= 0; e--)
 		{
-			std::cout << toErase[e] << std::endl;
+			//std::cout << toErase[e] << std::endl;
 			collection.erase(collection.begin() + toErase[e]);
 		}
 		//func::printCollection(collection);
 
 	}
+	//std::cout << "Merge again" << std::endl;
+	change = true;
+        while(change)
+        {
+                change = false;
+                std::set<int> toErase;
+		std::set<int> usedSet;
+                //iterate through the collected fracture Objects. (fractured pixels)
+                for(int i = 0; i < collection.size(); i++)
+                {
+			if(usedSet.find(i) == usedSet.end())
+			{
+				for(int p = 0; p < collection.size(); p++)
+				{
+					if(usedSet.find(p) == usedSet.end())
+					{
+						if(collection[i].getID() != collection[p].getID())
+						{
+							if(collection[i].meets(collection[p]))
+							{
+								collection[i].join(collection[p]);
+								toErase.insert(p);
+								change = true;
+								usedSet.insert(p);
+							}
+						}
+					}
+				}
+			}
+                }
+                for(std::set<int>::reverse_iterator e = toErase.rbegin(); e != toErase.rend(); ++e)
+                {
+                        collection.erase(collection.begin() + *e);
+                }
+
+        }
+
 	return collection;
 
 

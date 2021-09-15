@@ -49,6 +49,7 @@ int main(void)
 		}
 	
 	}
+
 	//print
 	for(int z = 0; z < d; z++)
         {
@@ -73,6 +74,7 @@ int main(void)
 	}
 
 	std::cout << "Done" << std::endl;
+
 
 
 }

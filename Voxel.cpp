@@ -99,13 +99,13 @@ imgdata::Voxel imgdata::Voxel::operator+(const Voxel & v)
 
 	return temp;
 }
-
-std::ostream & imgdata::operator<<(std::ostream & out, const Voxel & v)
+namespace imgdata{
+std::ostream & operator<<(std::ostream & out, const Voxel & v)
 {
 	out << "(" << v.coords[0] << ", " << v.coords[1] << ", " << v.coords[2] << ")-> " << int(v.intensity);   
 	return out;
 }
-
+}
 bool imgdata::Voxel::operator>(const imgdata::Voxel & v) const
 {
 	int rx = this->getX();

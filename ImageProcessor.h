@@ -9,6 +9,7 @@
 #include "Split.h"
 #include "Fracture.h"
 #include "Voxel.h"
+#include <set>
 
 namespace func
 {
