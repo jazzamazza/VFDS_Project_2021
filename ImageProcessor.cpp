@@ -127,102 +127,36 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 	bool change(true);
 	while(change)
 	{
-		std::cout << change << std::endl;
 		change = false;
-		std::vector<int> usedIDs;
 		std::vector<int> toErase;
-
-		//group into fractures   
-        	int count(0);
-		int joined(0);
-	
 	        //iterate through the collected fracture Objects. (fractured pixels)
-	        for(std::vector<Fracture>::iterator i = collection.begin(); i != collection.end(); ++i)
-	        {
-			Fracture f1(*i);
-			if(joined > 500)
+	        for(int i = 0; i + 1 < collection.size(); i+=2)
+	        {	
+			if(collection[i].meets(collection[i+1]) )
 			{
-				std::cout << "join 100" << std::endl;
-				break;
+				change = true;
+				collection[i].join(collection[i+1]);
+				std::cout << "PB " << i +1 << std::endl;
+				toErase.push_back(i+1);
 			}
-		
-			//check if this fracture has been used
-			bool used(false);
-			for(std::vector<int>::iterator u = usedIDs.begin(); u != usedIDs.end(); ++u)
+			else
 			{
-				if(*u == f1.getID())
+				if(collection[i] > collection[i+1])
 				{
-					used = true;
-				}
-			}
-			if(!used)
-			{
-               			std::vector<Voxel> f1Coords = f1.getCoords();
-				for(std::vector<Fracture>::iterator p = collection.begin(); p != collection.end(); ++p)
-				{
-					Fracture f2(*p);
-					
-					bool used2(false);
-					for(std::vector<int>::iterator u = usedIDs.begin(); u != usedIDs.end(); ++u)
-					{
-						if(*u == f2.getID())
-						{
-							used2 = true;
-						}	
-					}
-					if(!used2)
-					{
-						bool inserted(false);
-	
-						//only use boundary
-						std::vector<Voxel> f2Coords = f2.getCoords();
-			
-						if(f1.getID() != f2.getID()) //doesnt check against itself
-						{
-       		 		        		//iterate through the boundary pixels of main split
-       		        				for(std::vector<Voxel>::iterator v1 = f1Coords.begin(); v1 != f1Coords.end(); ++v1)
-        	        				{
-								if(inserted)
-								{
-									//only needs 1 match
-									break;
-								}
-								else
-								{
-									for(std::vector<Voxel>::iterator v2 = f2Coords.begin(); v2 != f2Coords.end(); ++v2)
-									{
-										if(func::touching(*v1,*v2))
-										{
-											std::cout << p->getID()  << " joining " << i->getID() << std::endl;
-											i->join(*p);
-											joined++;
-											change = true;
-											usedIDs.push_back(f2.getID());
-											toErase.push_back(f2.getID());
-											inserted = true;
-											break;
-										}
-									}
-								}
-							}
-						}
-					}
+					Fracture temp = collection[i];
+					collection[i] = collection[i+1];
+					collection[i+1] = temp;
 				}
 			}
 		}
-		std::cout << "Erasing" << std::endl;
-		for(std::vector<int>::iterator i = toErase.begin(); i != toErase.end(); ++i)
+		//func::printCollection(collection);
+		std::cout << "erasing" << std::endl;
+		for(int e = toErase.size()-1; e >= 0; e--)
 		{
-			for(std::vector<Fracture>::iterator p = collection.begin(); p != collection.end(); ++p)
-			{
-				if(p->getID() == *i)
-				{
-					std::cout << p->getID() << " gone" << std::endl;
-					collection.erase(p);
-					break;
-				}
-			}
+			std::cout << toErase[e] << std::endl;
+			collection.erase(collection.begin() + toErase[e]);
 		}
+		//func::printCollection(collection);
 
 	}
 	return collection;
@@ -464,24 +398,3 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
 	
 }
 
-//global
-std::vector<Voxel> directions = {Voxel(1,0,0,0), Voxel(-1,0,0,0), Voxel(0,1,0,0), Voxel(0,-1,0,0), Voxel(0,0,1,0), Voxel(0,0,-1,0)};
-
-bool func::touching(const Voxel & a, const Voxel & b) //change to split memeber function
-{
-	std::vector<Voxel> aNeighbours;
-	bool ret = false;
-	for(std::vector<Voxel>::iterator i = directions.begin(); i != directions.end(); i++)
-	{
-		aNeighbours.push_back(*i+a);
-	}
-	for(std::vector<Voxel>::iterator i = aNeighbours.begin(); i != aNeighbours.end(); ++i)
-	{
-		Voxel v(*i);
-		if(b == v)
-		{
-			ret = true;
-		}
-	}
-	return ret;	
-}

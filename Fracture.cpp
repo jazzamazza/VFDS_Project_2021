@@ -89,6 +89,32 @@ namespace imgdata {
     }
 }
 
+bool imgdata::Fracture::operator>(const imgdata::Fracture & rhs) const
+{
+	imgdata::Voxel rMax(0,0,0,0);
+	bool ret = false;
+	for(std::vector<Voxel>::const_iterator r = rhs.coords.begin(); r != rhs.coords.end(); ++r)
+	{
+		if(*r > rMax)
+		{
+			rMax = *r;
+		}
+	}
+	for(std::vector<Voxel>::const_iterator l = this->coords.begin(); l != this->coords.end(); ++l)
+	{
+		if(*l > rMax)
+		{
+			ret = true;
+			break;
+		}
+	}
+
+	return ret;
+
+
+	
+}
+
 int imgdata::Fracture::getVoxels(void) const {
     return this->numVoxels;
 }
@@ -103,6 +129,31 @@ std::string imgdata::Fracture::getColour(void) const {
 
 std::vector<imgdata::Voxel> imgdata::Fracture::getCoords(void) const {
     return this->coords;
+}
+
+bool imgdata::Fracture::meets(const Fracture & f) const
+{
+	bool ret(false);
+
+	for(std::vector<Voxel>::const_iterator i = f.coords.begin(); i != f.coords.end(); ++i)
+	{
+		for(std::vector<Voxel>::const_iterator p  = this->coords.begin(); p != this->coords.end(); ++p)
+		{
+			if(i->touching(*p))
+			{
+				ret = true;
+				break;
+			}
+		}
+
+		if(ret)
+		{
+			break;
+		}
+		
+	}		
+
+	return ret;
 }
 
 // insert a voxel into a fracture object

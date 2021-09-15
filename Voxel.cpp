@@ -106,6 +106,22 @@ std::ostream & imgdata::operator<<(std::ostream & out, const Voxel & v)
 	return out;
 }
 
+bool imgdata::Voxel::operator>(const imgdata::Voxel & v) const
+{
+	int rx = this->getX();
+	int ry = this->getY();
+	int rz = this->getZ();
+	int lx = v.getX();
+	int ly = v.getY();
+	int lz = v.getZ();
+	bool ret = false;
+	if(rx*rx + ry*ry + rz*rz > lx*lx + ly*ly + lz*lz)
+	{
+		ret = true;
+	}
+	return ret;
+}	
+
 bool imgdata::Voxel::operator==(const imgdata::Voxel & v) const
 {
 	Voxel temp(*this);
@@ -116,4 +132,27 @@ bool imgdata::Voxel::operator==(const imgdata::Voxel & v) const
 	}
 
 	return ret;
+}
+
+//global
+std::vector<imgdata::Voxel> directions = {imgdata::Voxel(1,0,0,0), imgdata::Voxel(-1,0,0,0), imgdata::Voxel(0,1,0,0), imgdata::Voxel(0,-1,0,0), imgdata::Voxel(0,0,1,0), imgdata::Voxel(0,0,-1,0)};
+
+bool imgdata::Voxel::touching(const imgdata::Voxel & v) const
+{
+	std::vector<imgdata::Voxel> aNeighbours;
+	bool ret = false;
+	for(std::vector<imgdata::Voxel>::iterator i = directions.begin(); i != directions.end(); i++)
+	{
+		aNeighbours.push_back(*i + *this);
+	}
+	for(std::vector<imgdata::Voxel>::iterator i = aNeighbours.begin(); i != aNeighbours.end(); ++i)
+	{
+		imgdata::Voxel temp(*i);
+		if(v == temp)
+		{
+			ret = true;
+		}
+	}
+	return ret;	
+	
 }

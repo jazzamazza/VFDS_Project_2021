@@ -6,9 +6,9 @@ int main(void)
 {
 	using namespace imgdata;
 	//construct Set
-	int d(128);
-	int r(128);
-	int c(128);
+	int d(10);
+	int r(10);
+	int c(10);
 	Voxel*** cube = new Voxel**[d];
 	for(int z = 0; z < d; z++)
 	{
@@ -36,7 +36,7 @@ int main(void)
 		cube[z] = set;
 	}
 	//make fracture
-	for(int z = 0; z < 128; z++)
+	for(int z = 0; z < 10; z++)
 	{
 		Voxel** set = new Voxel*[r];
 		for(int x = 5; x < 6; x++)
@@ -71,5 +71,8 @@ int main(void)
 	{
 		std::cout << *i << std::endl;
 	}
+
+	std::cout << "Done" << std::endl;
+
 
 }
