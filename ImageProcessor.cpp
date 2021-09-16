@@ -4,13 +4,14 @@
  */
 
 #include "ImageProcessor.h"
-
+#include <string>
+#include <fstream>
 using namespace imgdata;
 
 //global
 int ID = 0;
 int check(0);
-void func::collect(Split & parent, std::vector<Fracture> & collector)
+void func::collect(Split & parent, std::vector<Fracture> & collector, int threshold)
 {
         if(parent.getAllFrac()) //if all 0's
         {
@@ -27,11 +28,11 @@ void func::collect(Split & parent, std::vector<Fracture> & collector)
                 for(std::vector<std::shared_ptr<Split>>::iterator i = vec.begin(); i != vec.end(); ++i)
                 {
                         std::shared_ptr<Split> kid = *i;
-			kid->test();
+			kid->test(threshold);
                         if(kid->getSomeFrac()) //if any 0's
                         {
 				//std::cout << "some\n" << *kid << std::endl;
-                                collect(*kid, collector);
+                                collect(*kid, collector, threshold);
                         }
                 }
         }
@@ -112,11 +113,12 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
         //initiate collection
         std::vector<Fracture> collection;
 
+	int threshold = 128;
         //test before collect
-        MotherSplit.test();
+        MotherSplit.test(threshold);
 
         //collect 
-        func::collect(MotherSplit, collection);
+        func::collect(MotherSplit, collection, threshold);
 
         //print
         //std::cout << "collected" << std::endl;
@@ -131,7 +133,9 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 		std::vector<int> toErase;
 	        //iterate through the collected fracture Objects. (fractured pixels)
 	        for(int i = 0; i + 1 < collection.size(); i+=2)
-	        {	
+	        {
+			//std::cout << collection[i] << std::endl;
+			//std::cout << collection[i+1] << std::endl;	
 			if(collection[i].meets(collection[i+1]) )
 			{
 				change = true;
@@ -214,7 +218,7 @@ std::vector<Voxel> func::getBlock(Voxel ** & layer, int r, int c, int sizeX, int
 	return ret;
 }
 
-void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
+void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int val)
 {
 	for(int z = 0; z < depth; z++)
 	{
@@ -255,7 +259,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
 				{
 					if(block[i].getIntensity() == 0)
 					{
-						cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+						cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, val);
 					}
 					else
 					{
@@ -307,7 +311,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
                                 {
                                         if(rblock[i].getIntensity() == 0)
                                         {
-                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, val);
                                         }
                                         else 
 					{ 
@@ -355,11 +359,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
                                 {
                                         if(block[i].getIntensity() == 0)
                                         {
-                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, val);
                                         }
                                         else
                                         {
-						if(block[i].getIntensity() != 2)
+						if(block[i].getIntensity() != val)
 						{
                                                 	hit = true;
 						}
@@ -414,11 +418,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
                                 {
                                         if(rblock[i].getIntensity() == 0)
                                         {
-                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, val);
                                         }
                                         else
                                         {
-						if(rblock[i].getIntensity() != 2)
+						if(rblock[i].getIntensity() != val)
 						{
                                                 	hit = true;
 						}
@@ -435,3 +439,119 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
 	
 }
 
+void func::writeToPGM(const std::string & outFileName, std::vector<Fracture> collection, int dim)
+{
+	unsigned char *** cube = new unsigned char ** [dim];
+	for(int z = 0; z < dim; z++)
+	{
+		//prepare output
+		unsigned char ** layer = new unsigned char * [dim];
+		for(int x = 0; x < dim; x++)
+		{
+			unsigned char * row = new unsigned char[dim];
+			for(int y = 0; y < dim; y++)
+			{
+				row[y] = 0;
+			}
+			layer[x] = row;
+		}
+		cube[z] = layer;
+	}
+
+
+        //iterate through components
+        for(std::vector<Fracture>::iterator i = collection.begin(); i != collection.end(); ++i)
+        {
+                std::vector<Voxel> voxels = i->getCoords();
+                for(std::vector<Voxel>::iterator p = voxels.begin(); p != voxels.end(); ++p)
+                {
+                        cube[p->getZ()][p->getX()][p->getY()] = 255;
+                }
+        }
+
+	for(int z = 0; z < dim; z++)
+	{
+        	//write out
+		std::string sz = std::to_string(z);
+        	std::ofstream out("../out/"+outFileName+sz, std::ofstream::binary);
+        	out << "P5" <<"\n";
+        	out << dim << " ";
+        	out << dim << "\n";
+        	out << "255" << "\n";
+		
+	        char* wbuf = new char[dim];
+	        for(int x=0; x<dim; x++)
+	        {
+	                wbuf = reinterpret_cast<char *>(cube[z][x]);
+	                out.write(wbuf, dim);
+	        }
+		out.close();
+	}
+
+        //delete outputData
+	for(int z = 0; z < dim; z++)
+	{
+		for(int x=0; x<dim; x++)
+		{
+			delete[] cube[z][x];
+		}
+		delete [] cube[z];
+	}
+	delete [] cube;
+
+
+
+
+}
+
+void func::writeCube(const std::string & outFileName, Voxel*** sourceCube, int dim)
+{
+	unsigned char *** cube = new unsigned char ** [dim];
+	for(int z = 0; z < dim; z++)
+	{
+		//prepare output
+		unsigned char ** layer = new unsigned char * [dim];
+		for(int x = 0; x < dim; x++)
+		{
+			unsigned char * row = new unsigned char[dim];
+			for(int y = 0; y < dim; y++)
+			{
+				row[y] = sourceCube[z][x][y].getIntensity(); 
+			}
+			layer[x] = row;
+		}
+		cube[z] = layer;
+	}
+
+	for(int z = 0; z < dim; z++)
+	{
+        	//write out
+		std::string sz = std::to_string(z);
+        	std::ofstream out("../out/"+outFileName+sz, std::ofstream::binary);
+        	out << "P5" <<"\n";
+        	out << dim << " ";
+        	out << dim << "\n";
+        	out << "255" << "\n";
+		
+	        char* wbuf = new char[dim];
+	        for(int x=0; x<dim; x++)
+	        {
+	                wbuf = reinterpret_cast<char *>(cube[z][x]);
+	                out.write(wbuf, dim);
+	        }
+		out.close();
+	}
+
+        //delete outputData
+	for(int z = 0; z < dim; z++)
+	{
+		for(int x=0; x<dim; x++)
+		{
+			delete[] cube[z][x];
+		}
+		delete [] cube[z];
+	}
+	delete [] cube;
+
+
+}

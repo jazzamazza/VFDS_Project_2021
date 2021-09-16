@@ -34,7 +34,7 @@ class Split
 		
 		//void
 		void cut();
-		void test();
+		void test(int threshold);
 
 		//set
 		void setID(int ID);

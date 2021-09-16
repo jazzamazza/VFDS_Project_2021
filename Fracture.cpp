@@ -78,13 +78,13 @@ namespace imgdata {
         else
 	{
         	out << "Fracture ID: " << rhs.getID() << ", Number of voxels: " << rhs.getVoxels() << std::endl;
-		/*for(std::vector<Voxel>::iterator i = rhs.coords.begin(); i != rhs.coords.end(); ++i)
+		for(std::vector<Voxel>::iterator i = rhs.coords.begin(); i != rhs.coords.end(); ++i)
 		{
 			std::cout << "("  << i->getX() << "," << i->getY() << "," << i->getZ() << ")" << std::endl;
-		}*/
-		int s = rhs.coords.size()-1;
-		std::cout << "First ("  << rhs.coords[0].getX() << "," << rhs.coords[0].getY() << "," << rhs.coords[0].getZ() << ")" << std::endl;
-		std::cout << "Last ("  << rhs.coords[s].getX() << "," << rhs.coords[s].getY() << "," << rhs.coords[s].getZ() << ")" << std::endl;
+		}
+		//int s = rhs.coords.size()-1;
+		//std::cout << "First ("  << rhs.coords[0].getX() << "," << rhs.coords[0].getY() << "," << rhs.coords[0].getZ() << ")" << std::endl;
+		//std::cout << "Last ("  << rhs.coords[s].getX() << "," << rhs.coords[s].getY() << "," << rhs.coords[s].getZ() << ")" << std::endl;
 		
 	}	    	
 		
@@ -138,7 +138,7 @@ std::vector<imgdata::Voxel> imgdata::Fracture::getCoords(void) const {
 bool imgdata::Fracture::meets(const Fracture & f) const
 {
 	bool ret(false);
-
+	
 	for(std::vector<Voxel>::const_iterator i = f.coords.begin(); i != f.coords.end(); ++i)
 	{
 		for(std::vector<Voxel>::const_iterator p  = this->coords.begin(); p != this->coords.end(); ++p)

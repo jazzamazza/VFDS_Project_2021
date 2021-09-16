@@ -199,7 +199,7 @@ Voxel*** Split::getData()
 	return this->data;
 }
 
-void Split::test()
+void Split::test(int threshold)
 {
 	this->someFracture = false;
 	this->allFracture = true;
@@ -209,11 +209,11 @@ void Split::test()
 		{
 			for(int y = 0; y < this->cols; y++)
 			{
-				if (this->data[z][x][y].getIntensity() == 0)
+				if (this->data[z][x][y].getIntensity() < threshold)
 				{
 					this->someFracture = true;
 				}
-				if (this->data[z][x][y].getIntensity() != 0)
+				if (this->data[z][x][y].getIntensity() > threshold)
 				{
 					this->allFracture = false;
 				}			

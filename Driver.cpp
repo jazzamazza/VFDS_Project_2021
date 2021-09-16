@@ -72,9 +72,13 @@ int main(int argc, char* argv[])
         imgdata::Voxel*** vox = ctr.imgread::CTReader::readPGMStack(shape, dim);
         std::cout << "CTReader end" << std::endl;
 
+	func::writeCube("originalCube", vox, dim); 
+
 	std::cout << "Paint Background start" << std::endl;
-	func::paintBackground(vox, dim, dim, dim);
+	func::paintBackground(vox, dim, dim, dim, 200);
 	std::cout << "Paint Background end" << std::endl;
+
+	func::writeCube("paintedCube", vox, dim);
 
 
         std::cout << "Split/Merge start" << std::endl;
@@ -85,6 +89,8 @@ int main(int argc, char* argv[])
 	{
 		std::cout << *i << std::endl;
 	}
+
+	func::writeToPGM("fracturesInWhite", frac, dim);
 
         //std::cout << "delete pgm stack" << std::endl;
         //ctr.imgread::CTReader::deletePGMStack(vox, 128);   
