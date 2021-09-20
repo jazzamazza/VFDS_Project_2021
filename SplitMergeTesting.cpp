@@ -28,7 +28,7 @@ TEST_CASE ("Axes")
 			Voxel * row = new Voxel[c];
 			for(int y = 0; y < c; y++)
 			{
-				row[y] = Voxel(x,y,z,1);
+				row[y] = Voxel(x,y,z,250);
 			}
 			set[x] = row;
 		}
@@ -226,7 +226,7 @@ TEST_CASE ("Axes")
 				}
 			}
 		}
-		cube[64][64][64] = Voxel(64,64,64,1);
+		cube[64][64][64] = Voxel(64,64,64,250);
 
 		
 		//splitMerge
@@ -268,7 +268,7 @@ TEST_CASE("Diagonals")
 			Voxel * row = new Voxel[c];
 			for(int y = 0; y < c; y++)
 			{
-				row[y] = Voxel(x,y,z,1);
+				row[y] = Voxel(x,y,z,250);
 			}
 			set[x] = row;
 		}

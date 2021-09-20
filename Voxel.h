@@ -32,8 +32,10 @@ namespace imgdata {
             const int getY() const;
             const int getZ() const;
 	    Voxel operator+(const Voxel & v);
+	    bool operator>(const Voxel & v) const;
 	    friend std::ostream & operator<<(std::ostream & out, const Voxel & v);
 	    bool operator==(const Voxel & v) const;
+	    bool touching(const imgdata::Voxel & v) const;
     };
 }
 

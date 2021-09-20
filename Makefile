@@ -37,8 +37,11 @@ utest: unit_test.cpp ImageDataClass.o PartData.o BackgroundData.o Voxel.o CTRead
 unit_test.o: unit_test.cpp
 	g++ -c unit_test.cpp -o unit_test.o -std=c++2a
 
-ws:
-	g++ -c WS/Water.cpp -o water.o -std=c++2a;
+spdtest: speedTestDriver.o CTReader.o Voxel.o ImageProcessor.o Split.o Fracture.o
+	g++ speedTestDriver.o CTReader.o Voxel.o ImageProcessor.o Split.o Fracture.o -o spdtest -std=c++2a
+
+speedTestDriver.o: speedTestDriver.cpp
+	g++ -c speedTestDriver.cpp -o speedTestDriver.o
 
 clean:
-	rm *.o drv utest smtest mexe
+	rm *.o drv utest smtest spdtest mexe ../out/*

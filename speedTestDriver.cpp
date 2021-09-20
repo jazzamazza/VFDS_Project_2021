@@ -1,14 +1,12 @@
-/*
-Jared May
-25/08/2021
-VFDS DRIVER CLASS
+/*Noah De Nicola
+ * 20 September 2021
+ * test Speed Driver
 */
 
-//#include <fstream>
 #include <iostream>
-//#include <sstream>
 #include <string>
 #include <vector>
+#include <chrono>
 
 #include "Split.h"
 #include "Voxel.h"
@@ -67,28 +65,54 @@ int main(int argc, char* argv[])
         files = argv[1];
         shape = findShape(files);
         dim = findDim(files);
+	
+	
+	using namespace std::chrono;
 
-        std::cout << "CTReader start" << std::endl;
+	//CT
+        std::cout << "CTReader start..." << std::endl;
+	auto start = high_resolution_clock::now(); //start timing
         imgdata::Voxel*** vox = ctr.imgread::CTReader::readPGMStack(shape, dim);
-        std::cout << "CTReader end" << std::endl;
+	auto stop = high_resolution_clock::now();
+        std::cout << "CTReader end..." << std::endl;
+	auto x = duration_cast<milliseconds>(stop - start);
+	float ctTime = x.count();
+	std::cout << "Elapsed Time: " << ctTime/1000 << std::endl;
 
-	func::writeCube("originalCube", vox, dim); 
+	//tracing
+	//func::writeCube("originalCube", vox, dim); 
 
-	std::cout << "Paint Background start" << std::endl;
+	//paint
+	std::cout << "\nPaint Background start..." << std::endl;
+	start = high_resolution_clock::now();
 	func::paintBackground(vox, dim, dim, dim, 200);
-	std::cout << "Paint Background end" << std::endl;
+	stop = high_resolution_clock::now();
+	std::cout << "Paint Background end..." << std::endl;
 
-	func::writeCube("paintedCube", vox, dim);
+	x = duration_cast<milliseconds>(stop - start);
+       	float paintTime = x.count();
+	std::cout << "Elapsed Time: " << paintTime/1000 << std::endl;	
 
+	//tracing
+	//func::writeCube("paintedCube", vox, dim);
 
-        std::cout << "Split/Merge start" << std::endl;
+        std::cout << "\nSplit/Merge start..." << std::endl;
+	start = high_resolution_clock::now();
         std::vector<imgdata::Fracture> frac = func::splitMerge(vox, dim, dim, dim);
-        std::cout << "Split/Merge end" << std::endl;
+	stop = high_resolution_clock::now();
+        std::cout << "Split/Merge end..." << std::endl;
 
-	for(std::vector<imgdata::Fracture>::iterator i = frac.begin(); i != frac.end(); ++i)
+	x = duration_cast<milliseconds>(stop - start);
+	float splMrgTime = x.count();
+
+	std::cout << "Elapsed Time: " << splMrgTime/1000 << std::endl;
+
+	std::cout << "\nTotal Elapsed Time: " << (ctTime+paintTime+splMrgTime)/1000 << std::endl;
+
+	/*for(std::vector<imgdata::Fracture>::iterator i = frac.begin(); i != frac.end(); ++i)
 	{
 		std::cout << *i << std::endl;
-	}
+	}*/
 
 	func::writeToPGM("fracturesInWhite", frac, dim);
 

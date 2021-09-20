@@ -4,13 +4,14 @@
  */
 
 #include "ImageProcessor.h"
-
+#include <string>
+#include <fstream>
 using namespace imgdata;
 
 //global
 int ID = 0;
 int check(0);
-void func::collect(Split & parent, std::vector<Fracture> & collector)
+void func::collect(Split & parent, std::vector<Fracture> & collector, int threshold)
 {
         if(parent.getAllFrac()) //if all 0's
         {
@@ -27,11 +28,11 @@ void func::collect(Split & parent, std::vector<Fracture> & collector)
                 for(std::vector<std::shared_ptr<Split>>::iterator i = vec.begin(); i != vec.end(); ++i)
                 {
                         std::shared_ptr<Split> kid = *i;
-			kid->test();
+			kid->test(threshold);
                         if(kid->getSomeFrac()) //if any 0's
                         {
 				//std::cout << "some\n" << *kid << std::endl;
-                                collect(*kid, collector);
+                                collect(*kid, collector, threshold);
                         }
                 }
         }
@@ -112,119 +113,93 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
         //initiate collection
         std::vector<Fracture> collection;
 
+	int threshold = 128;
         //test before collect
-        MotherSplit.test();
+        MotherSplit.test(threshold);
 
         //collect 
-        func::collect(MotherSplit, collection);
+        func::collect(MotherSplit, collection, threshold);
 
         //print
-        std::cout << "collected" << std::endl;
-        func::printCollection(collection);
+        //std::cout << "collected" << std::endl;
+        //func::printCollection(collection);
 
 
 	//loop
 	bool change(true);
 	while(change)
 	{
-		std::cout << change << std::endl;
 		change = false;
-		std::vector<int> usedIDs;
 		std::vector<int> toErase;
-
-		//group into fractures   
-        	int count(0);
-		int joined(0);
-	
 	        //iterate through the collected fracture Objects. (fractured pixels)
-	        for(std::vector<Fracture>::iterator i = collection.begin(); i != collection.end(); ++i)
+	        for(int i = 0; i + 1 < collection.size(); i+=2)
 	        {
-			Fracture f1(*i);
-			if(joined > 500)
+			//std::cout << collection[i] << std::endl;
+			//std::cout << collection[i+1] << std::endl;	
+			if(collection[i].meets(collection[i+1]) )
 			{
-				std::cout << "join 100" << std::endl;
-				break;
+				change = true;
+				collection[i].join(collection[i+1]);
+				//std::cout << "PB " << i +1 << std::endl;
+				toErase.push_back(i+1);
 			}
-		
-			//check if this fracture has been used
-			bool used(false);
-			for(std::vector<int>::iterator u = usedIDs.begin(); u != usedIDs.end(); ++u)
+			else
 			{
-				if(*u == f1.getID())
+				if(collection[i] > collection[i+1])
 				{
-					used = true;
+					Fracture temp = collection[i];
+					collection[i] = collection[i+1];
+					collection[i+1] = temp;
 				}
 			}
-			if(!used)
+		}
+		//func::printCollection(collection);
+		//std::cout << "erasing" << std::endl;
+		for(int e = toErase.size()-1; e >= 0; e--)
+		{
+			//std::cout << toErase[e] << std::endl;
+			collection.erase(collection.begin() + toErase[e]);
+		}
+		//func::printCollection(collection);
+
+	}
+	//std::cout << "Merge again" << std::endl;
+	change = true;
+        while(change)
+        {
+                change = false;
+                std::set<int> toErase;
+		std::set<int> usedSet;
+                //iterate through the collected fracture Objects. (fractured pixels)
+                for(int i = 0; i < collection.size(); i++)
+                {
+			if(usedSet.find(i) == usedSet.end())
 			{
-               			std::vector<Voxel> f1Coords = f1.getCoords();
-				for(std::vector<Fracture>::iterator p = collection.begin(); p != collection.end(); ++p)
+				for(int p = 0; p < collection.size(); p++)
 				{
-					Fracture f2(*p);
-					
-					bool used2(false);
-					for(std::vector<int>::iterator u = usedIDs.begin(); u != usedIDs.end(); ++u)
+					if(usedSet.find(p) == usedSet.end())
 					{
-						if(*u == f2.getID())
+						if(collection[i].getID() != collection[p].getID())
 						{
-							used2 = true;
-						}	
-					}
-					if(!used2)
-					{
-						bool inserted(false);
-	
-						//only use boundary
-						std::vector<Voxel> f2Coords = f2.getCoords();
-			
-						if(f1.getID() != f2.getID()) //doesnt check against itself
-						{
-       		 		        		//iterate through the boundary pixels of main split
-       		        				for(std::vector<Voxel>::iterator v1 = f1Coords.begin(); v1 != f1Coords.end(); ++v1)
-        	        				{
-								if(inserted)
-								{
-									//only needs 1 match
-									break;
-								}
-								else
-								{
-									for(std::vector<Voxel>::iterator v2 = f2Coords.begin(); v2 != f2Coords.end(); ++v2)
-									{
-										if(func::touching(*v1,*v2))
-										{
-											std::cout << p->getID()  << " joining " << i->getID() << std::endl;
-											i->join(*p);
-											joined++;
-											change = true;
-											usedIDs.push_back(f2.getID());
-											toErase.push_back(f2.getID());
-											inserted = true;
-											break;
-										}
-									}
-								}
+							if(collection[i].meets(collection[p]))
+							{
+								collection[i].join(collection[p]);
+								toErase.insert(p);
+								change = true;
+								usedSet.insert(p);
 							}
 						}
 					}
 				}
 			}
-		}
-		std::cout << "Erasing" << std::endl;
-		for(std::vector<int>::iterator i = toErase.begin(); i != toErase.end(); ++i)
-		{
-			for(std::vector<Fracture>::iterator p = collection.begin(); p != collection.end(); ++p)
-			{
-				if(p->getID() == *i)
-				{
-					std::cout << p->getID() << " gone" << std::endl;
-					collection.erase(p);
-					break;
-				}
-			}
-		}
+                }
+                for(std::set<int>::reverse_iterator e = toErase.rbegin(); e != toErase.rend(); ++e)
+                {
+                        collection.erase(collection.begin() + *e);
+                }
 
-	}
+        }
+
 	return collection;
 
 
@@ -243,7 +218,7 @@ std::vector<Voxel> func::getBlock(Voxel ** & layer, int r, int c, int sizeX, int
 	return ret;
 }
 
-void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
+void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int val)
 {
 	for(int z = 0; z < depth; z++)
 	{
@@ -284,7 +259,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
 				{
 					if(block[i].getIntensity() == 0)
 					{
-						cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+						cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, val);
 					}
 					else
 					{
@@ -336,7 +311,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
                                 {
                                         if(rblock[i].getIntensity() == 0)
                                         {
-                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, val);
                                         }
                                         else 
 					{ 
@@ -384,11 +359,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
                                 {
                                         if(block[i].getIntensity() == 0)
                                         {
-                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, val);
                                         }
                                         else
                                         {
-						if(block[i].getIntensity() != 2)
+						if(block[i].getIntensity() != val)
 						{
                                                 	hit = true;
 						}
@@ -443,11 +418,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
                                 {
                                         if(rblock[i].getIntensity() == 0)
                                         {
-                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, 2);
+                                                cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, val);
                                         }
                                         else
                                         {
-						if(rblock[i].getIntensity() != 2)
+						if(rblock[i].getIntensity() != val)
 						{
                                                 	hit = true;
 						}
@@ -464,24 +439,119 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth)
 	
 }
 
-//global
-std::vector<Voxel> directions = {Voxel(1,0,0,0), Voxel(-1,0,0,0), Voxel(0,1,0,0), Voxel(0,-1,0,0), Voxel(0,0,1,0), Voxel(0,0,-1,0)};
-
-bool func::touching(const Voxel & a, const Voxel & b) //change to split memeber function
+void func::writeToPGM(const std::string & outFileName, std::vector<Fracture> collection, int dim)
 {
-	std::vector<Voxel> aNeighbours;
-	bool ret = false;
-	for(std::vector<Voxel>::iterator i = directions.begin(); i != directions.end(); i++)
+	unsigned char *** cube = new unsigned char ** [dim];
+	for(int z = 0; z < dim; z++)
 	{
-		aNeighbours.push_back(*i+a);
-	}
-	for(std::vector<Voxel>::iterator i = aNeighbours.begin(); i != aNeighbours.end(); ++i)
-	{
-		Voxel v(*i);
-		if(b == v)
+		//prepare output
+		unsigned char ** layer = new unsigned char * [dim];
+		for(int x = 0; x < dim; x++)
 		{
-			ret = true;
+			unsigned char * row = new unsigned char[dim];
+			for(int y = 0; y < dim; y++)
+			{
+				row[y] = 0;
+			}
+			layer[x] = row;
 		}
+		cube[z] = layer;
 	}
-	return ret;	
+
+
+        //iterate through components
+        for(std::vector<Fracture>::iterator i = collection.begin(); i != collection.end(); ++i)
+        {
+                std::vector<Voxel> voxels = i->getCoords();
+                for(std::vector<Voxel>::iterator p = voxels.begin(); p != voxels.end(); ++p)
+                {
+                        cube[p->getZ()][p->getX()][p->getY()] = 255;
+                }
+        }
+
+	for(int z = 0; z < dim; z++)
+	{
+        	//write out
+		std::string sz = std::to_string(z);
+        	std::ofstream out("../out/"+outFileName+sz, std::ofstream::binary);
+        	out << "P5" <<"\n";
+        	out << dim << " ";
+        	out << dim << "\n";
+        	out << "255" << "\n";
+		
+	        char* wbuf = new char[dim];
+	        for(int x=0; x<dim; x++)
+	        {
+	                wbuf = reinterpret_cast<char *>(cube[z][x]);
+	                out.write(wbuf, dim);
+	        }
+		out.close();
+	}
+
+        //delete outputData
+	for(int z = 0; z < dim; z++)
+	{
+		for(int x=0; x<dim; x++)
+		{
+			delete[] cube[z][x];
+		}
+		delete [] cube[z];
+	}
+	delete [] cube;
+
+
+
+
+}
+
+void func::writeCube(const std::string & outFileName, Voxel*** sourceCube, int dim)
+{
+	unsigned char *** cube = new unsigned char ** [dim];
+	for(int z = 0; z < dim; z++)
+	{
+		//prepare output
+		unsigned char ** layer = new unsigned char * [dim];
+		for(int x = 0; x < dim; x++)
+		{
+			unsigned char * row = new unsigned char[dim];
+			for(int y = 0; y < dim; y++)
+			{
+				row[y] = sourceCube[z][x][y].getIntensity(); 
+			}
+			layer[x] = row;
+		}
+		cube[z] = layer;
+	}
+
+	for(int z = 0; z < dim; z++)
+	{
+        	//write out
+		std::string sz = std::to_string(z);
+        	std::ofstream out("../out/"+outFileName+sz, std::ofstream::binary);
+        	out << "P5" <<"\n";
+        	out << dim << " ";
+        	out << dim << "\n";
+        	out << "255" << "\n";
+		
+	        char* wbuf = new char[dim];
+	        for(int x=0; x<dim; x++)
+	        {
+	                wbuf = reinterpret_cast<char *>(cube[z][x]);
+	                out.write(wbuf, dim);
+	        }
+		out.close();
+	}
+
+        //delete outputData
+	for(int z = 0; z < dim; z++)
+	{
+		for(int x=0; x<dim; x++)
+		{
+			delete[] cube[z][x];
+		}
+		delete [] cube[z];
+	}
+	delete [] cube;
+
+
 }

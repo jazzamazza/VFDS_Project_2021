@@ -32,11 +32,13 @@ namespace imgdata {
             Fracture& operator=(Fracture&& rhs);
 
             friend std::ostream & operator<<(std::ostream& out, Fracture& rhs);
+	    bool operator>(const Fracture & rhs) const;
 
             int getVoxels(void) const;
             int getID(void) const;
             std::string getColour(void) const;
             std::vector<Voxel> getCoords(void) const;
+	    bool meets(const Fracture & f) const;
 
 	    void join(Fracture & f);
             void insertVoxel(imgdata::Voxel& vox);

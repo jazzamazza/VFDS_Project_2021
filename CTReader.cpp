@@ -48,17 +48,16 @@ imgdata::Voxel*** imgread::CTReader::readPGMStack(const std::string& header, con
 
         //discard the rows + columns and the final "255" line
         std::getline(in, line);
-        std::getline(in, line);
 
-        for(int cols = 0; cols < dim; ++cols) {
+        for(int rows = 0; rows < dim; ++rows) {
             //create a buffer to read in the pgm binary data
             char* buffer = new char[dim];
             in.read(buffer, dim);
 
-            for(int rows = 0; rows < dim; ++rows) {
+            for(int cols = 0; cols < dim; ++cols) {
                 // Insert a Voxel item into the 3D array containing each coordinate point and the intensity at that point of the PGM image
                 // Necessary for split and merge algorithm
-                imgArr3D[depth][cols][rows] = imgdata::Voxel(rows, cols, depth, (unsigned char)buffer[rows]);
+                imgArr3D[depth][rows][cols] = imgdata::Voxel(rows, cols, depth, (unsigned char)buffer[cols]);
             }
             // delete the dynamically allocated buffer
             delete[] buffer;
