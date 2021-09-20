@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <chrono>
+#include <fstream>
 
 #include "Split.h"
 #include "Voxel.h"
@@ -108,6 +109,7 @@ int main(int argc, char* argv[])
 	std::cout << "Elapsed Time: " << splMrgTime/1000 << std::endl;
 
 	std::cout << "\nTotal Elapsed Time: " << (ctTime+paintTime+splMrgTime)/1000 << std::endl;
+
 
 	/*for(std::vector<imgdata::Fracture>::iterator i = frac.begin(); i != frac.end(); ++i)
 	{
