@@ -1,4 +1,0 @@
-*.o
-**/vfds.app
-moc*.cpp
-moc*.h
