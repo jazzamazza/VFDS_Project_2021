@@ -19,52 +19,62 @@
 #include <Qt>
 
 #include <QLineEdit>
+#include <QMessageBox>
 
 class MainWindow : public QMainWindow
 {
 
-Q_OBJECT
-public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
-    bool loadFile(const QString &);
+    Q_OBJECT
 
-private slots:
-    void open();
-    void about();
+    public:
+        MainWindow(QWidget *parent = nullptr);
+        ~MainWindow();
+        //bool loadFile(const QString &);
 
-private:
-    // Init Methods
-    void setupSignalsAndSlots();
-    void setupCoreWidgets();
-    void createActions();
-    void createMenus();
-    void updateActions();
-    bool saveFile(const QString &fileName);
-    void setImage(const QImage &newImage);
+    private slots:
+        //void open();
+        void aboutDialog();
+        void loadButtonClicked();
 
-    // Layout and Widgets
-    QWidget *mainWidget;
-    QVBoxLayout *centralWidgetLayout;
-    QGridLayout *formLayout;
-    QHBoxLayout *buttonsLayout;
+    private:
+        // Init Methods
+        void setupSignalsAndSlots();
+        void setupCoreWidgets();
 
-    // Menus
-    QMenu *fileMenu;
-    QMenu *helpMenu;
+        //void createActions();
+        void createMenus();
+       //void updateActions();
+        //bool saveFile(const QString &fileName);
+        //void setImage(const QImage &newImage);
 
-    // Actions
-    QAction *quitAction;
-    QAction *aboutAction;
-    QAction *openAction;
-    QAction *cancelAction;
-    QAction *newAction;
+        // Layout and Widgets
+        QWidget *mainWidget;
+        QVBoxLayout *centralWidgetLayout;
+        QGridLayout *formLayout;
+        QHBoxLayout *buttonsLayout;
 
-    // GUI 
-    QLabel *fileLabel;
-    QLabel *partDisplayLabel;
-    QPushButton *loadPushButton;
-    QPushButton *nextPushButton;
-    QPushButton *backPushButton;
+        // Menus
+        QMenu *fileMenu;
+        QMenu *helpMenu;
+
+        // Actions
+        QAction *quitAction;
+        QAction *aboutAction;
+        QAction *openAction;
+        //QAction *cancelAction;
+        //QAction *newAction;
+
+        // GUI 
+        //Labels
+        QLabel *fileLabel;
+        QLabel *partDisplayLabel;
+
+        //Buttons
+        QPushButton *loadPushButton;
+        QPushButton *nextPushButton;
+        QPushButton *backPushButton;
+
+        //Input
+        QLineEdit *fileLineEdit;
 };
 #endif // MAINWINDOW_H

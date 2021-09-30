@@ -54,7 +54,6 @@ OBJECTS_DIR   = ./
 
 SOURCES       = src/BackgroundData.cpp \
 		src/CTReader.cpp \
-		src/Driver.cpp \
 		src/Fracture.cpp \
 		src/ImageDataClass.cpp \
 		src/ImageProcessor.cpp \
@@ -62,13 +61,9 @@ SOURCES       = src/BackgroundData.cpp \
 		src/mainwindow.cpp \
 		src/PartData.cpp \
 		src/Split.cpp \
-		src/Voxel.cpp \
-		test/speedTestDriver.cpp \
-		test/SplitMergeTesting.cpp \
-		test/unit_test.cpp moc_mainwindow.cpp
+		src/Voxel.cpp moc_mainwindow.cpp
 OBJECTS       = BackgroundData.o \
 		CTReader.o \
-		Driver.o \
 		Fracture.o \
 		ImageDataClass.o \
 		ImageProcessor.o \
@@ -77,9 +72,6 @@ OBJECTS       = BackgroundData.o \
 		PartData.o \
 		Split.o \
 		Voxel.o \
-		speedTestDriver.o \
-		SplitMergeTesting.o \
-		unit_test.o \
 		moc_mainwindow.o
 DIST          = /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/spec_pre.prf \
 		/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/device_config.prf \
@@ -281,7 +273,6 @@ DIST          = /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/spec_pre.pr
 		src/Voxel.h \
 		test/catch.hpp src/BackgroundData.cpp \
 		src/CTReader.cpp \
-		src/Driver.cpp \
 		src/Fracture.cpp \
 		src/ImageDataClass.cpp \
 		src/ImageProcessor.cpp \
@@ -289,10 +280,7 @@ DIST          = /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/spec_pre.pr
 		src/mainwindow.cpp \
 		src/PartData.cpp \
 		src/Split.cpp \
-		src/Voxel.cpp \
-		test/speedTestDriver.cpp \
-		test/SplitMergeTesting.cpp \
-		test/unit_test.cpp
+		src/Voxel.cpp
 QMAKE_TARGET  = vfds
 DESTDIR       = 
 TARGET        = vfds.app/Contents/MacOS/vfds
@@ -734,7 +722,7 @@ distdir: FORCE
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents src/BackgroundData.h src/CTReader.h src/Fracture.h src/ImageDataClass.h src/ImageProcessor.h src/mainwindow.h src/PartData.h src/Split.h src/Voxel.h test/catch.hpp $(DISTDIR)/
-	$(COPY_FILE) --parents src/BackgroundData.cpp src/CTReader.cpp src/Driver.cpp src/Fracture.cpp src/ImageDataClass.cpp src/ImageProcessor.cpp src/main.cpp src/mainwindow.cpp src/PartData.cpp src/Split.cpp src/Voxel.cpp test/speedTestDriver.cpp test/SplitMergeTesting.cpp test/unit_test.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents src/BackgroundData.cpp src/CTReader.cpp src/Fracture.cpp src/ImageDataClass.cpp src/ImageProcessor.cpp src/main.cpp src/mainwindow.cpp src/PartData.cpp src/Split.cpp src/Voxel.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -900,6 +888,8 @@ moc_mainwindow.cpp: src/mainwindow.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtCore.framework/Headers/qnamespace.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QLineEdit \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qlineedit.h \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QMessageBox \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qmessagebox.h \
 		moc_predefs.h \
 		/usr/local/Cellar/qt/6.1.3/share/qt/libexec/moc
 	/usr/local/Cellar/qt/6.1.3/share/qt/libexec/moc $(DEFINES) --include /Users/jaredmay/Capstone/vfds/moc_predefs.h -I/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/macx-clang -I/Users/jaredmay/Capstone/vfds -I/Users/jaredmay/Capstone/vfds -I/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers -I/usr/local/Cellar/qt/6.1.3/lib/QtGui.framework/Headers -I/usr/local/Cellar/qt/6.1.3/lib/QtCore.framework/Headers -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1 -I/Library/Developer/CommandLineTools/usr/lib/clang/12.0.5/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -I/Library/Developer/CommandLineTools/usr/include -F/usr/local/Cellar/qt/6.1.3/lib src/mainwindow.h -o moc_mainwindow.cpp
@@ -930,13 +920,6 @@ CTReader.o: src/CTReader.cpp src/CTReader.h \
 		src/Voxel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o CTReader.o src/CTReader.cpp
 
-Driver.o: src/Driver.cpp src/Split.h \
-		src/Voxel.h \
-		src/ImageProcessor.h \
-		src/Fracture.h \
-		src/CTReader.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Driver.o src/Driver.cpp
-
 Fracture.o: src/Fracture.cpp src/Fracture.h \
 		src/Voxel.h \
 		src/Split.h
@@ -951,11 +934,11 @@ ImageProcessor.o: src/ImageProcessor.cpp src/ImageProcessor.h \
 		src/Fracture.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ImageProcessor.o src/ImageProcessor.cpp
 
-main.o: src/main.cpp src/mainwindow.h \
+main.o: src/main.cpp /usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QApplication \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qapplication.h \
+		src/mainwindow.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QMainWindow \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qmainwindow.h \
-		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QApplication \
-		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qapplication.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QLabel \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qlabel.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtCore.framework/Headers/QString \
@@ -1078,7 +1061,9 @@ main.o: src/main.cpp src/mainwindow.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtCore.framework/Headers/Qt \
 		/usr/local/Cellar/qt/6.1.3/lib/QtCore.framework/Headers/qnamespace.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QLineEdit \
-		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qlineedit.h
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qlineedit.h \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QMessageBox \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qmessagebox.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
 
 mainwindow.o: src/mainwindow.cpp src/mainwindow.h \
@@ -1208,7 +1193,9 @@ mainwindow.o: src/mainwindow.cpp src/mainwindow.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtCore.framework/Headers/Qt \
 		/usr/local/Cellar/qt/6.1.3/lib/QtCore.framework/Headers/qnamespace.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QLineEdit \
-		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qlineedit.h
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qlineedit.h \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QMessageBox \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qmessagebox.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o src/mainwindow.cpp
 
 PartData.o: src/PartData.cpp src/PartData.h \
@@ -1222,30 +1209,6 @@ Split.o: src/Split.cpp src/Split.h \
 
 Voxel.o: src/Voxel.cpp src/Voxel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Voxel.o src/Voxel.cpp
-
-speedTestDriver.o: test/speedTestDriver.cpp src/Split.h \
-		src/Voxel.h \
-		src/ImageProcessor.h \
-		src/Fracture.h \
-		src/CTReader.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o speedTestDriver.o test/speedTestDriver.cpp
-
-SplitMergeTesting.o: test/SplitMergeTesting.cpp src/Split.h \
-		src/Voxel.h \
-		src/ImageProcessor.h \
-		src/Fracture.h \
-		test/catch.hpp
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o SplitMergeTesting.o test/SplitMergeTesting.cpp
-
-unit_test.o: test/unit_test.cpp test/catch.hpp \
-		src/CTReader.h \
-		src/Voxel.h \
-		src/BackgroundData.h \
-		src/ImageDataClass.h \
-		src/PartData.h \
-		src/Fracture.h \
-		src/Split.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o unit_test.o test/unit_test.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp

@@ -32,7 +32,7 @@ HEADERS += src/BackgroundData.h \
            test/catch.hpp
 SOURCES += src/BackgroundData.cpp \
            src/CTReader.cpp \
-           src/Driver.cpp \
+#           src/Driver.cpp \
            src/Fracture.cpp \
            src/ImageDataClass.cpp \
            src/ImageProcessor.cpp \
@@ -42,6 +42,6 @@ SOURCES += src/BackgroundData.cpp \
            src/PartData.cpp \
            src/Split.cpp \
            src/Voxel.cpp \
-           test/speedTestDriver.cpp \
-           test/SplitMergeTesting.cpp \
-           test/unit_test.cpp
+#           test/speedTestDriver.cpp \
+#           test/SplitMergeTesting.cpp \
+#           test/unit_test.cpp
