@@ -4,10 +4,10 @@
  */
 
 #define CATCH_CONFIG_MAIN
-#include "Split.h"
-#include "Voxel.h"
-#include "ImageProcessor.h"
-#include "Fracture.h"
+#include "src/Split.h"
+#include "src/Voxel.h"
+#include "src/ImageProcessor.h"
+#include "src/Fracture.h"
 #include "catch.hpp"
 
 using namespace imgdata;
