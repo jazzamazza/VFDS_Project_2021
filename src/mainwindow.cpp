@@ -4,24 +4,27 @@ Jared May
 VFDS Main Window
 */
 #include "mainwindow.h"
+//#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     setWindowTitle("VFDS App");
-    setFixedSize(500,500);
+
+    //setSizePolicy(QSizePoli)
+
+    //setFixedSize(750,600);
+    setMinimumSize(750,600);
+    statusBar()->showMessage("Ready...");
 
     setupCoreWidgets();
+    setupLayout();
     createMenus();
-
-    centralWidgetLayout->addLayout(gridLayout);
-    //centralWidgetLayout->addWidget(mainWidget);
-    centralWidgetLayout->addLayout(buttonsLayout);
-    mainWidget->setLayout(centralWidgetLayout);
 
     setCentralWidget(mainWidget);
 
     setupSignalsAndSlots();
+    //std::cout << "width: " << imageLabel->size().width() << " height: "<< imageLabel->size().height();
     
 
 }
@@ -30,18 +33,36 @@ MainWindow::~MainWindow()
 {
 }
 
+void MainWindow::setupLayout(){
+    centralWidgetLayout->addLayout(viewLayout);
+    //centralWidgetLayout->addWidget(mainWidget);
+    sidePanelLayout->addLayout(sidePanelButtonsLayout);
+    //centralWidgetLayout->addLayout(buttonsLayout);
+    centralWidgetLayout->addLayout(sidePanelLayout);
+    mainWidget->setLayout(centralWidgetLayout);
+}
+
 void MainWindow::setupCoreWidgets(){
     //Setup Widgets and Layout
+
     mainWidget = new QWidget();
-    centralWidgetLayout = new QVBoxLayout();
-    gridLayout = new QGridLayout();
-    buttonsLayout = new QHBoxLayout();
+    centralWidgetLayout = new QHBoxLayout();
+    viewLayout = new QGridLayout();
     sidePanelLayout = new QVBoxLayout();
+    sidePanelButtonsLayout = new QHBoxLayout();
 
     //Setup labels
-    fileLabel = new QLabel("File:");
-    //partDisplayLabel = new QLabel("PART DISPLAYED HERE");
-    imageLabel = new QLabel("PART DISPLAYED HERE");
+    imageLabel = new QLabel();
+    //imageLabel -> setMinimumSize(500,500);
+    imageLabel -> setFixedSize(500,500);
+    imageLabel -> setBackgroundRole(QPalette::Base);
+    //imageLabel -> setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    imageLabel -> setScaledContents(true);
+//todo
+    /*scrollArea = new QScrollArea();
+    scrollArea->setBackgroundRole(QPalette::Dark);
+    scrollArea->setWidget(imageLabel);
+    scrollArea->setVisible(false);*/
 
     //Setup buttons
     //loadPushButton = new QPushButton("Load");
@@ -52,14 +73,16 @@ void MainWindow::setupCoreWidgets(){
     fileLineEdit = new QLineEdit();
 
     //Layout
-    gridLayout->addWidget(fileLabel, 0, 0);
+    viewLayout->addWidget(imageLabel, 0, 0);
+    viewLayout->setColumnMinimumWidth(0,505);
+    viewLayout->setRowMinimumHeight(0,505);
+    //viewLayout->addWidget(imageLabel,1,0);
     //formLayout->addWidget(fileLineEdit,0,1);
-    gridLayout->addWidget(imageLabel,1,0);
+    //gridLayout->addWidget(imageLabel,1,0);
 
-    buttonsLayout->addStretch();
-    //buttonsLayout->addWidget(loadPushButton);
-    buttonsLayout->addWidget(nextPushButton);
-    buttonsLayout->addWidget(backPushButton);
+    sidePanelButtonsLayout->addStretch();
+    sidePanelButtonsLayout->addWidget(nextPushButton);
+    sidePanelButtonsLayout->addWidget(backPushButton);
     
 }
 
@@ -87,14 +110,11 @@ void MainWindow::createMenus(){
 void MainWindow::setupSignalsAndSlots() {
     // Setup Signals and Slots
     connect(quitAction, &QAction::triggered, this, &QApplication::quit);
-    connect(aboutAction, &QAction::triggered, this, &MainWindow::aboutDialog);
-    //connect(loadPushButton, SIGNAL(clicked()), this, SLOT(loadButtonClicked()));
+    connect(aboutAction, &QAction::triggered, this, &MainWindow::about);
     connect(openAction, &QAction::triggered, this, &MainWindow::open);
-    //connect(clearPushButton, SIGNAL(clicked()), this, SLOT(clearAllRecords()));
-    //connect(loadPushButton, &QAction::triggered, this, &MainWindow::loadButtonClicked);
+    connect(nextPushButton,SIGNAL(clicked()),this,SLOT(about()));
 }
 void MainWindow::open(){
-    //QMessageBox::information(this, "VFDS System", "VFDS INFORMATION", QMessageBox::Ok|QMessageBox::Default, QMessageBox::NoButton, QMessageBox::NoButton);
     QString filename = QFileDialog::getOpenFileName(this,tr("Choose"),"", tr("Images (*.pgm *.png)"));
 
     if (QString::compare(filename, QString()) != 0)
@@ -105,8 +125,7 @@ void MainWindow::open(){
         if(valid)
         {
            imageLabel->setPixmap(QPixmap::fromImage(image));
-           fileLabel->setText(filename);
-           //QMessageBox::information(this,"File Name", filename,QMessageBox::Ok,QMessageBox::Default);
+           statusBar()->showMessage(filename);
         }
         else
         {
@@ -119,7 +138,7 @@ void MainWindow::open(){
     }
 }
 
-void MainWindow::aboutDialog()
+void MainWindow::about()
 {
 
     QMessageBox::about(this, "About VFDS System",
@@ -129,12 +148,11 @@ void MainWindow::aboutDialog()
 }
 
 //find image dimension from folder name
-int parseDim(std::string str)
+int MainWindow::parseDim(std::string str)
 {
     int dim = 0;
     std::string tmp = "";
-    //for (int i = str.length()-3; i < str.length(); i++)
-    for (int i = 0; i < str.length(); i++)
+    for (size_t i = 0; i < str.length(); i++)
     {
         if (std::isdigit(str[i]))
         {
@@ -146,10 +164,10 @@ int parseDim(std::string str)
 }
 
 //find shape name from folder name
-std::string parseShape(std::string str)
+std::string MainWindow::parseShape(std::string str)
 {
     std::string tmp = "";
-    for (int i = 0; i < str.length(); i++)
+    for (size_t i = 0; i < str.length(); i++)
     {
         if (!std::isdigit(str[i]))
         {

@@ -28,6 +28,7 @@ VFDS Main Window
 
 #include <QScrollArea>
 #include <QFileDialog>
+#include <QStatusBar>
 
 class MainWindow : public QMainWindow
 {
@@ -41,27 +42,29 @@ class MainWindow : public QMainWindow
     private slots:
         void open();
         //void saveAs();
-        /*void print();
-        void copy();
-        void paste();
-        void zoomIn();
-        void zoomOut();
-        void normalSize();
-        void fitToWindow();*/
-        //void about();
-        void aboutDialog();
-        //void loadButtonClicked();
+        //void load();
+        //void print();
+        //void copy();
+        //void paste();
+        //void zoomIn();
+        //void zoomOut();
+        //void normalSize();
+        //void fitToWindow();
+        void about();
+
 
     private:
     
-        //driver functions
+        //Driver Functions
         int parseDim(std::string str);
         std::string parseShape(std::string str);
 
-        // Init Methods
+        //Init Methods
         void setupSignalsAndSlots();
         void setupCoreWidgets();
         void createMenus();
+        void setupLayout();
+
         /*
         void createActions();
         void createMenus();
@@ -70,28 +73,19 @@ class MainWindow : public QMainWindow
         void setImage(const QImage &newImage);
         void scaleImage(double factor);
         void adjustScrollBar(QScrollBar *scrollBar, double factor);
-    */
+        */
+
+        //Display
         QImage image;
-        QLabel *imageLabel;
         QScrollArea *scrollArea;
         double scaleFactor = 1;
 
-/*
-    QAction *saveAsAct;
-    QAction *printAct;
-    QAction *copyAct;
-    QAction *zoomInAct;
-    QAction *zoomOutAct;
-    QAction *normalSizeAct;
-    QAction *fitToWindowAct;
-    */   
-
         // Layout and Widgets
         QWidget *mainWidget;
-        QVBoxLayout *centralWidgetLayout;
+        QHBoxLayout *centralWidgetLayout;
         QVBoxLayout *sidePanelLayout;
-        QGridLayout *gridLayout;
-        QHBoxLayout *buttonsLayout;
+        QGridLayout *viewLayout;
+        QHBoxLayout *sidePanelButtonsLayout;
 
         // Menus
         QMenu *fileMenu;
@@ -101,16 +95,25 @@ class MainWindow : public QMainWindow
         QAction *quitAction;
         QAction *aboutAction;
         QAction *openAction;
+        //QAction *nextAction;
         //QAction *cancelAction;
         //QAction *newAction;
+        //QAction *saveAsAct;
+        //QAction *printAct;
+        //QAction *loadAction;
+        //QAction *copyAct;
+        //QAction *zoomInAction;
+        //QAction *zoomOutAction;
+        //QAction *normalSizeAction;
+        //QAction *fitToWindowAction;
 
-        // GUI 
         //Labels
-        QLabel *fileLabel;
-        QLabel *partDisplayLabel;
+        QLabel *imageLabel;
+        QLabel *fracturesLabel;
+        QLabel *fractureLabel;
+        QLabel *partLabel;
 
         //Buttons
-        QPushButton *loadPushButton;
         QPushButton *nextPushButton;
         QPushButton *backPushButton;
 

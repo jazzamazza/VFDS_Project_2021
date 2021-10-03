@@ -234,6 +234,7 @@ DIST          = /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/spec_pre.pr
 		/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/qt_config.prf \
 		/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/macx-clang/qmake.conf \
 		/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/exclusive_builds.prf \
 		/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/mac/sdk.prf \
 		/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/toolchain.prf \
@@ -288,7 +289,7 @@ TARGET        = vfds.app/Contents/MacOS/vfds
 EXPORT_QMAKE_MAC_SDK = macosx
 EXPORT_QMAKE_MAC_SDK_VERSION = 11.3
 EXPORT_QMAKE_XCODE_DEVELOPER_PATH = /Library/Developer/CommandLineTools
-EXPORT__QMAKE_STASH_ = 
+EXPORT__QMAKE_STASH_ = /Users/jaredmay/Capstone/vfds/.qmake.stash
 EXPORT_VALID_ARCHS = x86_64
 EXPORT_ACTIVE_ARCHS = $(filter $(EXPORT_VALID_ARCHS), $(ARCHS))
 EXPORT_ARCH_ARGS = $(foreach arch, $(if $(EXPORT_ACTIVE_ARCHS), $(EXPORT_ACTIVE_ARCHS), $(EXPORT_VALID_ARCHS)), -arch $(arch))
@@ -464,6 +465,7 @@ Makefile: vfds.pro /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/macx-clang/qmake.
 		/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/qt_config.prf \
 		/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/macx-clang/qmake.conf \
 		/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/spec_post.prf \
+		.qmake.stash \
 		/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/exclusive_builds.prf \
 		/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/mac/sdk.prf \
 		/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/toolchain.prf \
@@ -657,6 +659,7 @@ Makefile: vfds.pro /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/macx-clang/qmake.
 /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/qt_config.prf:
 /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/macx-clang/qmake.conf:
 /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/spec_post.prf:
+.qmake.stash:
 /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/exclusive_builds.prf:
 /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/mac/sdk.prf:
 /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/toolchain.prf:
@@ -729,6 +732,7 @@ clean: compiler_clean
 
 distclean: clean 
 	-$(DEL_FILE) -r vfds.app
+	-$(DEL_FILE) .qmake.stash
 	-$(DEL_FILE) Makefile
 
 
@@ -890,6 +894,8 @@ moc_mainwindow.cpp: src/mainwindow.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QFileDialog \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qfiledialog.h \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QStatusBar \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qstatusbar.h \
 		moc_predefs.h \
 		/usr/local/Cellar/qt/6.1.3/share/qt/libexec/moc
 	/usr/local/Cellar/qt/6.1.3/share/qt/libexec/moc $(DEFINES) --include /Users/jaredmay/Capstone/vfds/moc_predefs.h -I/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/macx-clang -I/Users/jaredmay/Capstone/vfds -I/Users/jaredmay/Capstone/vfds -I/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers -I/usr/local/Cellar/qt/6.1.3/lib/QtGui.framework/Headers -I/usr/local/Cellar/qt/6.1.3/lib/QtCore.framework/Headers -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1 -I/Library/Developer/CommandLineTools/usr/lib/clang/12.0.5/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -I/Library/Developer/CommandLineTools/usr/include -F/usr/local/Cellar/qt/6.1.3/lib src/mainwindow.h -o moc_mainwindow.cpp
@@ -1068,6 +1074,8 @@ main.o: src/main.cpp /usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QFileDialog \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qfiledialog.h \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QStatusBar \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qstatusbar.h \
 		src/Split.h \
 		src/Voxel.h \
 		src/ImageProcessor.h \
@@ -1208,7 +1216,9 @@ mainwindow.o: src/mainwindow.cpp src/mainwindow.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QScrollArea \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qscrollarea.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QFileDialog \
-		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qfiledialog.h
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qfiledialog.h \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QStatusBar \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qstatusbar.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o src/mainwindow.cpp
 
 PartData.o: src/PartData.cpp src/PartData.h \
