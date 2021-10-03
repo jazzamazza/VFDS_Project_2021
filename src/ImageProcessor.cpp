@@ -46,64 +46,6 @@ void func::printCollection(std::vector<Fracture> & coll)
 	}
 }
 
-
-void func::plotNeighbours(std::shared_ptr<int[]> & flatGrid, int index, int val, std::vector<int> dim)
-{
-	std::vector<int> actions = {-1, 1, -dim[1], dim[1], -dim[1]*dim[0], dim[1]*dim[0]};
-	
-	//left and right
-	if(index%dim[1] == 0)
-	{
-		actions[0] = 0;	
-	}
-	if(index%dim[1] == dim[1]-1)
-	{
-		actions[1] = 0;
-	}
-
-	//forward and back
-	int layer = index / (dim[0]*dim[1]);
-	int tempIndex = index - dim[0]*dim[1]*layer;
-	if(tempIndex/dim[1]==0)
-	{
-		actions[2] = 0;
-	}
-	if(tempIndex/dim[1] == dim[0]-1)
-	{
-		actions[3] = 0;
-	}
-	if(index/ (dim[1]*dim[0]) == 0)
-	{
-		actions[4] = 0;
-	}
-	if(index/(dim[1]*dim[0]) == dim[2]-1)
-	{
-		actions[5] = 0;
-	}
-	for(std::vector<int>::iterator a = actions.begin(); a != actions.end(); ++a)
-	{
-		int nIndex = index + *a;
-		flatGrid[nIndex] = val;
-
-	}
-}
-
-void func::addSplit(Fracture & fracture, Split & split)
-{
-	Voxel *** dataSet = split.getData();
-	std::vector<int> d = split.getDim();
-	for(int z = 0; z < d[2]; z++)
-	{
-		for(int x = 0; x < d[0]; x++)
-		{
-			for(int y = 0; y < d[1]; y++)
-			{
-				fracture.insertVoxel(dataSet[z][x][y]);
-			}
-		}	
-	}
-}
-
 std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, int depth)
 {
 	//Start Split and merge
@@ -473,7 +415,7 @@ void func::writeToPGM(const std::string & outFileName, std::vector<Fracture> col
 	{
         	//write out
 		std::string sz = std::to_string(z);
-        	std::ofstream out("../out/"+outFileName+sz, std::ofstream::binary);
+        	std::ofstream out("../out/"+outFileName+sz+".pgm", std::ofstream::binary);
         	out << "P5" <<"\n";
         	out << dim << " ";
         	out << dim << "\n";
@@ -527,7 +469,7 @@ void func::writeCube(const std::string & outFileName, Voxel*** sourceCube, int d
 	{
         	//write out
 		std::string sz = std::to_string(z);
-        	std::ofstream out("../out/"+outFileName+sz, std::ofstream::binary);
+        	std::ofstream out("../out/"+outFileName+sz+".pgm", std::ofstream::binary);
         	out << "P5" <<"\n";
         	out << dim << " ";
         	out << dim << "\n";
