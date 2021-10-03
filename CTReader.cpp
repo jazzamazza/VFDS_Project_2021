@@ -8,17 +8,17 @@ imgread::CTReader::CTReader(void) {}
 imgread::CTReader::~CTReader() {}
 
 // Reads a PGM stack into a dynamically allocated 3d array of Voxel objects and returns it
-imgdata::Voxel*** imgread::CTReader::readPGMStack(const std::string& header, const int& dim) {
+unsigned char *** imgread::CTReader::readPGMStack(const std::string& header, const int& dim, bool noise) {
     
     // declare a dynamic 3D array of Voxels
-    imgdata::Voxel*** imgArr3D = new imgdata::Voxel**[dim];
+    unsigned char *** imgArr3D = new unsigned char ** [dim];
     
     for(int i = 0; i < dim; ++i) {
         // initialize the 2D component size
-        imgArr3D[i] = new imgdata::Voxel*[dim];
+        imgArr3D[i] = new unsigned char *[dim];
         for (int j = 0; j < dim; ++j) {
             // initialize the 1D component size
-            imgArr3D[i][j] = new imgdata::Voxel[dim];
+            imgArr3D[i][j] = new unsigned char [dim];
         }
     }
 
@@ -53,12 +53,8 @@ imgdata::Voxel*** imgread::CTReader::readPGMStack(const std::string& header, con
             //create a buffer to read in the pgm binary data
             char* buffer = new char[dim];
             in.read(buffer, dim);
-
-            for(int cols = 0; cols < dim; ++cols) {
-                // Insert a Voxel item into the 3D array containing each coordinate point and the intensity at that point of the PGM image
-                // Necessary for split and merge algorithm
-                imgArr3D[depth][rows][cols] = imgdata::Voxel(rows, cols, depth, (unsigned char)buffer[cols]);
-            }
+            // Add buffer array values to the 3D arary of unsigned char
+            imgArr3D[depth][rows] = (unsigned char*)buffer;
             // delete the dynamically allocated buffer
             delete[] buffer;
         }
@@ -70,13 +66,7 @@ imgdata::Voxel*** imgread::CTReader::readPGMStack(const std::string& header, con
     return imgArr3D;
 }
 
-// iteratively deletes the 3D Voxel array
-void imgread::CTReader::deletePGMStack(imgdata::Voxel***& imgArr3D, int dim) {
-    for(int i=0; i < dim; ++i) {
-        for(int j=0; j < dim; ++j) {
-            delete[] imgArr3D[i][j];
-        }
-        delete[] imgArr3D[i];
-    }
-    delete[] imgArr3D;
+int main(void) {
+    imgread::CTReader ctr;
+
 }

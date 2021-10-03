@@ -7,7 +7,6 @@
 #include <iostream>
 #include <string>
 #include <memory>
-#include "Voxel.h"
 
 namespace imgread {
     class CTReader {
@@ -16,7 +15,7 @@ namespace imgread {
             CTReader(void);
             ~CTReader();
 
-            unsigned char *** readPGMStack(const std::string& header, const int& dim);
+            unsigned char *** readPGMStack(const std::string& header, const int& dim, bool noise);
     };
 }
 
