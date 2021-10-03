@@ -17,7 +17,7 @@ namespace imgread {
             CTReader(void);
             ~CTReader();
 
-            unsigned char *** readPGMStack(const std::string& dir, const int& dim);
+            unsigned char *** readPGMStack(std::string& dir, int& dim);
     };
 }
 

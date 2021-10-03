@@ -8,9 +8,9 @@ imgread::CTReader::CTReader(void) {}
 imgread::CTReader::~CTReader() {}
 
 // Reads a PGM stack into a dynamically allocated 3d array of Voxel objects and returns it
-unsigned char *** imgread::CTReader::readPGMStack(const std::string& dir, const int& dim) {
+unsigned char *** imgread::CTReader::readPGMStack(std::string& dir, int& dim) {
     
-    // declare a dynamic 3D array of Voxels
+    // declare a dynamic 3D array of unsigned char
     unsigned char *** imgArr3D = new unsigned char ** [dim];
     
     for(int i = 0; i < dim; ++i) {
@@ -35,12 +35,16 @@ unsigned char *** imgread::CTReader::readPGMStack(const std::string& dir, const 
 
         if (std::regex_search(filestr, std::regex("\\.(hdr)$"))!= 0) {
             has_header = true;
+            // trim the string to reflect a pgm filename
+            // start at the point in the path where the filename begins
             int pos1 = filestr.find(dir) + dir.length()+1;
+            // finish at the .hdr file extension
             int pos2 = filestr.find(".hdr");
             filename = filestr.substr(pos1, pos2-pos1);
             break;
         }
     }
+
     if (!has_header) {
         // return some error here <----------------------------------------------------------------------------------------------------------------------
     }
@@ -48,10 +52,8 @@ unsigned char *** imgread::CTReader::readPGMStack(const std::string& dir, const 
     // read the PGM files in
     // iterate through the files based on their index
     for(int depth = 0; depth < dim; ++depth) {
-        
-        //std::string filename =  + =std::to_string(depth) + ".pgm";
-        //read the PGM file in, the index is appended to the filename
-        std::ifstream in(path+filename+std::to_string(depth)+".pgm", std::ios::binary);
+        //read the PGM file in, the index and .pgm extension is appended to the filename
+        std::ifstream in(path+"/"+filename+std::to_string(depth)+".pgm", std::ios::binary);
         std::string line = "";
 
         //check if file is PGM from opening line
@@ -76,18 +78,11 @@ unsigned char *** imgread::CTReader::readPGMStack(const std::string& dir, const 
             in.read(buffer, dim);
             // Add buffer array values to the 3D arary of unsigned char
             imgArr3D[depth][rows] = (unsigned char*)buffer;
-            // delete the dynamically allocated buffer
-            delete[] buffer;
         }
         // close filestream
         in.close();
 
     }
-
     return imgArr3D;
 }
 
-int main(void) {
-    imgread::CTReader ctr;
-    ctr.readPGMStack("cross256_14_noise", 256);
-}

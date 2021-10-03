@@ -3,7 +3,6 @@
 // 02/10/21
 #ifndef FILTER_H
 #define FILTER_H
-#include "CTReader.h"
 #include "Voxel.h"
 #include "ImageProcessor.h"
 #include <vector>
@@ -25,6 +24,7 @@ namespace imgfltr {
             // convert a 3d array of faw pointer to a 3d array of Voxel class objects
             imgdata::Voxel *** toVoxel(T *** & source) {
                 // declare a dynamic 3D array of Voxel objects
+                
                 imgdata::Voxel *** v_arr = new imgdata::Voxel ** [size];
                 for (int i = 0; i < this->size; ++i) {
                     // initialize the 2D component size
@@ -75,7 +75,6 @@ namespace imgfltr {
                 std::vector<T> collectNeighbours(T *** & source, int n_size, int depth, int col, int row) {
                     int half_n = floor(n_size/2);
                     std::vector<T> neighbours;
-                    T neighbour;
                     for (int i = col - half_n; i < col + half_n + 1; ++i) {
                         for (int j = row - half_n; j < row + half_n + 1; ++j) {
                             if ((i < 0 || i >= this->size) || (j < 0 || j >= this-> size)) {
@@ -84,8 +83,9 @@ namespace imgfltr {
                                 neighbours.push_back(0);
                             }
                             else {
-                                neighbours.push_back(source[depth][col][row]);
+                                neighbours.push_back(source[depth][i][j]);
                             }
+                            
                         }
                     }
                     return neighbours;
@@ -93,7 +93,7 @@ namespace imgfltr {
 
                 // executes the filtering method on a source 3d array given the intended size of the neighbourhood
                 // accept input for n_size in the format: n_size = n_sizexn_size or (n_size^2)
-                T *** Filter<T>::execute(T *** & source, int n_size) {
+                T *** execute(T *** & source, int n_size) {
                     T *** src_cpy = source;
                     // outermost loop: z-axis
                     for(int i = 0; i < this->size; ++i) {
