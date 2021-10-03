@@ -9,11 +9,11 @@
 #include <chrono>
 #include <fstream>
 
-#include "Split.h"
-#include "Voxel.h"
-#include "ImageProcessor.h"
-#include "Fracture.h"
-#include "CTReader.h"
+#include "src/Split.h"
+#include "src/Voxel.h"
+#include "src/ImageProcessor.h"
+#include "src/Fracture.h"
+#include "src/CTReader.h"
 
 //find image dimension from folder name
 int findDim(std::string str)

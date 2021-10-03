@@ -4,11 +4,11 @@
 
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include "CTReader.h"
-#include "BackgroundData.h"
-#include "PartData.h"
-#include "Voxel.h"
-#include "Fracture.h"
+#include "src/CTReader.h"
+#include "src/BackgroundData.h"
+#include "src/PartData.h"
+#include "src/Voxel.h"
+#include "src/Fracture.h"
 
 TEST_CASE ("imgdata: Voxel class") {
     SECTION("Default Constructor") {
