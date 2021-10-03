@@ -5,9 +5,11 @@
 #define FILTER_H
 #include "CTReader.h"
 #include <vector>
+#include <cmath>
 #include <algorithm>
 
 namespace imgfltr {
+    template <typename T>
     class Filter {
         private:
             int size;
@@ -15,15 +17,16 @@ namespace imgfltr {
             Filter() : size (0) {}
             Filter(int size) : size(size) {}
             ~Filter() {}
-            virtual void *** execute(unsigned char *** & source);
+            virtual T *** execute(T *** & source);
     };
 
-    class MedianFilter : public Filter {
+    template <typename T>
+    class MedianFilter : public Filter<T> {
             public:
                 MedianFilter();
                 MedianFilter(int size);
-                void *** execute(unsigned char *** & source);
-                unsigned char findMedian(const std::vector<unsigned char> & neighbours);
+                T *** execute(T *** & source);
+                T findMedian(const std::vector<T> & neighbours);
     };
 }
 

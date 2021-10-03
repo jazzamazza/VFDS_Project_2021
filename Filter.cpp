@@ -4,13 +4,18 @@
 
 #include "Filter.h"
 
-imgfltr:: MedianFilter::MedianFilter() : Filter() {}
+// implementation of the MedianFilter class
+template <typename T>
+imgfltr:: MedianFilter<T>::MedianFilter() : Filter<T>() {}
 
-imgfltr:: MedianFilter::MedianFilter(int size) : Filter(size) {}
+template <typename T>
+imgfltr::MedianFilter<T>::MedianFilter(int size) : Filter<T>(size) {}
 
-unsigned char imgfltr::MedianFilter::findMedian(const std::vector<unsigned char> & neighbours) {
+// finds the median of a vector of the templated type
+template <typename T>
+T imgfltr::MedianFilter<T>::findMedian(const std::vector<T> & neighbours) {
     std::sort(neighbours.begin(), neighbours.end());
-    int middle = neighbours.size()/2;
+    int middle = floor(neighbours.size()/2);
 
     if (neighbours.size()%2 == 0) {
         return (neighbours[middle-1] + neighbours[middle]) / 2;
@@ -18,4 +23,9 @@ unsigned char imgfltr::MedianFilter::findMedian(const std::vector<unsigned char>
 
     else
         return neighbours[middle];
+}
+
+template <typename T>
+T *** imgfltr::MedianFilter::execute(T *** & source) {
+    
 }
