@@ -497,3 +497,12 @@ void func::writeCube(const std::string & outFileName, Voxel*** sourceCube, int d
 
 
 }
+
+void func::saveFracture(Fracture & fracture, std::string saveName)
+{
+	std::ofstream out(saveName);
+
+	out << fracture;
+
+	out.close();
+}
