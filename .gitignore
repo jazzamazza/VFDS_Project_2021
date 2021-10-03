@@ -5,3 +5,4 @@ moc*.h
 .DS_Store
 .qmake.stash
 .vscode/
+data/
