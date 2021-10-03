@@ -16,9 +16,7 @@ namespace imgread {
             CTReader(void);
             ~CTReader();
 
-            imgdata::Voxel*** readPGMStack(const std::string& header, const int& dim);
-            void deletePGMStack(imgdata::Voxel***& imgArr3D, int dim);
-
+            unsigned char *** readPGMStack(const std::string& header, const int& dim);
     };
 }
 
