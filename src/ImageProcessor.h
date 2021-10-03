@@ -36,7 +36,7 @@ namespace func
 	void saveFracture(imgdata::Fracture & fracture, std::string saveName);
 
 	//save group of fractures
-	void saveGroupFractures( std::vector<imgdata::Fracture> & fractures, std::string folderName);
+	void saveGroupFractures( std::vector<imgdata::Fracture> & fractures, char * folderName);
 	
 	//load fractures
 	std::vector<imgdata::Fracture> loadFractures(std::string folderName);

@@ -6,6 +6,11 @@
 #include "ImageProcessor.h"
 #include <string>
 #include <fstream>
+
+#include <bits/stdc++.h>
+#include <iostream>
+#include <sys/stat.h>
+#include <sys/types.h>
 using namespace imgdata;
 
 //global
@@ -506,3 +511,20 @@ void func::saveFracture(Fracture & fracture, std::string saveName)
 
 	out.close();
 }
+
+void func::saveGroupFractures(std::vector<Fracture> & fractures, char * folderName)
+{
+	int check = mkdir(folderName, 0777);
+	std::string fn(folderName);
+
+	for(std::vector<Fracture>::iterator i = fractures.begin(); i != fractures.end(); ++i)
+	{
+		std::string id = std::to_string(i->getID());
+		func::saveFracture(*i, fn+"/fracture"+id);
+	}
+}
+
+/*std::vector<Fractures> func::loadFractures(std::string folderName)
+{
+	
+}*/

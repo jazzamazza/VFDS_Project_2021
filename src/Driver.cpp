@@ -91,7 +91,7 @@ int main(int argc, char* argv[])
 	}
 
 	//testing save
-	func::saveFracture(frac[0], "test.txt");
+	func::saveGroupFractures(frac, "fractures");
 
 	func::writeToPGM("fracturesInWhite", frac, dim);
 
