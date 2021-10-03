@@ -8,6 +8,7 @@
 >
 >- qmake
 >- make
+>- qt
 
 Run cmd in terminal:
 	

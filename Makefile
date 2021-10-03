@@ -890,6 +890,10 @@ moc_mainwindow.cpp: src/mainwindow.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qlineedit.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QMessageBox \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qmessagebox.h \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QScrollArea \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qscrollarea.h \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QFileDialog \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qfiledialog.h \
 		moc_predefs.h \
 		/usr/local/Cellar/qt/6.1.3/share/qt/libexec/moc
 	/usr/local/Cellar/qt/6.1.3/share/qt/libexec/moc $(DEFINES) --include /Users/jaredmay/Capstone/vfds/moc_predefs.h -I/usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/macx-clang -I/Users/jaredmay/Capstone/vfds -I/Users/jaredmay/Capstone/vfds -I/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers -I/usr/local/Cellar/qt/6.1.3/lib/QtGui.framework/Headers -I/usr/local/Cellar/qt/6.1.3/lib/QtCore.framework/Headers -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1 -I/Library/Developer/CommandLineTools/usr/lib/clang/12.0.5/include -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -I/Library/Developer/CommandLineTools/usr/include -F/usr/local/Cellar/qt/6.1.3/lib src/mainwindow.h -o moc_mainwindow.cpp
@@ -1063,7 +1067,16 @@ main.o: src/main.cpp /usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QLineEdit \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qlineedit.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QMessageBox \
-		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qmessagebox.h
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qmessagebox.h \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QScrollArea \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qscrollarea.h \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QFileDialog \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qfiledialog.h \
+		src/Split.h \
+		src/Voxel.h \
+		src/ImageProcessor.h \
+		src/Fracture.h \
+		src/CTReader.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o src/main.cpp
 
 mainwindow.o: src/mainwindow.cpp src/mainwindow.h \
@@ -1195,7 +1208,11 @@ mainwindow.o: src/mainwindow.cpp src/mainwindow.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QLineEdit \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qlineedit.h \
 		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QMessageBox \
-		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qmessagebox.h
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qmessagebox.h \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QScrollArea \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qscrollarea.h \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/QFileDialog \
+		/usr/local/Cellar/qt/6.1.3/lib/QtWidgets.framework/Headers/qfiledialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o src/mainwindow.cpp
 
 PartData.o: src/PartData.cpp src/PartData.h \
