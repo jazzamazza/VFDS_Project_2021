@@ -3,10 +3,12 @@
 #ifndef CTREADER_H
 #define CTREADER_H
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <memory>
+#include <regex>
 
 namespace imgread {
     class CTReader {
@@ -15,7 +17,7 @@ namespace imgread {
             CTReader(void);
             ~CTReader();
 
-            unsigned char *** readPGMStack(const std::string& header, const int& dim, bool noise);
+            unsigned char *** readPGMStack(const std::string& dir, const int& dim);
     };
 }
 
