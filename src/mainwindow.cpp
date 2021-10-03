@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     setupCoreWidgets();
     createMenus();
 
-    centralWidgetLayout->addLayout(formLayout);
+    centralWidgetLayout->addLayout(gridLayout);
     //centralWidgetLayout->addWidget(mainWidget);
     centralWidgetLayout->addLayout(buttonsLayout);
     mainWidget->setLayout(centralWidgetLayout);
@@ -34,16 +34,17 @@ void MainWindow::setupCoreWidgets(){
     //Setup Widgets and Layout
     mainWidget = new QWidget();
     centralWidgetLayout = new QVBoxLayout();
-    formLayout = new QGridLayout();
+    gridLayout = new QGridLayout();
     buttonsLayout = new QHBoxLayout();
+    sidePanelLayout = new QVBoxLayout();
 
     //Setup labels
     fileLabel = new QLabel("File:");
-    partDisplayLabel = new QLabel("PART DISPLAYED HERE");
-    imageLabel = new QLabel("PART");
+    //partDisplayLabel = new QLabel("PART DISPLAYED HERE");
+    imageLabel = new QLabel("PART DISPLAYED HERE");
 
     //Setup buttons
-    loadPushButton = new QPushButton("Load");
+    //loadPushButton = new QPushButton("Load");
     nextPushButton = new QPushButton("Next");
     backPushButton = new QPushButton("Back");
 
@@ -51,12 +52,12 @@ void MainWindow::setupCoreWidgets(){
     fileLineEdit = new QLineEdit();
 
     //Layout
-    formLayout->addWidget(fileLabel, 0, 0);
-    formLayout->addWidget(fileLineEdit,0,1);
-    formLayout->addWidget(imageLabel,1,0);
+    gridLayout->addWidget(fileLabel, 0, 0);
+    //formLayout->addWidget(fileLineEdit,0,1);
+    gridLayout->addWidget(imageLabel,1,0);
 
     buttonsLayout->addStretch();
-    buttonsLayout->addWidget(loadPushButton);
+    //buttonsLayout->addWidget(loadPushButton);
     buttonsLayout->addWidget(nextPushButton);
     buttonsLayout->addWidget(backPushButton);
     
@@ -87,14 +88,12 @@ void MainWindow::setupSignalsAndSlots() {
     // Setup Signals and Slots
     connect(quitAction, &QAction::triggered, this, &QApplication::quit);
     connect(aboutAction, &QAction::triggered, this, &MainWindow::aboutDialog);
-    connect(loadPushButton, SIGNAL(clicked()), this, SLOT(loadButtonClicked()));
+    //connect(loadPushButton, SIGNAL(clicked()), this, SLOT(loadButtonClicked()));
+    connect(openAction, &QAction::triggered, this, &MainWindow::open);
     //connect(clearPushButton, SIGNAL(clicked()), this, SLOT(clearAllRecords()));
     //connect(loadPushButton, &QAction::triggered, this, &MainWindow::loadButtonClicked);
 }
-
-void MainWindow::loadButtonClicked()
-{
-
+void MainWindow::open(){
     //QMessageBox::information(this, "VFDS System", "VFDS INFORMATION", QMessageBox::Ok|QMessageBox::Default, QMessageBox::NoButton, QMessageBox::NoButton);
     QString filename = QFileDialog::getOpenFileName(this,tr("Choose"),"", tr("Images (*.pgm *.png)"));
 
@@ -106,12 +105,17 @@ void MainWindow::loadButtonClicked()
         if(valid)
         {
            imageLabel->setPixmap(QPixmap::fromImage(image));
-           QMessageBox::information(this,"File Name", filename,QMessageBox::Ok,QMessageBox::Default);
+           fileLabel->setText(filename);
+           //QMessageBox::information(this,"File Name", filename,QMessageBox::Ok,QMessageBox::Default);
         }
         else
         {
-            //something
+            QMessageBox::warning(this,"Invalid file selected","Please select a PGM file",QMessageBox::Ok,QMessageBox::Default);
         }
+    }
+    else
+    {
+        QMessageBox::warning(this,"No file selected","Please select a PGM file",QMessageBox::Ok,QMessageBox::Default);
     }
 }
 
@@ -119,10 +123,9 @@ void MainWindow::aboutDialog()
 {
 
     QMessageBox::about(this, "About VFDS System",
-                        "RMS System 2.0"
-                        "<p>Copyright &copy; 2005 Inc."
-                        "This is a simple application to demonstrate the use of windows,"
-                        "tool bars, menus and dialog boxes");
+                        "Volumetric Fracture Detection System"
+                        "<p>"
+                        "This is a simple application to display PGM files");
 }
 
 //find image dimension from folder name

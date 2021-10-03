@@ -39,7 +39,7 @@ class MainWindow : public QMainWindow
         bool loadFile(const QString &);
 
     private slots:
-        //void open();
+        void open();
         //void saveAs();
         /*void print();
         void copy();
@@ -50,7 +50,7 @@ class MainWindow : public QMainWindow
         void fitToWindow();*/
         //void about();
         void aboutDialog();
-        void loadButtonClicked();
+        //void loadButtonClicked();
 
     private:
     
@@ -89,7 +89,8 @@ class MainWindow : public QMainWindow
         // Layout and Widgets
         QWidget *mainWidget;
         QVBoxLayout *centralWidgetLayout;
-        QGridLayout *formLayout;
+        QVBoxLayout *sidePanelLayout;
+        QGridLayout *gridLayout;
         QHBoxLayout *buttonsLayout;
 
         // Menus
