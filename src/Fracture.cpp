@@ -80,7 +80,7 @@ namespace imgdata {
         	out << "Fracture ID: " << rhs.getID() << ", Number of voxels: " << rhs.getVoxels() << std::endl;
 		for(std::vector<Voxel>::iterator i = rhs.coords.begin(); i != rhs.coords.end(); ++i)
 		{
-			std::cout << "("  << i->getX() << "," << i->getY() << "," << i->getZ() << ")" << std::endl;
+			out << "("  << i->getX() << "," << i->getY() << "," << i->getZ() << ")" << std::endl;
 		}
 		//int s = rhs.coords.size()-1;
 		//std::cout << "First ("  << rhs.coords[0].getX() << "," << rhs.coords[0].getY() << "," << rhs.coords[0].getZ() << ")" << std::endl;
@@ -90,6 +90,7 @@ namespace imgdata {
 		
         
         return out;
+    
     }
 }
 
