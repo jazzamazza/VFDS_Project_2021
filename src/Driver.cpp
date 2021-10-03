@@ -90,6 +90,9 @@ int main(int argc, char* argv[])
 		std::cout << *i << std::endl;
 	}
 
+	//testing save
+	func::saveGroupFractures(frac, "fractures");
+
 	func::writeToPGM("fracturesInWhite", frac, dim);
 
         //std::cout << "delete pgm stack" << std::endl;

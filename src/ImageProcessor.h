@@ -29,8 +29,17 @@ namespace func
 	//writes fractures to pgms
 	void writeToPGM(const std::string & outFileName, std::vector<imgdata::Fracture> collection, int dim);
 
-	//writes whole cube to pgms
+	//writes whole cube(CT scan space) to pgms
 	void writeCube(const std::string & outFileName, imgdata::Voxel *** sourceCube, int dim);
+
+	//save fracture
+	void saveFracture(imgdata::Fracture & fracture, std::string saveName);
+
+	//save group of fractures
+	void saveGroupFractures( std::vector<imgdata::Fracture> & fractures, char * folderName);
+	
+	//load fractures
+	std::vector<imgdata::Fracture> loadFractures(std::string folderName);
 }
 
 
