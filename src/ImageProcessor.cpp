@@ -516,15 +516,21 @@ void func::saveGroupFractures(std::vector<Fracture> & fractures, char * folderNa
 {
 	int check = mkdir(folderName, 0777);
 	std::string fn(folderName);
+	
+	std::ofstream out(fn+"/info.txt");
+	out << fractures.size();
+	out.close();
 
 	for(std::vector<Fracture>::iterator i = fractures.begin(); i != fractures.end(); ++i)
 	{
 		std::string id = std::to_string(i->getID());
-		func::saveFracture(*i, fn+"/fracture"+id);
+		func::saveFracture(*i, fn+"/fracture"+id+".txt");
 	}
 }
 
-/*std::vector<Fractures> func::loadFractures(std::string folderName)
+std::vector<Fractures> func::loadFractures(std::string folderName)
 {
+	std::ifstream in(foldername+"/info.txt");
+	int numFractures << in;
 	
-}*/
+}
