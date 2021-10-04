@@ -92,6 +92,7 @@ int main(int argc, char* argv[])
 
 	//testing save
 	func::saveGroupFractures(frac, "fractures");
+	func::loadGroupFractures("fractures");
 
 	func::writeToPGM("fracturesInWhite", frac, dim);
 
