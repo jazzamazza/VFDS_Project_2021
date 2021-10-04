@@ -38,8 +38,11 @@ namespace func
 	//save group of fractures
 	void saveGroupFractures( std::vector<imgdata::Fracture> & fractures, char * folderName);
 	
-	//load fractures
-	std::vector<imgdata::Fracture> loadFractures(std::string folderName);
+	//load fracture
+	imgdata::Fracture loadFracture(std::string fileName);
+
+	//load group of fractures
+	std::vector<imgdata::Fracture> loadGroupFractures(std::string folderName);
 }
 
 

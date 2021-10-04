@@ -518,19 +518,57 @@ void func::saveGroupFractures(std::vector<Fracture> & fractures, char * folderNa
 	std::string fn(folderName);
 	
 	std::ofstream out(fn+"/info.txt");
-	out << fractures.size();
-	out.close();
 
 	for(std::vector<Fracture>::iterator i = fractures.begin(); i != fractures.end(); ++i)
 	{
 		std::string id = std::to_string(i->getID());
+		out << id << std::endl;
 		func::saveFracture(*i, fn+"/fracture"+id+".txt");
 	}
+	out.close();
 }
 
-std::vector<Fractures> func::loadFractures(std::string folderName)
+Fracture func::loadFracture(std::string fileName)
 {
-	std::ifstream in(foldername+"/info.txt");
-	int numFractures << in;
+	std::ifstream in(fileName);
+
+	std::string line;
+
+	std::getline(in,line);
+	std::cout << line << std::endl;
+	int colon = line.find(":");
+	int comma = line.find(",");
+	std::string stringID = line.substr(colon+2,comma-colon-2);
+	std::cout << stringID << std::endl;
+
+	int id = std::stoi(stringID);
+
+	Fracture f(id,"black");
+
+	while(std::getline(in, line))
+	{
+	}
+	in.close();
+
+	return f;
+
+}
+
+std::vector<Fracture> func::loadGroupFractures(std::string folderName)
+{
+	std::ifstream in(folderName+"/info.txt");
+
+	while(!in.eof())
+	{
+		int id;
+
+		in >> id >> std::ws;
+		Fracture f = func::loadFracture(folderName+"/fracture"+std::to_string(id)+".txt");
+	}
+	in.close();
+
+	
+	std::vector<Fracture> x;
+	return x;
 	
 }
