@@ -3,11 +3,12 @@
 #ifndef CTREADER_H
 #define CTREADER_H
 
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <string>
 #include <memory>
-#include "Voxel.h"
+#include <regex>
 
 namespace imgread {
     class CTReader {
@@ -16,9 +17,7 @@ namespace imgread {
             CTReader(void);
             ~CTReader();
 
-            imgdata::Voxel*** readPGMStack(const std::string& header, const int& dim);
-            void deletePGMStack(imgdata::Voxel***& imgArr3D, int dim);
-
+            unsigned char *** readPGMStack(std::string& dir, int& dim);
     };
 }
 
