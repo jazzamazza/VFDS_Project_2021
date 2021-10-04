@@ -20,7 +20,7 @@ CONFIG += c++17
 # Input
 HEADERS += src/BackgroundData.h \
            src/CTReader.h \
-#           src/Filter.h \
+           src/Filter.h \
            src/Fracture.h \
            src/ImageDataClass.h \
            src/ImageProcessor.h \
@@ -45,4 +45,3 @@ SOURCES += src/BackgroundData.cpp \
 #           test/speedTestDriver.cpp \
 #           test/SplitMergeTesting.cpp \
 #           test/unit_test.cpp
-            src/Filter.cpp

@@ -57,8 +57,6 @@ unsigned char *** imgread::CTReader::readPGMStack(std::string& hdrPath)
     std::size_t fileNameLen = hdrPath.rfind('.');
     if (fileNameLen!=std::string::npos)
         filename = hdrPath.substr(pathLen,fileNameLen-pathLen);
-    else
-        //some error
 
     // read the PGM files in
     // iterate through the files based on their index

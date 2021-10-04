@@ -25,7 +25,6 @@ int main(int argc, char* argv[])
     imgread::CTReader ctr;
     std::string files = "";
     std::string shape = "";
-    int dim = 0;
     
     //get image folder name as argument
     if (argc==1)
@@ -38,16 +37,16 @@ int main(int argc, char* argv[])
         files = argv[1];
         std::cout<<files<<"\n";
         //shape = findShape(files);
-        //dim = findDim(files);
 
         std::cout << "CTReader start" << std::endl;
-        //imgdata::Voxel*** vox = ctr.imgread::CTReader::readPGMStack(files);
         unsigned char*** pgms = ctr.imgread::CTReader::readPGMStack(files);
-        //std::cout << "first voxel" << pgms[0];
         std::cout << "CTReader end" << std::endl;
+    
+    	int dim = ctr.getDim(files);
+
+	func::writeRawCube("originalCube", pgms, dim); 
     }
 /*
-	func::writeCube("originalCube", vox, dim); 
 
 	std::cout << "Paint Background start" << std::endl;
 	func::paintBackground(vox, dim, dim, dim, 150);
