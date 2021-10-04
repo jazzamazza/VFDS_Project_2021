@@ -17,36 +17,6 @@ VFDS DRIVER CLASS
 #include "CTReader.h"
 #include "Filter.h"
 
-//find image dimension from folder name
-int findDim(std::string str)
-{
-    int dim = 0;
-    std::string tmp = "";
-    //for (int i = str.length()-3; i < str.length(); i++)
-    for (int i = 0; i < str.length(); i++)
-    {
-        if (std::isdigit(str[i]))
-        {
-            tmp.push_back(str[i]);
-        }
-    }
-    dim = std::stoi(tmp);
-    return(dim);
-}
-
-//find shape name from folder name
-std::string findShape(std::string str)
-{
-    std::string tmp = "";
-    for (int i = 0; i < str.length(); i++)
-    {
-        if (!std::isdigit(str[i]))
-        {
-            tmp.push_back(str[i]);
-        }   
-    }
-    return(tmp);
-}
 
 int main(int argc, char* argv[])
 {
@@ -60,34 +30,24 @@ int main(int argc, char* argv[])
     //get image folder name as argument
     if (argc==1)
     {
-        std::cout << "Please provide a folder name as an argument" << std::endl;
+        std::cout << "Please provide path to header as an argument" << std::endl;
         return 1;
     }
     else
     {
-        /*files = argv[1];
-        shape = findShape(files);
-        dim = findDim(files);*/
-	std::string name = argv[1];
-	int loc_ = name.find("_");
-	std::string stringdim = name.substr(loc_-3, 3);
-	dim = std::stoi(stringdim);
-
-	std::cout << dim << std::endl;
-
-	imgfltr::BilateralFilter<unsigned char> bf(256, 4, 0.05);
+        files = argv[1];
+        std::cout<<files<<"\n";
+        //shape = findShape(files);
+        //dim = findDim(files);
 
         std::cout << "CTReader start" << std::endl;
-	unsigned char *** rawCube = ctr.imgread::CTReader::readPGMStack(name, dim);
+        //imgdata::Voxel*** vox = ctr.imgread::CTReader::readPGMStack(files);
+        unsigned char*** pgms = ctr.imgread::CTReader::readPGMStack(files);
+        //std::cout << "first voxel" << pgms[0];
         std::cout << "CTReader end" << std::endl;
-
-
-        std::cout << "Filter Conver start" << std::endl;
-        imgdata::Voxel*** vox = bf.toVoxel(rawCube);
-        std::cout << "Filter Conver end" << std::endl;
-
-	//func::writeRawCube("rawCube", rawCube, dim);
-	//func::writeCube("originalCube", vox, dim); 
+    }
+/*
+	func::writeCube("originalCube", vox, dim); 
 
 	std::cout << "Paint Background start" << std::endl;
 	func::paintBackground(vox, dim, dim, dim, 150);
@@ -123,6 +83,6 @@ int main(int argc, char* argv[])
         //std::cout << "delete pgm stack" << std::endl;
         //ctr.imgread::CTReader::deletePGMStack(vox, 128); 
     }
-    
+    */
     return 0;
 }
