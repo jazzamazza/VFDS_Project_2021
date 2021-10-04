@@ -504,6 +504,28 @@ void func::writeCube(const std::string & outFileName, Voxel*** sourceCube, int d
 
 }
 
+void func::writeCubeColour(std::string name, unsigned char *** RBGformat, int dim)
+{
+
+	for(int z = 0; z < dim; z++)
+	{
+		std::ofstream out("out/"+name+std::to_string(z)+".ppm", std::ofstream::binary);
+		out << "P6" << "\n";
+		out << dim << " ";
+		out << dim << "\n";
+		out << "255" << "\n";
+
+	        char* wbuf = new char[3];
+		for(int x = 0; x < dim*dim; x++)
+		{
+	                wbuf = reinterpret_cast<char *>(RBGformat[z][x]);
+	                out.write(wbuf, 3);
+		}
+		out.close();
+	}	
+
+}
+
 void func::writeRawCube(const std::string & outFileName, unsigned char*** cube, int dim)
 {
 	for(int z = 0; z < dim; z++)
@@ -620,3 +642,5 @@ std::vector<Fracture> func::loadGroupFractures(std::string folderName)
 	return ret;
 	
 }
+
+

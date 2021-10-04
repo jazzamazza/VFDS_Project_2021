@@ -63,7 +63,6 @@ unsigned char *** imgread::CTReader::readPGMStack(std::string& hdrPath)
     for(int depth = 0; depth < imgDim; ++depth) {
         //read the PGM file in, the index and .pgm extension is appended to the filename
         std::string pgmFile = folderDir+"/"+filename+std::to_string(depth)+".pgm";
-        std::cout<<pgmFile<<std::endl;
         std::ifstream in(pgmFile, std::ios::binary);
         std::string line = "";
 

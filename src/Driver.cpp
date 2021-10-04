@@ -35,25 +35,58 @@ int main(int argc, char* argv[])
     else
     {
         files = argv[1];
-        std::cout<<files<<"\n";
-        //shape = findShape(files);
+	int dim = 100;
+	unsigned char *** cube = new unsigned char ** [dim];
+        for(int z = 0; z < dim; z++)
+        {
+                //prepare output
+                unsigned char ** layer = new unsigned char * [dim*dim];
+                for(int x = 0; x < dim*dim; x++)
+                {
+                        unsigned char * row = new unsigned char[3];
+			if(x%dim > 66)
+			{
+				row[0] = 0;
+				row[1] = 255;
+				row[2] = 0;
+				layer[x] = row;
+			}
+			else if(x&dim > 33)
+			{
+				row[0] = 255;
+				row[1] = 0;
+				row[2] = 0;
+				layer[x] = row;
+			}
+			else
+			{
+                        	row[0] = 0;
+				row[1] = 0;
+				row[2] = 255;
+				layer[x] = row;
+			}
+                }
+                cube[z] = layer;
+        }
 
+	func::writeCubeColour("noah", cube, dim);
+
+/*
         std::cout << "CTReader start" << std::endl;
         unsigned char*** pgms = ctr.imgread::CTReader::readPGMStack(files);
         std::cout << "CTReader end" << std::endl;
     
     	int dim = ctr.getDim(files);
+	imgfltr::BilateralFilter<unsigned char> bf(dim, 4, 0.005);
+	std::cout << "Filter Conversion start" << std::endl;
+	Voxel *** vox = bf.toVoxel(pgms);
+	std::cout << "Filter Conversion end" << std::endl;
+	
 
-	func::writeRawCube("originalCube", pgms, dim); 
-    }
-/*
 
 	std::cout << "Paint Background start" << std::endl;
 	func::paintBackground(vox, dim, dim, dim, 150);
 	std::cout << "Paint Background end" << std::endl;
-
-//	func::writeCube("paintedCube", vox, dim);
-
 
         std::cout << "Split/Merge start" << std::endl;
         std::vector<imgdata::Fracture> frac = func::splitMerge(vox, dim, dim, dim);
@@ -69,19 +102,17 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	std::cout << toPrint.size() << std::endl;
+	std::cout << toPrint.size() << " fractures found"<< std::endl;
 
 	//testing save
 	func::saveGroupFractures(toPrint, "fractures");
-	std::vector<Fracture> loaded = func::loadGroupFractures("fractures");
+	//std::vector<Fracture> loaded = func::loadGroupFractures("fractures");
 
-	func::writeToPGM("og", toPrint, dim);
-	func::writeToPGM("savedANDloaded", loaded, dim);
+	func::writeToPGM("fracturesInWhite", toPrint, dim);
+	//func::writeToPGM("savedANDloaded", loaded, dim);
+*/
 
 
-        //std::cout << "delete pgm stack" << std::endl;
-        //ctr.imgread::CTReader::deletePGMStack(vox, 128); 
     }
-    */
     return 0;
 }

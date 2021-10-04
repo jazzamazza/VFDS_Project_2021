@@ -31,7 +31,10 @@ namespace func
 
 	//writes whole cube(CT scan space) to pgms
 	void writeCube(const std::string & outFileName, imgdata::Voxel *** sourceCube, int dim);
-	
+
+	//writes colour  cube
+	void writeCubeColour(std::string name, unsigned char *** RBGformat, int dim);	
+
 	//Write raw unsigned chars
 	void writeRawCube(const std::string & outFileName, unsigned char *** sourceCube, int dim);
 
