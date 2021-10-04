@@ -34,16 +34,19 @@ namespace imgfltr {
                         v_arr[i][j] = new imgdata::Voxel[size];
                     }
                 }
+		
+		std::cout << "here" << std::endl;
 
                 // Insert a Voxel item into the 3D array containing each coordinate point and the intensity at that point of the PGM image
                 // Necessary for split and merge algorithm
                 for (int depth = 0; depth < this->size; ++depth) {
                     for (int col = 0; col < this->size; ++col) {
-                        for (int row = 0; row < this->size; ++row)
-                            v_arr[depth][col][row] = imgdata::Voxel(row, col, depth, source[depth][col][row]);
+                        for (int row = 0; row < this->size; ++row){
+                            v_arr[depth][col][row] = imgdata::Voxel(col, row, depth, std::move(source[depth][col][row]));
+			}
                     }
                 }
-
+		std::cout << "done" << std::endl;
                 return v_arr;
             }
 
