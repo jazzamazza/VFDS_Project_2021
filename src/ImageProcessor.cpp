@@ -5,12 +5,14 @@
 
 #include "ImageProcessor.h"
 #include <string>
+#include <sstream>
 #include <fstream>
 
 #include <bits/stdc++.h>
-#include <iostream>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#include <iostream>
 using namespace imgdata;
 
 //global
@@ -60,7 +62,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
         //initiate collection
         std::vector<Fracture> collection;
 
-	int threshold = 128;
+	int threshold = 50;
         //test before collect
         MotherSplit.test(threshold);
 
@@ -169,7 +171,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 {
 	for(int z = 0; z < depth; z++)
 	{
-		Voxel ** layer = cube[z];	
+		Voxel ** layer = cube[z];
 
 		//left side (left to right)
 		int r(0);
@@ -420,7 +422,7 @@ void func::writeToPGM(const std::string & outFileName, std::vector<Fracture> col
 	{
         	//write out
 		std::string sz = std::to_string(z);
-        	std::ofstream out("../out/"+outFileName+sz+".pgm", std::ofstream::binary);
+        	std::ofstream out("out/"+outFileName+sz+".pgm", std::ofstream::binary);
         	out << "P5" <<"\n";
         	out << dim << " ";
         	out << dim << "\n";
@@ -450,7 +452,6 @@ void func::writeToPGM(const std::string & outFileName, std::vector<Fracture> col
 
 
 }
-
 void func::writeCube(const std::string & outFileName, Voxel*** sourceCube, int dim)
 {
 	unsigned char *** cube = new unsigned char ** [dim];
@@ -474,7 +475,7 @@ void func::writeCube(const std::string & outFileName, Voxel*** sourceCube, int d
 	{
         	//write out
 		std::string sz = std::to_string(z);
-        	std::ofstream out("../out/"+outFileName+sz+".pgm", std::ofstream::binary);
+        	std::ofstream out("out/"+outFileName+sz+".pgm", std::ofstream::binary);
         	out << "P5" <<"\n";
         	out << dim << " ";
         	out << dim << "\n";
@@ -503,6 +504,31 @@ void func::writeCube(const std::string & outFileName, Voxel*** sourceCube, int d
 
 }
 
+void func::writeRawCube(const std::string & outFileName, unsigned char*** cube, int dim)
+{
+	for(int z = 0; z < dim; z++)
+	{
+        	//write out
+		std::string sz = std::to_string(z);
+        	std::ofstream out("out/"+outFileName+sz+".pgm", std::ofstream::binary);
+        	out << "P5" <<"\n";
+        	out << dim << " ";
+        	out << dim << "\n";
+        	out << "255" << "\n";
+		
+	        char* wbuf = new char[dim];
+	        for(int x=0; x<dim; x++)
+	        {
+	                wbuf = reinterpret_cast<char *>(cube[z][x]);
+	                out.write(wbuf, dim);
+	        }
+		out.close();
+	}
+
+
+}
+
+
 void func::saveFracture(Fracture & fracture, std::string saveName)
 {
 	std::ofstream out(saveName);
@@ -516,15 +542,81 @@ void func::saveGroupFractures(std::vector<Fracture> & fractures, char * folderNa
 {
 	int check = mkdir(folderName, 0777);
 	std::string fn(folderName);
+	
+	std::ofstream out(fn+"/info.txt");
 
 	for(std::vector<Fracture>::iterator i = fractures.begin(); i != fractures.end(); ++i)
 	{
 		std::string id = std::to_string(i->getID());
-		func::saveFracture(*i, fn+"/fracture"+id);
+		out << id << std::endl;
+		func::saveFracture(*i, fn+"/fracture"+id+".txt");
 	}
+	out.close();
 }
 
-/*std::vector<Fractures> func::loadFractures(std::string folderName)
+Fracture func::loadFracture(std::string fileName)
 {
+	std::ifstream in(fileName);
+
+	std::string line;
+
+	std::getline(in,line);
+	int colon = line.find(":");
+	int comma = line.find(",");
+	std::string stringID = line.substr(colon+2,comma-colon-2);
+
+	int id = std::stoi(stringID);
+
+	Fracture f(id,"black");
+
+	while(std::getline(in, line))
+	{
+		int x,y,z;
+		std::string og = line;
+		//x
+		int fc = line.find(",");
+		std::string s = line.substr(1,fc-1);
+		x = std::stoi(s);
+		line = line.substr(fc+1);
+
+		//y
+		fc = line.find(",");
+		s = line.substr(0,fc);
+		y = std::stoi(s);
+		line = line.substr(fc+1);
 	
-}*/
+		
+		//z
+		fc = line.find(",");
+		s = line.substr(0,fc);
+		z = std::stoi(s);
+
+		Voxel v(x,y,z,0);
+		f.insertVoxel(v);
+	}
+	in.close();
+
+	return f;
+
+}
+
+std::vector<Fracture> func::loadGroupFractures(std::string folderName)
+{
+	std::ifstream in(folderName+"/info.txt");
+	
+	std::vector<Fracture> ret;
+
+	while(!in.eof())
+	{
+		int id;
+
+		in >> id >> std::ws;
+		Fracture f = func::loadFracture(folderName+"/fracture"+std::to_string(id)+".txt");
+		ret.push_back(f);
+	}
+	in.close();
+
+	
+	return ret;
+	
+}

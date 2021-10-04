@@ -45,3 +45,4 @@ SOURCES += src/BackgroundData.cpp \
 #           test/speedTestDriver.cpp \
 #           test/SplitMergeTesting.cpp \
 #           test/unit_test.cpp
+            src/Filter.cpp

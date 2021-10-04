@@ -15,6 +15,7 @@ VFDS DRIVER CLASS
 #include "ImageProcessor.h"
 #include "Fracture.h"
 #include "CTReader.h"
+#include "Filter.h"
 
 
 int main(int argc, char* argv[])
@@ -49,28 +50,38 @@ int main(int argc, char* argv[])
 	func::writeCube("originalCube", vox, dim); 
 
 	std::cout << "Paint Background start" << std::endl;
-	func::paintBackground(vox, dim, dim, dim, 200);
+	func::paintBackground(vox, dim, dim, dim, 150);
 	std::cout << "Paint Background end" << std::endl;
 
-	func::writeCube("paintedCube", vox, dim);
+//	func::writeCube("paintedCube", vox, dim);
 
 
         std::cout << "Split/Merge start" << std::endl;
         std::vector<imgdata::Fracture> frac = func::splitMerge(vox, dim, dim, dim);
         std::cout << "Split/Merge end" << std::endl;
 
+	std::vector<imgdata::Fracture> toPrint;
 	for(std::vector<imgdata::Fracture>::iterator i = frac.begin(); i != frac.end(); ++i)
 	{
-		std::cout << *i << std::endl;
+		if(i->getVoxels() > 50)
+		{
+			//std::cout << *i << std::endl;
+			toPrint.push_back(*i);
+		}
 	}
 
-	//testing save
-	func::saveGroupFractures(frac, "fractures");
+	std::cout << toPrint.size() << std::endl;
 
-	func::writeToPGM("fracturesInWhite", frac, dim);
+	//testing save
+	func::saveGroupFractures(toPrint, "fractures");
+	std::vector<Fracture> loaded = func::loadGroupFractures("fractures");
+
+	func::writeToPGM("og", toPrint, dim);
+	func::writeToPGM("savedANDloaded", loaded, dim);
+
 
         //std::cout << "delete pgm stack" << std::endl;
-        //ctr.imgread::CTReader::deletePGMStack(vox, 128);   
+        //ctr.imgread::CTReader::deletePGMStack(vox, 128); 
     }
     */
     return 0;
