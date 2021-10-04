@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
     else
     {
         files = argv[1];
-	int dim = 100;
+	int dim = 256;
 	unsigned char *** cube = new unsigned char ** [dim];
         for(int z = 0; z < dim; z++)
         {
@@ -44,14 +44,14 @@ int main(int argc, char* argv[])
                 for(int x = 0; x < dim*dim; x++)
                 {
                         unsigned char * row = new unsigned char[3];
-			if(x%dim > 66)
+			if(false)//x%dim > 66*(z))
 			{
 				row[0] = 0;
 				row[1] = 255;
 				row[2] = 0;
 				layer[x] = row;
 			}
-			else if(x&dim > 33)
+			else if(false)//x&dim > 33*(z))
 			{
 				row[0] = 255;
 				row[1] = 0;
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 			{
                         	row[0] = 0;
 				row[1] = 0;
-				row[2] = 255;
+				row[2] = int(255*float(z)/float(dim));
 				layer[x] = row;
 			}
                 }
