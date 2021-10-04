@@ -113,10 +113,12 @@ int main(int argc, char* argv[])
 	std::cout << toPrint.size() << std::endl;
 
 	//testing save
-	//func::saveGroupFractures(frac, "fractures");
-	//func::loadGroupFractures("fractures");
+	func::saveGroupFractures(toPrint, "fractures");
+	std::vector<Fracture> loaded = func::loadGroupFractures("fractures");
 
-	func::writeToPGM("fracturesInWhite", toPrint, dim);
+	func::writeToPGM("og", toPrint, dim);
+	func::writeToPGM("savedANDloaded", loaded, dim);
+
 
         //std::cout << "delete pgm stack" << std::endl;
         //ctr.imgread::CTReader::deletePGMStack(vox, 128); 
