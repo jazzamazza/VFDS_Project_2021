@@ -13,11 +13,14 @@
 namespace imgread {
     class CTReader {
         private:
+
         public:
             CTReader(void);
             ~CTReader();
-
+            int getDim(std::string& hdrPath);
+            std::string getDir(std::string& hdrPath);
             unsigned char *** readPGMStack(std::string& dir, int& dim);
+            unsigned char *** readPGMStack(std::string& hdrPath);
     };
 }
 

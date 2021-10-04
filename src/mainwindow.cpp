@@ -4,7 +4,6 @@ Jared May
 VFDS Main Window
 */
 #include "mainwindow.h"
-//#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -25,8 +24,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     setupSignalsAndSlots();
     //std::cout << "width: " << imageLabel->size().width() << " height: "<< imageLabel->size().height();
-    
-
 }
 
 MainWindow::~MainWindow()
@@ -115,16 +112,26 @@ void MainWindow::setupSignalsAndSlots() {
     connect(nextPushButton,SIGNAL(clicked()),this,SLOT(about()));
 }
 void MainWindow::open(){
-    QString filename = QFileDialog::getOpenFileName(this,tr("Choose"),"", tr("Images (*.pgm *.png)"));
+    fileDialog = new QFileDialog(this,tr("Choose"),"", tr("Header File (*.hdr)"));
+
+    //fileDialog -> setFileMode(QFileDialog::Directory);
+    //fileDialog -> setOption(QFileDialog::ShowDirsOnly, true);
+
+    //QString directory = fileDialog->getExistingDirectory(this,"choose","",QFileDialog::ShowDirsOnly);
+    QString filename = fileDialog->getOpenFileName();
+    std::string filePath = filename.toStdString();
+    QMessageBox::information(this,filename,filename+"ctrreader start",QMessageBox::Ok,QMessageBox::NoButton);
+    unsigned char *** voxArr = ctReader->readPGMStack(filePath);
+    QMessageBox::information(this,filename,"ctrreader end",QMessageBox::Ok,QMessageBox::NoButton);
 
     if (QString::compare(filename, QString()) != 0)
     {
         //QImage image;
-        bool valid = image.load(filename);
-
+        //bool valid = image.load(filename);
+        bool valid = true;
         if(valid)
         {
-           imageLabel->setPixmap(QPixmap::fromImage(image));
+           imageLabel->setPixmap(QPixmap(voxArr[0]));
            statusBar()->showMessage(filename);
         }
         else

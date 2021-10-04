@@ -6,3 +6,4 @@ moc*.h
 .qmake.stash
 .vscode/
 data/
+Makefile

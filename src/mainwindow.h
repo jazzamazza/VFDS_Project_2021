@@ -21,7 +21,7 @@ VFDS Main Window
 #include <QVBoxLayout>
 
 #include <QtGui>
-#include <Qt>
+//#include <Qt>
 
 #include <QLineEdit>
 #include <QMessageBox>
@@ -29,6 +29,14 @@ VFDS Main Window
 #include <QScrollArea>
 #include <QFileDialog>
 #include <QStatusBar>
+
+#include "Split.h"
+#include "Voxel.h"
+#include "ImageProcessor.h"
+#include "Fracture.h"
+#include "CTReader.h"
+
+using namespace imgdata;
 
 class MainWindow : public QMainWindow
 {
@@ -38,6 +46,12 @@ class MainWindow : public QMainWindow
         MainWindow(QWidget *parent = nullptr);
         ~MainWindow();
         bool loadFile(const QString &);
+
+
+        imgread::CTReader *ctReader;
+        std::string files = "";
+        std::string shape = "";
+        int dim = 0;
 
     private slots:
         void open();
@@ -119,5 +133,6 @@ class MainWindow : public QMainWindow
 
         //Input
         QLineEdit *fileLineEdit;
+        QFileDialog *fileDialog;
 };
 #endif // MAINWINDOW_H
