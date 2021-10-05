@@ -14,12 +14,15 @@
 namespace func
 {
 	//collects all fractured voxels
-	void collect(imgpro::Split & parent, std::vector<imgdata::Fracture> & collector, int threshold);
+	void split(imgpro::Split & parent, std::vector<imgdata::Fracture> & collector, int threshold);
 	//tracing method
 	void printCollection(std::vector<imgdata::Fracture> & coll);
 
 	//convert unsigned chars to voxels
 	imgdata::Voxel*** toVoxels(unsigned char *** & cube, int dim);
+
+	//merge
+	std::vector<imgdata::Fracture> merge(std::vector<imgdata::Fracture> & collection);
 
 	//Split & Merge
 	std::vector<imgdata::Fracture> splitMerge(imgdata::Voxel *** & imgArr3D, int rows, int cols, int depth);
