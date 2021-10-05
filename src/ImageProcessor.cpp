@@ -216,6 +216,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 
 			while( (!hit) && (c < cols) )
 			{
+				int secondChance(2);
 				std::vector<Voxel> block;
 				int colSize;
 				if(c+3 < cols)
@@ -237,7 +238,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 					}
 					else
 					{
-						hit = true;
+						secondChance--;
+						if(secondChance <= 0)
+						{
+							hit = true;
+						}
 					}
 				}
 				c += 3;
@@ -265,6 +270,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 			
                         while( (!hit) && (c >= 0) )
                         {
+				int SC(2); //secondchance
                                 int colSize;
 				std::vector<Voxel> rblock;
 				int jump;
@@ -277,7 +283,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                                 else
                                 {
                                         colSize = 3;
-					jump = c; //revisit this line
+					jump = c;
                                         rblock = func::getBlock(layer, r, c, rowSize, colSize);
                                 }
 
@@ -288,8 +294,12 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                                                 cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, val);
                                         }
                                         else 
-					{ 
-                                                hit = true;
+					{
+						SC--;
+						if(SC <= 0)
+						{
+                                                	hit = true;
+						}
                                         }
                                 }
                                 c -= jump;
@@ -316,6 +326,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 
                         while( (!hit) && (r < rows) )
                         {
+				int SC(2);
                                 std::vector<Voxel> block;
                                 int rowSize;
                                 if(r+3 < rows)
@@ -339,7 +350,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                                         {
 						if(block[i].getIntensity() != val)
 						{
-                                                	hit = true;
+							SC--;
+							if(SC <= 0)
+							{
+                                                		hit = true;
+							}
 						}
                                         }
                                 }
@@ -368,6 +383,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                         
                         while( (!hit) && (r >= 0) )
                         {
+				int SC(2);
                                 int rowSize;
                                 std::vector<Voxel> rblock;
                                 int jump;
@@ -398,7 +414,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                                         {
 						if(rblock[i].getIntensity() != val)
 						{
-                                                	hit = true;
+							SC--;
+							if (SC <= 0)
+							{
+                                                		hit = true;
+							}
 						}
                                         }
                                 }
@@ -742,9 +762,9 @@ unsigned char *** func::preparePPMCube(unsigned char *** & sourceCube, int dim, 
 				int nx = x*dim + y;
 				if(sourceCube[z][x][y] != 0)
 				{
-					cube[z][nx][0] = 255;
-					cube[z][nx][1] = 255;
-					cube[z][nx][2] = 255;
+					cube[z][nx][0] = 150;
+					cube[z][nx][1] = 150;
+					cube[z][nx][2] = 150;
 				}
 			}
 		}
