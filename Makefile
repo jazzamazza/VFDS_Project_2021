@@ -61,7 +61,7 @@ SOURCES       = src/BackgroundData.cpp \
 		src/mainwindow.cpp \
 		src/PartData.cpp \
 		src/Split.cpp \
-		src/VFDSDriver.cpp \
+		src/VFDSController.cpp \
 		src/Voxel.cpp moc_mainwindow.cpp
 OBJECTS       = BackgroundData.o \
 		CTReader.o \
@@ -72,7 +72,7 @@ OBJECTS       = BackgroundData.o \
 		mainwindow.o \
 		PartData.o \
 		Split.o \
-		VFDSDriver.o \
+		VFDSController.o \
 		Voxel.o \
 		moc_mainwindow.o
 DIST          = /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/spec_pre.prf \
@@ -273,9 +273,8 @@ DIST          = /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/spec_pre.pr
 		src/mainwindow.h \
 		src/PartData.h \
 		src/Split.h \
-		src/VFDSDriver.h \
-		src/Voxel.h \
-		test/catch.hpp src/BackgroundData.cpp \
+		src/VFDSController.h \
+		src/Voxel.h src/BackgroundData.cpp \
 		src/CTReader.cpp \
 		src/Fracture.cpp \
 		src/ImageDataClass.cpp \
@@ -284,7 +283,7 @@ DIST          = /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/spec_pre.pr
 		src/mainwindow.cpp \
 		src/PartData.cpp \
 		src/Split.cpp \
-		src/VFDSDriver.cpp \
+		src/VFDSController.cpp \
 		src/Voxel.cpp
 QMAKE_TARGET  = vfds
 DESTDIR       = 
@@ -726,8 +725,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/local/Cellar/qt/6.1.3/share/qt/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents src/BackgroundData.h src/CTReader.h src/Filter.h src/Fracture.h src/ImageDataClass.h src/ImageProcessor.h src/mainwindow.h src/PartData.h src/Split.h src/VFDSDriver.h src/Voxel.h test/catch.hpp $(DISTDIR)/
-	$(COPY_FILE) --parents src/BackgroundData.cpp src/CTReader.cpp src/Fracture.cpp src/ImageDataClass.cpp src/ImageProcessor.cpp src/main.cpp src/mainwindow.cpp src/PartData.cpp src/Split.cpp src/VFDSDriver.cpp src/Voxel.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents src/BackgroundData.h src/CTReader.h src/Filter.h src/Fracture.h src/ImageDataClass.h src/ImageProcessor.h src/mainwindow.h src/PartData.h src/Split.h src/VFDSController.h src/Voxel.h $(DISTDIR)/
+	$(COPY_FILE) --parents src/BackgroundData.cpp src/CTReader.cpp src/Fracture.cpp src/ImageDataClass.cpp src/ImageProcessor.cpp src/main.cpp src/mainwindow.cpp src/PartData.cpp src/Split.cpp src/VFDSController.cpp src/Voxel.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -1238,14 +1237,14 @@ Split.o: src/Split.cpp src/Split.h \
 		src/Voxel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Split.o src/Split.cpp
 
-VFDSDriver.o: src/VFDSDriver.cpp src/VFDSDriver.h \
+VFDSController.o: src/VFDSController.cpp src/VFDSController.h \
 		src/ImageProcessor.h \
 		src/Split.h \
 		src/Voxel.h \
 		src/Fracture.h \
 		src/CTReader.h \
 		src/Filter.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o VFDSDriver.o src/VFDSDriver.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o VFDSController.o src/VFDSController.cpp
 
 Voxel.o: src/Voxel.cpp src/Voxel.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Voxel.o src/Voxel.cpp
