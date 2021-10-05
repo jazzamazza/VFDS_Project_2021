@@ -1,20 +1,20 @@
-// Header file for the RaySamples class
+// Header file for the RaySampler class
 // htciai001
 // 21/09/21
 
-#ifndef RAYSAMPLES_H
-#define RAYSAMPLES_H
+#ifndef RAYSAMPLER_H
+#define RAYSAMPLER_H
 #include "VolumeVisualizer.h"
 #include "CTReader.h"
 
 namespace raycst {
-    class RaySamples {
+    class RaySampler {
         private:
             int size, steps;
         public:
-            RaySamples();
-            RaySamples(int sz, int st);
-            ~RaySamples();
+            RaySampler();
+            RaySampler(int sz, int st);
+            ~RaySampler();
 
             raycst::Point3 ** buildSampleOrigins(unsigned char*** & source, VolumeVisualizer & vv, double w);
             void sampleColour(double & cout, double & cin, double ccurrent, double opacity);

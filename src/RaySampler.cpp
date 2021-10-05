@@ -1,16 +1,16 @@
-// RaySamples class for vfds. Creates the 3D sample grid for projection
+// RaySampler class for vfds. Creates the 3D sample grid for projection
 // htciai001
 // 21/09/21
 
-#include "RaySamples.h"
+#include "RaySampler.h"
 
-raycst::RaySamples::RaySamples() : size(0), steps(1) {}
+raycst::RaySampler::RaySampler() : size(0), steps(1) {}
 
-raycst::RaySamples::RaySamples(int sz, int st) : size(sz), steps(st) {}
+raycst::RaySampler::RaySampler(int sz, int st) : size(sz), steps(st) {}
 
-raycst::RaySamples::~RaySamples() {}
+raycst::RaySampler::~RaySampler() {}
 
-racst::Point3 ** raycst::RaySamples::buildSampleOrigins(unsigned char*** & source, VolumeVisualizer & vv, double w) {
+racst::Point3 ** raycst::RaySampler::buildSampleOrigins(unsigned char*** & source, VolumeVisualizer & vv, double w) {
     double dim = size/steps;
     // represents y axis traversal
     for (int i = -dim/2; i < (dim/2)+1; ++i) {
@@ -24,7 +24,7 @@ racst::Point3 ** raycst::RaySamples::buildSampleOrigins(unsigned char*** & sourc
     }
 }
 
-void raycst::RaySamples::sampleColour(double & cout, double & cin, double ccurrent, double opacity) {
+void raycst::RaySampler::sampleColour(double & cout, double & cin, double ccurrent, double opacity) {
     if (opacity > 0) {
         return cin*(1-opacity) + ccurrent*opacity;
     }
@@ -35,7 +35,7 @@ int main(void) {
     raycst::VolumeVisualizer vv(128, raycst::Point3(90,90,128), raycst::Vector3(0,1,0));
     imgread::CTReader ctr;
     unsigned char *** data = ctr.readPGMStack("cross", 128);
-    raycst::RaySamples rs(128, 2);
+    raycst::RaySampler rs(128, 2);
     rs.buildSampleOrigins(data, vv, 0.3);
     return 0;
 }
