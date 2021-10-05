@@ -77,7 +77,7 @@ namespace imgdata {
 	}
         else
 	{
-        	out << "Fracture ID: " << rhs.getID() << ", Number of voxels: " << rhs.getVoxels() << std::endl;
+        	out << "Fracture ID: " << rhs.getID() << ", Number of voxels: " << rhs.getVoxels() << ", Fracture Colour: " << rhs.getColour() << "."<< std::endl;
 		for(std::vector<Voxel>::iterator i = rhs.coords.begin(); i != rhs.coords.end(); ++i)
 		{
 			out << "("  << i->getX() << "," << i->getY() << "," << i->getZ() << ")" << std::endl;

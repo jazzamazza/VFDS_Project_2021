@@ -166,6 +166,15 @@ imgpro::Split& imgpro::Split::operator=(imgpro::Split && s)
 std::vector<std::shared_ptr<imgpro::Split>> imgpro::Split::getKids()
 {
 	return this->children;
+	for(int z = 0; z < this->depth; z++)
+	{
+		for(int x = 0; x < this->rows; x++)
+		{
+			delete [] this->data[z][x];
+		}
+		delete [] this->data[z];
+	}
+	delete [] this->data;
 }
 
 std::vector<int> imgpro::Split::getDim()
@@ -385,7 +394,6 @@ void imgpro::Split::cut()
         }
         this->children.push_back(std::make_shared<imgpro::Split>(BFRcube, depth-cutz, rows-cutx, cols-cuty));
 
-	//delete parent data
 
 	
 }

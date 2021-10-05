@@ -76,12 +76,12 @@ Voxel*** func::toVoxels(unsigned char *** &cube, int dim)
 
 std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, int depth)
 {
+        std::vector<Fracture> collection;
 	//Start Split and merge
         Split MotherSplit(imgArr3D, depth, rows, cols);
         //std::cout << MotherSplit << "\n" << std::endl;    //uncomment for case demo
 
         //initiate collection
-        std::vector<Fracture> collection;
 
 	int threshold = 50;
         //test before collect
@@ -93,7 +93,6 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
         //print
         //std::cout << "collected" << std::endl;
         //func::printCollection(collection);
-
 
 	//loop
 	bool change(true);
@@ -610,9 +609,17 @@ Fracture func::loadFracture(std::string fileName)
 	int comma = line.find(",");
 	std::string stringID = line.substr(colon+2,comma-colon-2);
 
+	line = line.substr(comma+2);
+	line = line.substr(line.find(",")+1);
+
+	colon = line.find(":");
+	comma = line.find(".");
+	std::string colour = line.substr(colon+2,comma-colon-2);
+
+
 	int id = std::stoi(stringID);
 
-	Fracture f(id,"black");
+	Fracture f(id, colour);
 
 	while(std::getline(in, line))
 	{
@@ -703,7 +710,7 @@ unsigned char *** func::preparePPMCube(int dim)
 
 unsigned char *** func::preparePPMCube(int dim, std::vector<Fracture> & fractures)
 {
-	std::vector< std::pair<std::string, std::vector<int>>> colours({std::pair("white", std::vector<int>({255,255,255})), std::pair("red", std::vector<int>({255,0,0})), std::pair("green", std::vector<int>({0,255,0})), std::pair("blue", std::vector<int>({0,0,255})), std::pair("yellow", std::vector<int>({0,255,255}))});        
+	std::vector< std::pair<std::string, std::vector<int>>> colours({std::pair("white", std::vector<int>({255,255,255})), std::pair("red", std::vector<int>({255,0,0})), std::pair("green", std::vector<int>({0,255,0})), std::pair("blue", std::vector<int>({0,0,255})), std::pair("yellow", std::vector<int>({255,255,0}))});        
         unsigned char *** cube = new unsigned char ** [dim];
         for(int z = 0; z < dim; z++)
         {

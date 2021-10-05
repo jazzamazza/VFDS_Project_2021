@@ -53,20 +53,12 @@ int main(int argc, char* argv[])
         std::vector<imgdata::Fracture> frac = func::splitMerge(vox, dim, dim, dim);
         std::cout << "Split/Merge end" << std::endl;
 
-	std::cout << frac.size() << " fractures found"<< std::endl;
+	std::cout << frac.size() << " fractures detected"<< std::endl;
 	int sum(0);
+	int cc(0);
 	for(std::vector<Fracture>::iterator i = frac.begin(); i != frac.end(); ++i)
 	{
 		sum += i->getVoxels();
-	}
-	std::cout << sum << std::endl;
-	//testing save
-	func::saveGroupFractures(frac, "f123", dim);
-	std::vector<Fracture> loaded = func::loadGroupFractures("f123");
-	int loadedDim = func::loadDim("f123");
-	int cc(0);
-	for(std::vector<imgdata::Fracture>::iterator i = loaded.begin(); i != loaded.end(); ++i)
-	{
 		if(cc%5 == 0)
 		{
 			i->setColour("white");
@@ -79,7 +71,7 @@ int main(int argc, char* argv[])
 		{
 			i->setColour("green");
 		}
-		else if(cc&5 == 3)
+		else if(cc%5 == 3)
 		{
 			i->setColour("blue");
 		}
@@ -89,6 +81,12 @@ int main(int argc, char* argv[])
 		}
 		cc++;
 	}
+	std::cout << sum << " fractured voxels detected" << std::endl;
+
+	//testing save
+	func::saveGroupFractures(frac, "f123", dim);
+	std::vector<Fracture> loaded = func::loadGroupFractures("f123");
+	int loadedDim = func::loadDim("f123");
 
 	unsigned char *** RBGformat = func::preparePPMCube(loadedDim, loaded);
 	func::writeCubeColour("fracsInColour", RBGformat, loadedDim);
