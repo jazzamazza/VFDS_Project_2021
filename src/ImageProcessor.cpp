@@ -19,7 +19,7 @@ using namespace imgpro;
 //global
 int ID = 0;
 int check(0);
-void func::collect(Split & parent, std::vector<Fracture> & collector, int threshold)
+void func::split(Split & parent, std::vector<Fracture> & collector, int threshold)
 {
         if(parent.getAllFrac()) //if all 0's
         {
@@ -40,7 +40,7 @@ void func::collect(Split & parent, std::vector<Fracture> & collector, int thresh
                         if(kid->getSomeFrac()) //if any 0's
                         {
 				//std::cout << "some\n" << *kid << std::endl;
-                                collect(*kid, collector, threshold);
+                                split(*kid, collector, threshold);
                         }
                 }
         }
@@ -74,27 +74,8 @@ Voxel*** func::toVoxels(unsigned char *** &cube, int dim)
 	return ret;
 }
 
-std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, int depth)
+std::vector<Fracture> func::merge(std::vector<Fracture> & collection)
 {
-        std::vector<Fracture> collection;
-	//Start Split and merge
-        Split MotherSplit(imgArr3D, depth, rows, cols);
-        //std::cout << MotherSplit << "\n" << std::endl;    //uncomment for case demo
-
-        //initiate collection
-
-	int threshold = 50;
-        //test before collect
-        MotherSplit.test(threshold);
-
-        //collect 
-        func::collect(MotherSplit, collection, threshold);
-
-        //print
-        //std::cout << "collected" << std::endl;
-        //func::printCollection(collection);
-
-	//loop
 	bool change(true);
 	while(change)
 	{
@@ -171,6 +152,30 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 
 	return collection;
 
+}
+
+std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, int depth)
+{
+	//Start Split and merge
+        Split MotherSplit(imgArr3D, depth, rows, cols);
+        //std::cout << MotherSplit << "\n" << std::endl;    //uncomment for case demo
+
+        //initiate collection
+
+	int threshold = 50;
+        //test before collect
+        MotherSplit.test(threshold);
+
+        //collect 
+        std::vector<Fracture> collection;
+        func::split(MotherSplit, collection, threshold);
+
+        //print
+        //std::cout << "collected" << std::endl;
+        //func::printCollection(collection);
+
+	//loop
+	return func::merge(collection);
 
 }
 
