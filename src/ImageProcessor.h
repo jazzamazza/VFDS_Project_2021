@@ -42,13 +42,22 @@ namespace func
 	void saveFracture(imgdata::Fracture & fracture, std::string saveName);
 
 	//save group of fractures
-	void saveGroupFractures( std::vector<imgdata::Fracture> & fractures, char * folderName);
+	void saveGroupFractures( std::vector<imgdata::Fracture> & fractures, char * folderName, int dim);
 	
 	//load fracture
 	imgdata::Fracture loadFracture(std::string fileName);
 
 	//load group of fractures
 	std::vector<imgdata::Fracture> loadGroupFractures(std::string folderName);
+
+	//load dim
+	int loadDim(std::string folderName);
+
+	//prepare cube for ppm format
+	unsigned char *** preparePPMCube(int dim);
+
+	//prepare cube with fractures
+	unsigned char *** preparePPMCube(int dim, std::vector<imgdata::Fracture> & fractures);
 }
 
 

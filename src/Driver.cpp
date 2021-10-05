@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
     else
     {
         files = argv[1];
-	int dim = 100;
+	/*int dim = 256;
 	unsigned char *** cube = new unsigned char ** [dim];
         for(int z = 0; z < dim; z++)
         {
@@ -44,14 +44,14 @@ int main(int argc, char* argv[])
                 for(int x = 0; x < dim*dim; x++)
                 {
                         unsigned char * row = new unsigned char[3];
-			if(x%dim > 66)
+			if(false)//x%dim > 66*(z))
 			{
 				row[0] = 0;
 				row[1] = 255;
 				row[2] = 0;
 				layer[x] = row;
 			}
-			else if(x&dim > 33)
+			else if(false)//x&dim > 33*(z))
 			{
 				row[0] = 255;
 				row[1] = 0;
@@ -62,7 +62,7 @@ int main(int argc, char* argv[])
 			{
                         	row[0] = 0;
 				row[1] = 0;
-				row[2] = 255;
+				row[2] = int(255*float(z)/float(dim));
 				layer[x] = row;
 			}
                 }
@@ -71,7 +71,6 @@ int main(int argc, char* argv[])
 
 	func::writeCubeColour("noah", cube, dim);
 
-/*
         std::cout << "CTReader start" << std::endl;
         unsigned char*** pgms = ctr.imgread::CTReader::readPGMStack(files);
         std::cout << "CTReader end" << std::endl;
@@ -95,6 +94,7 @@ int main(int argc, char* argv[])
 	std::vector<imgdata::Fracture> toPrint;
 	for(std::vector<imgdata::Fracture>::iterator i = frac.begin(); i != frac.end(); ++i)
 	{
+		i->setColour("red");
 		if(i->getVoxels() > 50)
 		{
 			//std::cout << *i << std::endl;
@@ -102,15 +102,46 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	std::cout << toPrint.size() << " fractures found"<< std::endl;
+	std::cout << frac.size() << " fractures found"<< std::endl;
+
 
 	//testing save
-	func::saveGroupFractures(toPrint, "fractures");
-	//std::vector<Fracture> loaded = func::loadGroupFractures("fractures");
+	func::saveGroupFractures(frac, "f123", dim);*/
+	std::vector<Fracture> loaded = func::loadGroupFractures("f123");
+	int loadedDim = func::loadDim("f123");
+	int cc(0);
+	for(std::vector<imgdata::Fracture>::iterator i = loaded.begin(); i != loaded.end(); ++i)
+	{
+		if(cc%5 == 0)
+		{
+			i->setColour("white");
+		}
+		else if(cc%5 == 1)
+		{
+			i->setColour("red");
+		}
+		else if(cc%5 == 2)
+		{
+			i->setColour("green");
+		}
+		else if(cc&5 == 3)
+		{
+			i->setColour("blue");
+		}
+		else if( cc%5 == 4)
+		{
+			i->setColour("yellow");
+		}
+		cc++;
+	}
 
-	func::writeToPGM("fracturesInWhite", toPrint, dim);
+	unsigned char *** RBGformat = func::preparePPMCube(loadedDim, loaded);
+	func::writeCubeColour("fracsInColour", RBGformat, loadedDim);
+		
+
+
+	//func::writeToPGM("fracturesInWhite", frac, dim);
 	//func::writeToPGM("savedANDloaded", loaded, dim);
-*/
 
 
     }
