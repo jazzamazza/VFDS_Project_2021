@@ -14,6 +14,7 @@
 
 #include <iostream>
 using namespace imgdata;
+using namespace imgpro;
 
 //global
 int ID = 0;

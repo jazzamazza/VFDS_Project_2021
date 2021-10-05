@@ -42,7 +42,7 @@ namespace imgdata {
 
 	    void join(Fracture & f);
             void insertVoxel(imgdata::Voxel& vox);
-	    void insertSplit(Split & s); 
+	    void insertSplit(imgpro::Split & s); 
 
             void setColour(std::string colour);
     

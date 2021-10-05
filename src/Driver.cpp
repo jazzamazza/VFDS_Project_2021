@@ -21,7 +21,7 @@ VFDS DRIVER CLASS
 int main(int argc, char* argv[])
 {
     using namespace imgdata;
-
+    using namespace imgpro;
     imgread::CTReader ctr;
     std::string files = "";
     std::string shape = "";
@@ -35,41 +35,6 @@ int main(int argc, char* argv[])
     else
     {
         files = argv[1];
-	/*int dim = 256;
-	unsigned char *** cube = new unsigned char ** [dim];
-        for(int z = 0; z < dim; z++)
-        {
-                //prepare output
-                unsigned char ** layer = new unsigned char * [dim*dim];
-                for(int x = 0; x < dim*dim; x++)
-                {
-                        unsigned char * row = new unsigned char[3];
-			if(false)//x%dim > 66*(z))
-			{
-				row[0] = 0;
-				row[1] = 255;
-				row[2] = 0;
-				layer[x] = row;
-			}
-			else if(false)//x&dim > 33*(z))
-			{
-				row[0] = 255;
-				row[1] = 0;
-				row[2] = 0;
-				layer[x] = row;
-			}
-			else
-			{
-                        	row[0] = 0;
-				row[1] = 0;
-				row[2] = int(255*float(z)/float(dim));
-				layer[x] = row;
-			}
-                }
-                cube[z] = layer;
-        }
-
-	func::writeCubeColour("noah", cube, dim);
 
         std::cout << "CTReader start" << std::endl;
         unsigned char*** pgms = ctr.imgread::CTReader::readPGMStack(files);
@@ -91,22 +56,11 @@ int main(int argc, char* argv[])
         std::vector<imgdata::Fracture> frac = func::splitMerge(vox, dim, dim, dim);
         std::cout << "Split/Merge end" << std::endl;
 
-	std::vector<imgdata::Fracture> toPrint;
-	for(std::vector<imgdata::Fracture>::iterator i = frac.begin(); i != frac.end(); ++i)
-	{
-		i->setColour("red");
-		if(i->getVoxels() > 50)
-		{
-			//std::cout << *i << std::endl;
-			toPrint.push_back(*i);
-		}
-	}
-
 	std::cout << frac.size() << " fractures found"<< std::endl;
 
 
 	//testing save
-	func::saveGroupFractures(frac, "f123", dim);*/
+	func::saveGroupFractures(frac, "f123", dim);
 	std::vector<Fracture> loaded = func::loadGroupFractures("f123");
 	int loadedDim = func::loadDim("f123");
 	int cc(0);
@@ -139,9 +93,6 @@ int main(int argc, char* argv[])
 	func::writeCubeColour("fracsInColour", RBGformat, loadedDim);
 		
 
-
-	//func::writeToPGM("fracturesInWhite", frac, dim);
-	//func::writeToPGM("savedANDloaded", loaded, dim);
 
 
     }

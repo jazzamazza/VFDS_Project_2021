@@ -312,4 +312,24 @@ TEST_CASE ("imgread: CTReader class") {
 }
 
 
-
+TEST_CASE("Split Class")
+{
+	SECTION("Default Constructor")
+	{
+	}
+	SECTION("Custom Constructor")
+	{
+	}
+	SECTION("Copy Constructor")
+	{
+	}
+	SECTION("Move Constructor")
+	{
+	}
+	SECTION("Copy Assignment Operator")
+	{
+	}
+	SECTION("Move Assignment Operator")
+	{
+	}
+}

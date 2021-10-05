@@ -14,7 +14,7 @@
 namespace func
 {
 	//collects all fractured voxels
-	void collect(Split & parent, std::vector<imgdata::Fracture> & collector, int threshold);
+	void collect(imgpro::Split & parent, std::vector<imgdata::Fracture> & collector, int threshold);
 	//tracing method
 	void printCollection(std::vector<imgdata::Fracture> & coll);
 	//Split & Merge
