@@ -36,8 +36,6 @@ VFDS Main Window
 #include "Fracture.h"
 #include "CTReader.h"
 
-using namespace imgdata;
-
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -46,7 +44,6 @@ class MainWindow : public QMainWindow
         MainWindow(QWidget *parent = nullptr);
         ~MainWindow();
         bool loadFile(const QString &);
-
 
         imgread::CTReader *ctReader;
         std::string files = "";

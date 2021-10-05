@@ -112,26 +112,27 @@ void MainWindow::setupSignalsAndSlots() {
     connect(nextPushButton,SIGNAL(clicked()),this,SLOT(about()));
 }
 void MainWindow::open(){
-    fileDialog = new QFileDialog(this,tr("Choose"),"", tr("Header File (*.hdr)"));
+    fileDialog = new QFileDialog();
 
     //fileDialog -> setFileMode(QFileDialog::Directory);
     //fileDialog -> setOption(QFileDialog::ShowDirsOnly, true);
-
     //QString directory = fileDialog->getExistingDirectory(this,"choose","",QFileDialog::ShowDirsOnly);
-    QString filename = fileDialog->getOpenFileName();
+    //QString filename = fileDialog->getOpenFileName();
+
+    QString filename = fileDialog->getOpenFileName(this,tr("Choose"),"", tr("Header File (*.hdr *.pgm)"));
     std::string filePath = filename.toStdString();
-    QMessageBox::information(this,filename,filename+"ctrreader start",QMessageBox::Ok,QMessageBox::NoButton);
-    unsigned char *** voxArr = ctReader->readPGMStack(filePath);
-    QMessageBox::information(this,filename,"ctrreader end",QMessageBox::Ok,QMessageBox::NoButton);
+    //QMessageBox::information(this,filename,filename+"ctrreader start",QMessageBox::Ok,QMessageBox::NoButton);
+    //unsigned char *** voxArr = ctReader->readPGMStack(filePath);
+    //QMessageBox::information(this,filename,"ctrreader end",QMessageBox::Ok,QMessageBox::NoButton);
 
     if (QString::compare(filename, QString()) != 0)
     {
-        //QImage image;
-        //bool valid = image.load(filename);
-        bool valid = true;
+        QImage image;
+        bool valid = image.load(filename);
+        //bool valid = true;
         if(valid)
         {
-           imageLabel->setPixmap(QPixmap(voxArr[0]));
+           imageLabel->setPixmap(QPixmap::fromImage(image));
            statusBar()->showMessage(filename);
         }
         else

@@ -27,8 +27,6 @@ std::string imgread::CTReader::getDir(std::string& hdrPath){
 
     if (endofpath!=std::string::npos)
         dir = hdrPath.substr(0,endofpath);
-    //else
-        //some error
     return dir;
 }
 
