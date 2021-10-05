@@ -14,11 +14,12 @@
 
 #include <iostream>
 using namespace imgdata;
+using namespace imgpro;
 
 //global
 int ID = 0;
 int check(0);
-void func::collect(Split & parent, std::vector<Fracture> & collector, int threshold)
+void func::split(Split & parent, std::vector<Fracture> & collector, int threshold)
 {
         if(parent.getAllFrac()) //if all 0's
         {
@@ -39,7 +40,7 @@ void func::collect(Split & parent, std::vector<Fracture> & collector, int thresh
                         if(kid->getSomeFrac()) //if any 0's
                         {
 				//std::cout << "some\n" << *kid << std::endl;
-                                collect(*kid, collector, threshold);
+                                split(*kid, collector, threshold);
                         }
                 }
         }
@@ -53,28 +54,28 @@ void func::printCollection(std::vector<Fracture> & coll)
 	}
 }
 
-std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, int depth)
+Voxel*** func::toVoxels(unsigned char *** &cube, int dim)
 {
-	//Start Split and merge
-        Split MotherSplit(imgArr3D, depth, rows, cols);
-        //std::cout << MotherSplit << "\n" << std::endl;    //uncomment for case demo
+	imgdata::Voxel *** ret = new Voxel ** [dim];
+	for(int z = 0; z < dim; z++)
+	{
+		imgdata::Voxel ** layer = new Voxel * [dim];
+		for(int x = 0; x < dim; x++)
+		{
+			imgdata::Voxel * row = new Voxel [dim];
+			for(int y = 0; y < dim; y++)
+			{
+				row[y] = Voxel(x,y,z,cube[z][x][y]);
+			}
+			layer[x] = row;
+		}
+		ret[z] = layer;
+	}
+	return ret;
+}
 
-        //initiate collection
-        std::vector<Fracture> collection;
-
-	int threshold = 50;
-        //test before collect
-        MotherSplit.test(threshold);
-
-        //collect 
-        func::collect(MotherSplit, collection, threshold);
-
-        //print
-        //std::cout << "collected" << std::endl;
-        //func::printCollection(collection);
-
-
-	//loop
+std::vector<Fracture> func::merge(std::vector<Fracture> & collection)
+{
 	bool change(true);
 	while(change)
 	{
@@ -151,6 +152,30 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 
 	return collection;
 
+}
+
+std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, int depth)
+{
+	//Start Split and merge
+        Split MotherSplit(imgArr3D, depth, rows, cols);
+        //std::cout << MotherSplit << "\n" << std::endl;    //uncomment for case demo
+
+        //initiate collection
+
+	int threshold = 50;
+        //test before collect
+        MotherSplit.test(threshold);
+
+        //collect 
+        std::vector<Fracture> collection;
+        func::split(MotherSplit, collection, threshold);
+
+        //print
+        //std::cout << "collected" << std::endl;
+        //func::printCollection(collection);
+
+	//loop
+	return func::merge(collection);
 
 }
 
@@ -589,9 +614,17 @@ Fracture func::loadFracture(std::string fileName)
 	int comma = line.find(",");
 	std::string stringID = line.substr(colon+2,comma-colon-2);
 
+	line = line.substr(comma+2);
+	line = line.substr(line.find(",")+1);
+
+	colon = line.find(":");
+	comma = line.find(".");
+	std::string colour = line.substr(colon+2,comma-colon-2);
+
+
 	int id = std::stoi(stringID);
 
-	Fracture f(id,"black");
+	Fracture f(id, colour);
 
 	while(std::getline(in, line))
 	{
@@ -682,7 +715,7 @@ unsigned char *** func::preparePPMCube(int dim)
 
 unsigned char *** func::preparePPMCube(int dim, std::vector<Fracture> & fractures)
 {
-	std::vector< std::pair<std::string, std::vector<int>>> colours({std::pair("white", std::vector<int>({255,255,255})), std::pair("red", std::vector<int>({255,0,0})), std::pair("green", std::vector<int>({0,255,0})), std::pair("blue", std::vector<int>({0,0,255})), std::pair("yellow", std::vector<int>({0,255,255}))});        
+	std::vector< std::pair<std::string, std::vector<int>>> colours({std::pair("white", std::vector<int>({255,255,255})), std::pair("red", std::vector<int>({255,0,0})), std::pair("green", std::vector<int>({0,255,0})), std::pair("blue", std::vector<int>({0,0,255})), std::pair("yellow", std::vector<int>({255,255,0}))});        
         unsigned char *** cube = new unsigned char ** [dim];
         for(int z = 0; z < dim; z++)
         {
