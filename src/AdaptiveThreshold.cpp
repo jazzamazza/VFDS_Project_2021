@@ -20,23 +20,35 @@ std::vector<int> denoise::AdaptiveThreshold::getHistogram(unsigned char *** & so
     return histogram;
 }
 
-// determine the weighted mean of a pixel category
-void denoise::AdaptiveThreshold::getMean(int start, int end, double & mean, std::vector<int> & histogram) {
-    // a count of the pixel values present in the classified category (bg, obj)
+// determine the local mean of a pixel neighbourhood
+double denoise::AdaptiveThreshold::getMean(std::vector<int> & histogram) {
     int n = 0;
-    for(int i = start; i < end; ++i) {
+    double mean = 0;
+    for(int i = 0; i < (int)histogram.size(); ++i) {
         mean += i*histogram.at(i);
         n += histogram.at(i);
     }
 
-    mean = mean/n;
+    return mean/n;
+}
+
+// determine the local std dev of a pixel neighbourhood
+double denoise::AdaptiveThreshold::getStdDev(double mean, std::vector<int> & histogram) {
+    double var = 0;    
+    std::vector<int>::iterator it;
+    // accumulate the variance of the histogram
+    for(it = histogram.begin(); it != histogram.end(); ++it) {
+        var += std::pow(((*it)-mean), 2);
+    }
+    // get the square root and return the std dev
+    return std::sqrt(var);
 }
 
 // determine an adaptive threshold via successive refinement of the peak positions
 unsigned char denoise::AdaptiveThreshold::getThreshold(std::vector<int> & histogram, int max) {
     // Initialise the starting threshold T0 as the weighted average of the pixel intensities, based on their appearance in the hisogram
     double threshold = 0;
-
+    /*
     for (int i = 0; i < max; ++i) {
         threshold += i*histogram.at(i);
     }
@@ -55,7 +67,7 @@ unsigned char denoise::AdaptiveThreshold::getThreshold(std::vector<int> & histog
         getMean(threshold+1, max, o_mean, histogram);
 
         threshold_next = (b_mean + o_mean)/2;
-    }
+    }*/
 
     return threshold;
 
@@ -81,7 +93,7 @@ void denoise::AdaptiveThreshold::execute(unsigned char *** & source, unsigned ch
     double mean = total/(dim*dim);
     double var = 0;
 
-    // calculate the global variance for the dataset and normailize the value
+    // calculate the global variance for the dataset and normalize the value
     for (int y = 0; y < dim; ++y) {
         for (int x = 0; x < dim; ++x) {
             var += std::pow(((double)source[depth][y][x]-mean), 2);
