@@ -31,6 +31,7 @@ VFDS Main Window
 #include "VFDSController.h"
 #include "ImageProcessor.h"
 #include "CTReader.h"
+#include "detectiondialog.h"
 
 class MainWindow : public QMainWindow
 {
@@ -42,9 +43,9 @@ class MainWindow : public QMainWindow
         bool loadFile(const QString &);
 
         imgread::CTReader *ctReader;
-        std::string files = "";
-        std::string shape = "";
-        int dim = 0;
+        //std::string files = "";
+        //std::string shape = "";
+        //int dim = 0;
 
     private slots:
         void open();
@@ -60,11 +61,15 @@ class MainWindow : public QMainWindow
         void about();
         void next();
         void back();
+        void detectFractures();
+        void detectionDialogShow();
 
 
     private: 
-
+        QWidget *infoWidget;
+        DetectionDialog detectionDialog;
         const QString fractureLabelText = "Layer: ";
+        const QString nFracturesLabelText = "Fractures detected: ";
         void displayImage();
         VFDSController *vfdsController;
 
@@ -99,6 +104,8 @@ class MainWindow : public QMainWindow
         // Menus
         QMenu *fileMenu;
         QMenu *helpMenu;
+        QMenu *toolsMenu;
+        //QMenu *detectionMenu;
 
         // Actions
         QAction *quitAction;
@@ -106,7 +113,8 @@ class MainWindow : public QMainWindow
         QAction *openAction;
         QAction *nextAction;
         QAction *backAction;
-
+        QAction *detectFracturesAction;
+        QAction *detectionPreferences;
         //QAction *cancelAction;
         //QAction *newAction;
         //QAction *saveAsAct;
@@ -127,6 +135,7 @@ class MainWindow : public QMainWindow
         //Buttons
         QPushButton *nextPushButton;
         QPushButton *backPushButton;
+        QPushButton *detectFracturesPushButton;
 
         //Input
         QLineEdit *fileLineEdit;
