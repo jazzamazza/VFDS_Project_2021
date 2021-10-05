@@ -27,6 +27,12 @@ namespace raycst {
             // finds an orthogonal unit vector on the image plane
             raycst::Vector3 getAxis_2();
 
+            // functions which return the plane normal and centre of projection
+            raycst::Vector3 getVPN();
+            raycst::Point3 getCOP();
+
+
+
     };
 }
 

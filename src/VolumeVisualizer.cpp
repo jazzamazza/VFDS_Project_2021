@@ -35,12 +35,10 @@ raycst::Vector3 raycst::VolumeVisualizer::getAxis_2() {
     return axis_2;
 }
 
-int main(void) {
-    raycst::VolumeVisualizer vv(256, raycst::Point3(128,128,256), raycst::Vector3(0,1,0));
-    raycst::Vector3 a4 = vv.getAxis_1();
-    raycst::Vector3 a5 = vv.getAxis_2();
+raycst::Vector3 raycst::VolumeVisualizer::getVPN() {
+    return this->vpn;
+}
 
-    a4.printVec3();
-    a5.printVec3();
-    return 0;
+raycst::Point3 raycst::VolumeVisualizer::getCOP() {
+    return this->cop;
 }
