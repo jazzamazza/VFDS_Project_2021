@@ -31,22 +31,6 @@ void denoise::AdaptiveThreshold::getMean(int start, int end, double & mean, std:
     mean = mean/n;
 }
 
-/*void denoise::AdaptiveThreshold::classify(double threshold, std::vector<int> & obj, std::vector<int> & bg) {
-    if (!obj.empty()) {
-        obj.clear();
-    }
-    if (!bg.empty()) {
-        bg.clear();
-    }
-    
-    for (int i = 0; i < 256; ++i) {
-        if (i <= threshold)
-            bg.push_back(i);
-        else
-            obj.push_back(i);
-    }
-}*/
-
 unsigned char denoise::AdaptiveThreshold::getThreshold(std::vector<int> & histogram) {
     // Initialise the starting threshold T0 as the weighted average of the pixel intensities, based on their appearance in the hisogram
     double threshold = 0;
@@ -61,7 +45,6 @@ unsigned char denoise::AdaptiveThreshold::getThreshold(std::vector<int> & histog
     // loop until the threshold converges (it no longer changes between iterations)
     while(threshold_next != threshold) {
         threshold = threshold_next;
-        //classify(threshold, obj, bg);
         // reset the mean values for the background and object pixels (classified by the threshold)
         double o_mean = 0, b_mean = 0;
 
