@@ -55,39 +55,8 @@ double denoise::AdaptiveThreshold::getStdDev(double mean, std::vector<int> & his
     return std::sqrt(var/n);
 }
 
-
-// determine an adaptive threshold via successive refinement of the peak positions
-/*unsigned char denoise::AdaptiveThreshold::getThreshold() {
-    // Initialise the starting threshold T0 as the weighted average of the pixel intensities, based on their appearance in the hisogram
-    double threshold = ;
-
-    for (int i = 0; i < max; ++i) {
-        threshold += i*histogram.at(i);
-    }
-    threshold = threshold/(this->dim*this->dim);
-
-    // define a background and object identification vector
-    double threshold_next = 0;
-
-    // loop until the threshold converges (it no longer changes between iterations)
-    while(threshold_next != threshold) {
-        threshold = threshold_next;
-        // reset the mean values for the background and object pixels (classified by the threshold)
-        double o_mean = 0, b_mean = 0;
-
-        getMean(0, threshold+1, b_mean, histogram);
-        getMean(threshold+1, max, o_mean, histogram);
-
-        threshold_next = (b_mean + o_mean)/2;
-    }
-
-    return threshold;
-
-}*/
-
 void denoise::AdaptiveThreshold::execute(unsigned char *** & source, unsigned char *** & target, int depth) {
     // get the total cumulative value of the dataset and max pixel value in the image
-    double *** src_cpy = (double***)source;
     int max = 0;
     double total = 0;
 
@@ -129,9 +98,9 @@ void denoise::AdaptiveThreshold::execute(unsigned char *** & source, unsigned ch
     // iterate over 2d image coordinates
     // determine half of the sliding pixel neighbourhood size
     int n_half = std::floor(n_size/2);
-
     for (int i = n_half; i < dim+n_size; i += n_size) {
         for (int j = n_half; j < dim+n_size; j += n_size) {
+            
             // generate the local histogram
             std::vector<int> histogram = getHistogram(source, depth, i, j, max);
 
@@ -141,38 +110,19 @@ void denoise::AdaptiveThreshold::execute(unsigned char *** & source, unsigned ch
              // clamp upper limit of threshold
             if (threshold > 255)
                 threshold = 255;
-
+            
             // use this to threshold the pixel
             // threshold the current pixel neighbourhood
-            for (int x = i-n_half; x < i+n_half+1; ++x) {
-                for(int y = j-n_half; y < j-n_half+1; ++y) {
+            for (int y = i-n_half; y < i+n_half+1; ++y) {
+                for(int x = j-n_half; x < j+n_half+1; ++x) {
                     if ((x >= 0 && x < dim) && (y >= 0 && y < dim)) {
-
-                        if (src_cpy[depth][x][y] < (unsigned char)threshold)
-                            target[depth][x][y] = 0;
+                        if (source[depth][y][x] < threshold)
+                            target[depth][y][x] = 0;
                         else
-                            target[depth][x][y] = max;
+                            target[depth][y][x] = max;
                     }
                 }
             }
         }
     }
-
-    // older code using a global histogram
-    /*
-    std::vector<int> histogram = getHistogram(src_copy, depth, max);
-    unsigned char threshold = getThreshold(histogram, max);
-    
-    // employ threshold across the dataset
-    for (int i = 0; i < dim; ++i) {
-        for (int j = 0; j < dim; ++j) {
-            if (source[depth][i][j] < threshold) {
-                target[depth][i][j] = 0;
-            }
-            else {
-                target[depth][i][j] = max;
-            }
-        }
-    }
-    */
 }   
