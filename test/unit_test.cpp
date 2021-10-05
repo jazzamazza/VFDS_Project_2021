@@ -379,9 +379,9 @@ TEST_CASE("imgpro: Split Class")
 		REQUIRE(s2.getID() == -1);
 	}
 	SECTION("Copy Assignment Operator")
-	{//cont here
+	{
 		imgpro::Split s1(cube, dim, dim, dim);
-		imgpro::Split s2(s1);
+		imgpro::Split s2 = s1;
 
 		REQUIRE(s2.getData() != s1.getData());	
 		REQUIRE(s2.getAllFrac() == s1.getAllFrac());
@@ -393,15 +393,13 @@ TEST_CASE("imgpro: Split Class")
 	}
 	SECTION("Move Assignment Operator")
 	{
-		imgpro::Split s1(cube, dim, dim, dim);
-		imgpro::Split s2(s1);
-
-		REQUIRE(s2.getData() != s1.getData());	
-		REQUIRE(s2.getAllFrac() == s1.getAllFrac());
-		REQUIRE(s2.getSomeFrac() == s1.getSomeFrac());
-		REQUIRE(s2.getDepth() == s1.getDepth());
-		REQUIRE(s2.getRows() == s1.getRows());
-		REQUIRE(s2.getCols() == s1.getCols());
-		REQUIRE(s2.getID() == s1.getID());
+		imgpro::Split s2 = imgpro::Split(cube, dim, dim, dim);
+	
+		REQUIRE(s2.getAllFrac() == NULL);
+		REQUIRE(s2.getSomeFrac() == NULL);
+		REQUIRE(s2.getDepth() == dim);
+		REQUIRE(s2.getRows() == dim);
+		REQUIRE(s2.getCols() == dim);
+		REQUIRE(s2.getID() == -1);
 	}
 }

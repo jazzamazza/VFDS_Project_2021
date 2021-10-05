@@ -57,8 +57,12 @@ int main(int argc, char* argv[])
         std::cout << "Split/Merge end" << std::endl;
 
 	std::cout << frac.size() << " fractures found"<< std::endl;
-
-
+	int sum(0);
+	for(std::vector<Fracture>::iterator i = frac.begin(); i != frac.end(); ++i)
+	{
+		sum += i->getVoxels();
+	}
+	std::cout << sum << std::endl;
 	//testing save
 	func::saveGroupFractures(frac, "f123", dim);
 	std::vector<Fracture> loaded = func::loadGroupFractures("f123");
