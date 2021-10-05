@@ -41,8 +41,9 @@ int main(int argc, char* argv[])
         std::cout << "CTReader end" << std::endl;
     
     	int dim = ctr.getDim(files);
-
+	std::cout << "Converting to Voxels start" << std::endl;
 	Voxel *** vox = func::toVoxels(pgms, dim);
+	std::cout << "Convert to Voxels end" << std::endl;
 
 	std::cout << "Paint Background start" << std::endl;
 	func::paintBackground(vox, dim, dim, dim, 150);
