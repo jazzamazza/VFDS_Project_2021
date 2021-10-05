@@ -64,7 +64,7 @@ namespace func
 	unsigned char *** preparePPMCube(int dim);
 
 	//prepare cube with fractures
-	unsigned char *** preparePPMCube(int dim, std::vector<imgdata::Fracture> & fractures);
+	unsigned char *** preparePPMCube(unsigned char *** & sourceCube, int dim, std::vector<imgdata::Fracture> & fractures);
 }
 
 

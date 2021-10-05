@@ -32,15 +32,15 @@ void func::split(Split & parent, std::vector<Fracture> & collector, int threshol
         else
         {
                 parent.cut();
-                std::vector<std::shared_ptr<Split>> vec = parent.getKids();
-                for(std::vector<std::shared_ptr<Split>>::iterator i = vec.begin(); i != vec.end(); ++i)
+                Split * kids = parent.getKids();
+                for(int i = 0; i < 8; i++)
                 {
-                        std::shared_ptr<Split> kid = *i;
-			kid->test(threshold);
-                        if(kid->getSomeFrac()) //if any 0's
+                        Split kid = kids[i];
+			kid.test(threshold);
+                        if(kid.getSomeFrac()) //if any 0's
                         {
 				//std::cout << "some\n" << *kid << std::endl;
-                                split(*kid, collector, threshold);
+                                split(kid, collector, threshold);
                         }
                 }
         }
@@ -158,7 +158,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 {
 	//Start Split and merge
         Split MotherSplit(imgArr3D, depth, rows, cols);
-        //std::cout << MotherSplit << "\n" << std::endl;    //uncomment for case demo
+        //std::cout << "MotherSplit"<< std::endl;    //uncomment for case demo
 
         //initiate collection
 
@@ -216,6 +216,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 
 			while( (!hit) && (c < cols) )
 			{
+				int secondChance(2);
 				std::vector<Voxel> block;
 				int colSize;
 				if(c+3 < cols)
@@ -237,7 +238,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 					}
 					else
 					{
-						hit = true;
+						secondChance--;
+						if(secondChance <= 0)
+						{
+							hit = true;
+						}
 					}
 				}
 				c += 3;
@@ -265,6 +270,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 			
                         while( (!hit) && (c >= 0) )
                         {
+				int SC(2); //secondchance
                                 int colSize;
 				std::vector<Voxel> rblock;
 				int jump;
@@ -277,7 +283,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                                 else
                                 {
                                         colSize = 3;
-					jump = c; //revisit this line
+					jump = c;
                                         rblock = func::getBlock(layer, r, c, rowSize, colSize);
                                 }
 
@@ -288,8 +294,12 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                                                 cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, val);
                                         }
                                         else 
-					{ 
-                                                hit = true;
+					{
+						SC--;
+						if(SC <= 0)
+						{
+                                                	hit = true;
+						}
                                         }
                                 }
                                 c -= jump;
@@ -316,6 +326,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 
                         while( (!hit) && (r < rows) )
                         {
+				int SC(2);
                                 std::vector<Voxel> block;
                                 int rowSize;
                                 if(r+3 < rows)
@@ -339,7 +350,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                                         {
 						if(block[i].getIntensity() != val)
 						{
-                                                	hit = true;
+							SC--;
+							if(SC <= 0)
+							{
+                                                		hit = true;
+							}
 						}
                                         }
                                 }
@@ -368,6 +383,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                         
                         while( (!hit) && (r >= 0) )
                         {
+				int SC(2);
                                 int rowSize;
                                 std::vector<Voxel> rblock;
                                 int jump;
@@ -398,7 +414,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                                         {
 						if(rblock[i].getIntensity() != val)
 						{
-                                                	hit = true;
+							SC--;
+							if (SC <= 0)
+							{
+                                                		hit = true;
+							}
 						}
                                         }
                                 }
@@ -713,10 +733,11 @@ unsigned char *** func::preparePPMCube(int dim)
 
 
 
-unsigned char *** func::preparePPMCube(int dim, std::vector<Fracture> & fractures)
+unsigned char *** func::preparePPMCube(unsigned char *** & sourceCube, int dim, std::vector<Fracture> & fractures)
 {
 	std::vector< std::pair<std::string, std::vector<int>>> colours({std::pair("white", std::vector<int>({255,255,255})), std::pair("red", std::vector<int>({255,0,0})), std::pair("green", std::vector<int>({0,255,0})), std::pair("blue", std::vector<int>({0,0,255})), std::pair("yellow", std::vector<int>({255,255,0}))});        
-        unsigned char *** cube = new unsigned char ** [dim];
+        
+	unsigned char *** cube = new unsigned char ** [dim];
         for(int z = 0; z < dim; z++)
         {
                 //prepare output
@@ -731,6 +752,23 @@ unsigned char *** func::preparePPMCube(int dim, std::vector<Fracture> & fracture
                 }
                 cube[z] = layer;
         }
+	
+        for(int z = 0; z < dim; z++)
+	{
+                for(int x = 0; x < dim; x++)
+		{
+			for(int y = 0; y < dim; y++)
+			{	
+				int nx = x*dim + y;
+				if(sourceCube[z][x][y] != 0)
+				{
+					cube[z][nx][0] = 150;
+					cube[z][nx][1] = 150;
+					cube[z][nx][2] = 150;
+				}
+			}
+		}
+	}
 	for(std::vector<Fracture>::iterator f = fractures.begin(); f != fractures.end(); ++f)
 	{
 		std::vector<Voxel> voxels = f->getCoords();
