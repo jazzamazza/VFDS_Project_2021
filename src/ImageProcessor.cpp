@@ -713,10 +713,11 @@ unsigned char *** func::preparePPMCube(int dim)
 
 
 
-unsigned char *** func::preparePPMCube(int dim, std::vector<Fracture> & fractures)
+unsigned char *** func::preparePPMCube(unsigned char *** & sourceCube, int dim, std::vector<Fracture> & fractures)
 {
 	std::vector< std::pair<std::string, std::vector<int>>> colours({std::pair("white", std::vector<int>({255,255,255})), std::pair("red", std::vector<int>({255,0,0})), std::pair("green", std::vector<int>({0,255,0})), std::pair("blue", std::vector<int>({0,0,255})), std::pair("yellow", std::vector<int>({255,255,0}))});        
-        unsigned char *** cube = new unsigned char ** [dim];
+        
+	unsigned char *** cube = new unsigned char ** [dim];
         for(int z = 0; z < dim; z++)
         {
                 //prepare output
@@ -731,6 +732,23 @@ unsigned char *** func::preparePPMCube(int dim, std::vector<Fracture> & fracture
                 }
                 cube[z] = layer;
         }
+	
+        for(int z = 0; z < dim; z++)
+	{
+                for(int x = 0; x < dim; x++)
+		{
+			for(int y = 0; y < dim; y++)
+			{	
+				int nx = x*dim + y;
+				if(sourceCube[z][x][y] != 0)
+				{
+					cube[z][nx][0] = 255;
+					cube[z][nx][1] = 255;
+					cube[z][nx][2] = 255;
+				}
+			}
+		}
+	}
 	for(std::vector<Fracture>::iterator f = fractures.begin(); f != fractures.end(); ++f)
 	{
 		std::vector<Voxel> voxels = f->getCoords();

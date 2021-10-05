@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 	std::vector<Fracture> loaded = func::loadGroupFractures("f123");
 	int loadedDim = func::loadDim("f123");
 
-	unsigned char *** RBGformat = func::preparePPMCube(loadedDim, loaded);
+	unsigned char *** RBGformat = func::preparePPMCube(pgms,loadedDim, loaded);
 	func::writeCubeColour("fracsInColour", RBGformat, loadedDim);
 		
 
