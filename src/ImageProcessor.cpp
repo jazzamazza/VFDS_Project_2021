@@ -32,15 +32,15 @@ void func::split(Split & parent, std::vector<Fracture> & collector, int threshol
         else
         {
                 parent.cut();
-                std::vector<std::shared_ptr<Split>> vec = parent.getKids();
-                for(std::vector<std::shared_ptr<Split>>::iterator i = vec.begin(); i != vec.end(); ++i)
+                Split * kids = parent.getKids();
+                for(int i = 0; i < 8; i++)
                 {
-                        std::shared_ptr<Split> kid = *i;
-			kid->test(threshold);
-                        if(kid->getSomeFrac()) //if any 0's
+                        Split kid = kids[i];
+			kid.test(threshold);
+                        if(kid.getSomeFrac()) //if any 0's
                         {
 				//std::cout << "some\n" << *kid << std::endl;
-                                split(*kid, collector, threshold);
+                                split(kid, collector, threshold);
                         }
                 }
         }
@@ -158,7 +158,7 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 {
 	//Start Split and merge
         Split MotherSplit(imgArr3D, depth, rows, cols);
-        //std::cout << MotherSplit << "\n" << std::endl;    //uncomment for case demo
+        //std::cout << "MotherSplit"<< std::endl;    //uncomment for case demo
 
         //initiate collection
 

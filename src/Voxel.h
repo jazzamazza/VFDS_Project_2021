@@ -11,7 +11,7 @@
 namespace imgdata {
     class Voxel {
         private:
-            std::vector<int> coords;
+            int x,y,z;
             unsigned char intensity;
 
         public:
@@ -26,7 +26,6 @@ namespace imgdata {
             Voxel(Voxel&& v);
             Voxel& operator=(Voxel&& rhs);
 
-            const std::vector<int> getCoords() const;
             const unsigned char getIntensity() const;
             const int getX() const;
             const int getY() const;

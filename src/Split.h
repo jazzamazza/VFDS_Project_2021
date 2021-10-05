@@ -19,7 +19,7 @@ namespace imgpro
 			imgdata::Voxel*** data;
 			int depth, rows, cols;
 			bool allFracture, someFracture; 
-			std::vector< std::shared_ptr<Split> > children;
+			Split * children;
 			int ID;
 		public:
 			//core 3
@@ -49,7 +49,7 @@ namespace imgpro
 			int getCols();
 			int getID();
 			std::vector<int> getDim();
-			std::vector<std::shared_ptr<Split>> getKids();
+			Split * getKids();
 			std::vector<imgdata::Voxel> getBoundary();
 
 			//operators
