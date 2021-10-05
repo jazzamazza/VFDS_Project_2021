@@ -3,14 +3,15 @@
 // 04/10/21
 
 #include "AdaptiveThreshold.h"
+#include <iostream>
 
 denoise::AdaptiveThreshold::AdaptiveThreshold() : dim(0) {}
 denoise::AdaptiveThreshold::AdaptiveThreshold(int dim) : dim(dim) {}
 denoise::AdaptiveThreshold::~AdaptiveThreshold() {}
 
 // returns a histogram containing the frequency of each pixel intensity across the source image
-std::vector<int> denoise::AdaptiveThreshold::getHistogram(unsigned char *** & source, int depth) {
-    std::vector<int> histogram(256);
+std::vector<int> denoise::AdaptiveThreshold::getHistogram(unsigned char *** & source, int depth, int max) {
+    std::vector<int> histogram(max+1);
     for (int i = 0; i < this->dim; ++i) {
         for (int j = 0; j < this->dim; ++j) {
             histogram.at((int)source[depth][i][j]) += 1;
@@ -31,10 +32,11 @@ void denoise::AdaptiveThreshold::getMean(int start, int end, double & mean, std:
     mean = mean/n;
 }
 
-unsigned char denoise::AdaptiveThreshold::getThreshold(std::vector<int> & histogram) {
+unsigned char denoise::AdaptiveThreshold::getThreshold(std::vector<int> & histogram, int max) {
     // Initialise the starting threshold T0 as the weighted average of the pixel intensities, based on their appearance in the hisogram
     double threshold = 0;
-    for (int i = 0; i < 256; ++i) {
+
+    for (int i = 0; i < max; ++i) {
         threshold += i*histogram.at(i);
     }
     threshold = threshold/(this->dim*this->dim);
@@ -49,7 +51,7 @@ unsigned char denoise::AdaptiveThreshold::getThreshold(std::vector<int> & histog
         double o_mean = 0, b_mean = 0;
 
         getMean(0, threshold+1, b_mean, histogram);
-        getMean(threshold+1, 256, o_mean, histogram);
+        getMean(threshold+1, max, o_mean, histogram);
 
         threshold_next = (b_mean + o_mean)/2;
     }
@@ -60,15 +62,24 @@ unsigned char denoise::AdaptiveThreshold::getThreshold(std::vector<int> & histog
 
 void denoise::AdaptiveThreshold::execute(unsigned char *** & source, unsigned char *** & target, int depth) {
     unsigned char *** src_copy = source;
-    std::vector<int> histogram = getHistogram(src_copy, depth);
-    unsigned char threshold = getThreshold(histogram);
+    // get the max pixel value in the image
+    int max = 0;
+    for (int k = 0; k < dim; ++k) {
+        for (int l = 0; l < dim; ++l) {
+            if (source[depth][k][l] > max)
+                max = source[depth][k][l];
+        }
+    }
+
+    std::vector<int> histogram = getHistogram(src_copy, depth, max);
+    unsigned char threshold = getThreshold(histogram, max);
     for (int i = 0; i < dim; ++i) {
         for (int j = 0; j < dim; ++j) {
-            if (source[depth][i][j] <= threshold) {
+            if (source[depth][i][j] < threshold) {
                 target[depth][i][j] = 0;
             }
             else {
-                target[depth][i][j] = 255;
+                target[depth][i][j] = max;
             }
         }
     }
