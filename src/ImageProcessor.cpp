@@ -14,6 +14,7 @@
 
 #include <iostream>
 using namespace imgdata;
+using namespace imgpro;
 
 //global
 int ID = 0;
@@ -51,6 +52,26 @@ void func::printCollection(std::vector<Fracture> & coll)
 	{
 		std::cout << *i << std::endl;
 	}
+}
+
+Voxel*** func::toVoxels(unsigned char *** &cube, int dim)
+{
+	imgdata::Voxel *** ret = new Voxel ** [dim];
+	for(int z = 0; z < dim; z++)
+	{
+		imgdata::Voxel ** layer = new Voxel * [dim];
+		for(int x = 0; x < dim; x++)
+		{
+			imgdata::Voxel * row = new Voxel [dim];
+			for(int y = 0; y < dim; y++)
+			{
+				row[y] = Voxel(x,y,z,cube[z][x][y]);
+			}
+			layer[x] = row;
+		}
+		ret[z] = layer;
+	}
+	return ret;
 }
 
 std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, int depth)

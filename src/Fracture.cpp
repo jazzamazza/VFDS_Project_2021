@@ -3,7 +3,7 @@
 // 24/08/21 
 
 #include "Fracture.h"
-
+using namespace imgpro;
 // default constructor
 imgdata::Fracture::Fracture(void) : coords(std::vector<imgdata::Voxel>()), numVoxels(0), fid(-1), colour("null") {}
 // custom constructor
