@@ -5,18 +5,14 @@
 #include "Voxel.h"
 
 // default constructor
-imgdata::Voxel::Voxel(void) : coords(std::vector<int>()), intensity(0) {}
+imgdata::Voxel::Voxel(void) : x(-1), y(-1), z(-1), intensity(0) {}
 // custom constructor
-imgdata::Voxel::Voxel(int x, int y, int z, unsigned char intensity) : intensity(intensity), coords(std::vector<int>()) {
-    coords.push_back(x);
-    coords.push_back(y);
-    coords.push_back(z);
-}
+imgdata::Voxel::Voxel(int x, int y, int z, unsigned char intensity) : x(x), y(y), z(z), intensity(intensity) {}
 
 imgdata::Voxel::~Voxel() {}
 
 // copy constructor
-imgdata::Voxel::Voxel(const Voxel& v) : coords(v.coords), intensity(v.intensity) {}
+imgdata::Voxel::Voxel(const Voxel& v) : x(v.x), y(v.y), z(v.z), intensity(v.intensity) {}
 
 // copy assignment operator
 imgdata::Voxel& imgdata::Voxel::operator=(const imgdata::Voxel& rhs) {
@@ -24,45 +20,37 @@ imgdata::Voxel& imgdata::Voxel::operator=(const imgdata::Voxel& rhs) {
     if(this != &rhs) {
         this->intensity = rhs.intensity;
 
-        if(!this->coords.empty()) {
-            coords.clear();
-        }
-
-        if(!rhs.coords.empty())
-            this->coords = rhs.coords;
+        this->x = rhs.x;
+	this->y = rhs.y;
+	this->z = rhs.z;
     }
 
     return *this;
 }
 
 // move constructor
-imgdata::Voxel::Voxel(imgdata::Voxel&& v) : coords(v.coords), intensity(v.intensity) {
-    v.coords.clear();
+imgdata::Voxel::Voxel(imgdata::Voxel&& v) : x(v.x), y(v.y), z(v.z), intensity(v.intensity) {
+    v.x = -1;
+    v.y = -1;
+    v.z = -1;
     v.intensity = 0;
 }
 
 imgdata::Voxel& imgdata::Voxel::operator=(imgdata::Voxel&& rhs) {
     // ensure that this is not self-assignment
     if(this != &rhs) {
-        this-> intensity = rhs.intensity;
-
-        if(!this->coords.empty()) {
-            this->coords.clear();
-        }
-
-        if(!rhs.coords.empty()) {
-            this->coords = rhs.coords;
-            rhs.coords.clear();
-        }
-
+        this->intensity = rhs.intensity;
+	this->x = rhs.x;
+	this->y = rhs.y;
+	this->z = rhs.z;
+       
+	rhs.x = -1;
+	rhs.y = -1;
+	rhs.z = -1;
         rhs.intensity = 0;
     }
 
     return *this;
-}
-
-const std::vector<int> imgdata::Voxel::getCoords() const{
-    return this->coords;
 }
 
 const unsigned char imgdata::Voxel::getIntensity() const {
@@ -70,39 +58,30 @@ const unsigned char imgdata::Voxel::getIntensity() const {
 }
 
 const int imgdata::Voxel::getX() const{
-    if(coords.size()==3)
-        return this->coords[0];
-    else
-        return -1;
+    return this->x;
 }
 
 const int imgdata::Voxel::getY() const{
-    if(coords.size()==3)
-        return this->coords[1];
-    else
-        return -1;
+    return this->y;
 }
 
 const int imgdata::Voxel::getZ() const {
-    if(coords.size()==3)
-        return this->coords[2];
-    else
-        return -1;
+    return this->z;
 }
 
 imgdata::Voxel imgdata::Voxel::operator+(const Voxel & v)
 {
 	Voxel temp(*this);
-	temp.coords[0] += v.coords[0];
-	temp.coords[1] += v.coords[1];
-	temp.coords[2] += v.coords[2];
+	temp.x += v.x;
+	temp.y += v.y;
+	temp.z += v.z;
 
 	return temp;
 }
 namespace imgdata{
 std::ostream & operator<<(std::ostream & out, const Voxel & v)
 {
-	out << "(" << v.coords[0] << ", " << v.coords[1] << ", " << v.coords[2] << ")-> " << int(v.intensity);   
+	out << "(" << v.x << ", " << v.y << ", " << v.z << ")-> " << int(v.intensity);   
 	return out;
 }
 }
@@ -126,7 +105,7 @@ bool imgdata::Voxel::operator==(const imgdata::Voxel & v) const
 {
 	Voxel temp(*this);
 	bool ret = false;
-	if( (temp.coords[0] == v.coords[0]) && (temp.coords[1] == v.coords[1]) && (temp.coords[2] == v.coords[2]) )
+	if( (temp.x == v.x) && (temp.y == v.y) && (temp.z == v.z) )
 	{
 		ret = true;
 	}
