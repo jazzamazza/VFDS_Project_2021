@@ -40,13 +40,19 @@ double denoise::AdaptiveThreshold::getMean(std::vector<int> & histogram) {
 // determine the local std dev of a pixel neighbourhood
 double denoise::AdaptiveThreshold::getStdDev(double mean, std::vector<int> & histogram) {
     double var = 0;
-    std::vector<int>::iterator it;
+    int n = 0;
     // accumulate the variance of the histogram
-    for(it = histogram.begin(); it != histogram.end(); ++it) {
-        var += std::pow(((*it)-mean), 2);
+    for(int i = 0; i < (int)histogram.size(); ++i) {
+        if (histogram.at(i) > 0) {
+            n += histogram.at(i);
+            for(int j = 0; j < histogram.at(i); ++j) {
+                var += std::pow(((i)-mean), 2);
+            }
+        }
     }
+
     // get the square root and return the std dev
-    return std::sqrt(var);
+    return std::sqrt(var/n);
 }
 
 
@@ -81,6 +87,7 @@ double denoise::AdaptiveThreshold::getStdDev(double mean, std::vector<int> & his
 
 void denoise::AdaptiveThreshold::execute(unsigned char *** & source, unsigned char *** & target, int depth) {
     // get the total cumulative value of the dataset and max pixel value in the image
+    double *** src_cpy = (double***)source;
     int max = 0;
     double total = 0;
 
@@ -131,15 +138,17 @@ void denoise::AdaptiveThreshold::execute(unsigned char *** & source, unsigned ch
             double local_mean = getMean(histogram);
             double std_dev = getStdDev(local_mean, histogram);
             double threshold = (sigma_m * mean) + (sigma_s * std_dev);
+             // clamp upper limit of threshold
+            if (threshold > 255)
+                threshold = 255;
 
             // use this to threshold the pixel
-            int lower = i-n_half;
-            int upper = i-n_half+1;
             // threshold the current pixel neighbourhood
-            for (int x = lower; x < upper; ++x) {
-                for(int y = lower; j < upper; ++j) {
+            for (int x = i-n_half; x < i+n_half+1; ++x) {
+                for(int y = j-n_half; y < j-n_half+1; ++y) {
                     if ((x >= 0 && x < dim) && (y >= 0 && y < dim)) {
-                        if (source[depth][x][y] < threshold)
+
+                        if (src_cpy[depth][x][y] < (unsigned char)threshold)
                             target[depth][x][y] = 0;
                         else
                             target[depth][x][y] = max;
