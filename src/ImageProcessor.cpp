@@ -504,6 +504,28 @@ void func::writeCube(const std::string & outFileName, Voxel*** sourceCube, int d
 
 }
 
+void func::writeCubeColour(std::string name, unsigned char *** RBGformat, int dim)
+{
+
+	for(int z = 0; z < dim; z++)
+	{
+		std::ofstream out("out/"+name+std::to_string(z)+".ppm", std::ofstream::binary);
+		out << "P6" << "\n";
+		out << dim << " ";
+		out << dim << "\n";
+		out << "255" << "\n";
+
+	        char* wbuf = new char[3];
+		for(int x = 0; x < dim*dim; x++)
+		{
+	                wbuf = reinterpret_cast<char *>(RBGformat[z][x]);
+	                out.write(wbuf, 3);
+		}
+		out.close();
+	}	
+
+}
+
 void func::writeRawCube(const std::string & outFileName, unsigned char*** cube, int dim)
 {
 	for(int z = 0; z < dim; z++)
@@ -538,12 +560,14 @@ void func::saveFracture(Fracture & fracture, std::string saveName)
 	out.close();
 }
 
-void func::saveGroupFractures(std::vector<Fracture> & fractures, char * folderName)
+void func::saveGroupFractures(std::vector<Fracture> & fractures, char * folderName, int dim)
 {
 	int check = mkdir(folderName, 0777);
 	std::string fn(folderName);
 	
 	std::ofstream out(fn+"/info.txt");
+
+	out << dim << "\n";
 
 	for(std::vector<Fracture>::iterator i = fractures.begin(); i != fractures.end(); ++i)
 	{
@@ -603,7 +627,8 @@ Fracture func::loadFracture(std::string fileName)
 std::vector<Fracture> func::loadGroupFractures(std::string folderName)
 {
 	std::ifstream in(folderName+"/info.txt");
-	
+	int dim;
+	in >> dim;
 	std::vector<Fracture> ret;
 
 	while(!in.eof())
@@ -620,3 +645,81 @@ std::vector<Fracture> func::loadGroupFractures(std::string folderName)
 	return ret;
 	
 }
+
+int func::loadDim(std::string folderName)
+{
+	std::ifstream in(folderName+"/info.txt");
+	int dim;
+	in >> dim;
+
+	return dim;
+
+}
+
+unsigned char *** func::preparePPMCube(int dim)
+{
+        unsigned char *** cube = new unsigned char ** [dim];
+        for(int z = 0; z < dim; z++)
+        {
+                //prepare output
+                unsigned char ** layer = new unsigned char * [dim*dim];
+                for(int x = 0; x < dim*dim; x++)
+                {
+                        unsigned char * row = new unsigned char[3];
+                        row[0] = 0;
+                       	row[1] = 0;
+                        row[2] = 0;
+                        layer[x] = row;
+                }
+                cube[z] = layer;
+        }
+	return cube;
+
+
+}
+
+
+
+unsigned char *** func::preparePPMCube(int dim, std::vector<Fracture> & fractures)
+{
+	std::vector< std::pair<std::string, std::vector<int>>> colours({std::pair("white", std::vector<int>({255,255,255})), std::pair("red", std::vector<int>({255,0,0})), std::pair("green", std::vector<int>({0,255,0})), std::pair("blue", std::vector<int>({0,0,255})), std::pair("yellow", std::vector<int>({0,255,255}))});        
+        unsigned char *** cube = new unsigned char ** [dim];
+        for(int z = 0; z < dim; z++)
+        {
+                //prepare output
+                unsigned char ** layer = new unsigned char * [dim*dim];
+                for(int x = 0; x < dim*dim; x++)
+                {
+                        unsigned char * row = new unsigned char[3];
+                        row[0] = 0;
+                       	row[1] = 0;
+                        row[2] = 0;
+                        layer[x] = row;
+                }
+                cube[z] = layer;
+        }
+	for(std::vector<Fracture>::iterator f = fractures.begin(); f != fractures.end(); ++f)
+	{
+		std::vector<Voxel> voxels = f->getCoords();
+		std::string colour = f->getColour();
+		for(std::vector<Voxel>::iterator v = voxels.begin(); v != voxels.end(); ++v)
+		{
+			for(int i = 0; i < colours.size(); i++)
+			{
+				if(colour == colours[i].first)
+				{
+					int x = v->getX()*dim + v->getY();
+					cube[v->getZ()][x][0] = colours[i].second[0];
+					cube[v->getZ()][x][1] = colours[i].second[1];
+					cube[v->getZ()][x][2] = colours[i].second[2];
+				}
+			}	
+		}
+	}
+	
+	return cube;
+
+
+}
+
+

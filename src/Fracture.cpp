@@ -195,3 +195,8 @@ void imgdata::Fracture::insertSplit(Split & s)
 		}
 	}
 }
+
+void imgdata::Fracture::setColour(std::string colour)
+{
+	this->colour = colour;
+}

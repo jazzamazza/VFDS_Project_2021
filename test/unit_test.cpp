@@ -9,6 +9,7 @@
 #include "src/PartData.h"
 #include "src/Voxel.h"
 #include "src/Fracture.h"
+#include "src/Split.h"
 
 TEST_CASE ("imgdata: Voxel class") {
     SECTION("Default Constructor") {
@@ -305,7 +306,10 @@ TEST_CASE ("imgread: CTReader class") {
     SECTION("readPGMStack Member Function") {
         // This checks that no seg faults take place during the read-in or de-allocation
         imgread::CTReader ctr;
-        auto testctr = ctr.imgread::CTReader::readPGMStack("cross", 128);
-        ctr.imgread::CTReader::deletePGMStack(testctr, 128);
+	std::string fname("images/cross256_14/test-D256-V3086-F14-.hdr");
+        auto testctr = ctr.imgread::CTReader::readPGMStack(fname);
     }
 }
+
+
+

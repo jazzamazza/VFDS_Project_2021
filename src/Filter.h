@@ -35,7 +35,6 @@ namespace imgfltr {
                     }
                 }
 		
-		std::cout << "here" << std::endl;
 
                 // Insert a Voxel item into the 3D array containing each coordinate point and the intensity at that point of the PGM image
                 // Necessary for split and merge algorithm
@@ -46,7 +45,6 @@ namespace imgfltr {
 			}
                     }
                 }
-		std::cout << "done" << std::endl;
                 return v_arr;
             }
 
