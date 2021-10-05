@@ -41,12 +41,8 @@ int main(int argc, char* argv[])
         std::cout << "CTReader end" << std::endl;
     
     	int dim = ctr.getDim(files);
-	imgfltr::BilateralFilter<unsigned char> bf(dim, 4, 0.005);
-	std::cout << "Filter Conversion start" << std::endl;
-	Voxel *** vox = bf.toVoxel(pgms);
-	std::cout << "Filter Conversion end" << std::endl;
-	
 
+	Voxel *** vox = func::toVoxels(pgms, dim);
 
 	std::cout << "Paint Background start" << std::endl;
 	func::paintBackground(vox, dim, dim, dim, 150);
