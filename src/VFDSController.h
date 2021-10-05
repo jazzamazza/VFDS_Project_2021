@@ -17,46 +17,58 @@ class VFDSController
 {
 private:
     /* data */
-    std::string headerFilePath;
-    std::string dataFolderPath;
-    std::string fractureFilePath;
-    std::string outputFile;
+
     imgread::CTReader ctReader;
-    std::vector<imgdata::Fracture> fractures;
-    unsigned char*** imageData;
 
-    int depth = 256;
+    std::string headerFilePath; //PGM Dataset .hdr file path
+    std::string dataFolderPath; //PGM Dataset folder path
 
-    imgfltr::BilateralFilter<unsigned char> bf;
+    std::string fractureFolderPath; //Fracture data input folder path
+    std::string outputFolderPath; //Fracture data output folder path
 
+    std::vector<imgdata::Fracture> fractures; //Vector of Fractures
 
+    unsigned char*** imageData; //Raw Array of pixel data
+    int depth = 0; //Dimensions of image stack
+    int imageN = 0;
+    std::string pgmPath;
 
+    //filters to do
+    imgfltr::BilateralFilter<unsigned char> bf; //Bilateral filter
 
-    //adaptive threshold stuff
-    //
+    //adaptive threshold stuff to do
 
-
-    //filters
-
-
-    enum traversalAxis {x,y,z} axis;
-    enum denoiseAlg{Median, Bilateral} denoise;//to do
+    enum traversalAxis {x,y,z} axis; //axis of traversal
+    enum denoiseAlg{Median, Bilateral} denoise; //to do
 
     bool newDataSet=true;
-    bool dataReadSuccess=false;
+    bool readDataSuccess=false;
     bool saveEnable=false;
     bool loadEnable=false;
     bool renderingOn=false;
 
-    //splitmerge vec fract len vec = n fracs
-
-
-
-
 public:
-    VFDSController(/* args */);
+    VFDSController(std::string &hdrFilePath);
     ~VFDSController();
 
+    void readData();
+
+    std::string getHeaderFilePath();
+    void setHeaderFilePath(const std::string &newHeaderFilePath);
+
+    std::string getDataFolderPath();
+    void setDataFolderPath(const std::string &newDataFolderPath);
+    void setDataFolderPath();
+
+    int getImageN() const;
+    void setImageN(int newImageN);
+    bool getReadDataSuccess() const;
+    const std::string &getPgmPath();
+    void setPgmPath();
+
+    void incImageN();
+    void decImageN();
+    int getDepth() const;
 };
 
 
