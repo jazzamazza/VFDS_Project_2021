@@ -4,8 +4,8 @@
 
 #include "AdaptiveThreshold.h"
 
-denoise::AdaptiveThreshold::AdaptiveThreshold() : dim(0), n_size(0) {}
-denoise::AdaptiveThreshold::AdaptiveThreshold(int dim, int n_size) : dim(dim), n_size(n_size) {}
+denoise::AdaptiveThreshold::AdaptiveThreshold() : dim(0) {}
+denoise::AdaptiveThreshold::AdaptiveThreshold(int dim) : dim(dim) {}
 denoise::AdaptiveThreshold::~AdaptiveThreshold() {}
 
 // returns a histogram containing the frequency of each pixel intensity across the source image
@@ -47,9 +47,9 @@ void denoise::AdaptiveThreshold::getMean(int start, int end, double & mean, std:
     }
 }*/
 
-unsigned char denoise::AdaptiveThreshold::getThreshold(unsigned char *** & source, std::vector<int> & histogram) {
+unsigned char denoise::AdaptiveThreshold::getThreshold(std::vector<int> & histogram) {
     // Initialise the starting threshold T0 as the weighted average of the pixel intensities, based on their appearance in the hisogram
-    double threshold;
+    double threshold = 0;
     for (int i = 0; i < 256; ++i) {
         threshold += i*histogram.at(i);
     }
@@ -78,7 +78,7 @@ unsigned char denoise::AdaptiveThreshold::getThreshold(unsigned char *** & sourc
 void denoise::AdaptiveThreshold::execute(unsigned char *** & source, unsigned char *** & target, int depth) {
     unsigned char *** src_copy = source;
     std::vector<int> histogram = getHistogram(src_copy, depth);
-    unsigned char threshold = getThreshold(source, histogram);
+    unsigned char threshold = getThreshold(histogram);
     for (int i = 0; i < dim; ++i) {
         for (int j = 0; j < dim; ++j) {
             if (source[depth][i][j] <= threshold) {

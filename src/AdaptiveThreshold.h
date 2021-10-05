@@ -8,15 +8,15 @@
 namespace denoise {
     class AdaptiveThreshold{
         private:
-            int dim, n_size;
+            int dim;
         public:
             AdaptiveThreshold();
-            AdaptiveThreshold(int dim, int n_size);
+            AdaptiveThreshold(int dim);
             ~AdaptiveThreshold();
 
             void execute(unsigned char *** & source, unsigned char *** & target, int depth);
             std::vector<int> getHistogram(unsigned char *** & source, int depth);
-            unsigned char getThreshold(unsigned char *** & source, std::vector<int> & histogram);
+            unsigned char getThreshold(std::vector<int> & histogram);
             void getMean(int start, int end, double & mean, std::vector<int> & histogram);
             void classify(double threshold, std::vector<int> & obj, std::vector<int> & bg);
 
