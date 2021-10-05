@@ -8,6 +8,8 @@ VFDS Main Window
 
 #include <QMainWindow>
 #include <QApplication>
+#include <QtGui>
+//#include <Qt>
 
 #include <QLabel>
 #include <QString>
@@ -15,28 +17,20 @@ VFDS Main Window
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
+#include <QScrollArea>
+#include <QFileDialog>
+#include <QStatusBar>
+
+#include <QLineEdit>
+#include <QMessageBox>
 
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
-#include <QtGui>
-//#include <Qt>
-
-#include <QLineEdit>
-#include <QMessageBox>
-
-#include <QScrollArea>
-#include <QFileDialog>
-#include <QStatusBar>
-
-#include "Split.h"
-#include "Voxel.h"
+#include "VFDSController.h"
 #include "ImageProcessor.h"
-#include "Fracture.h"
 #include "CTReader.h"
-
-using namespace imgdata;
 
 class MainWindow : public QMainWindow
 {
@@ -46,7 +40,6 @@ class MainWindow : public QMainWindow
         MainWindow(QWidget *parent = nullptr);
         ~MainWindow();
         bool loadFile(const QString &);
-
 
         imgread::CTReader *ctReader;
         std::string files = "";
@@ -65,13 +58,15 @@ class MainWindow : public QMainWindow
         //void normalSize();
         //void fitToWindow();
         void about();
+        void next();
+        void back();
 
 
-    private:
-    
-        //Driver Functions
-        int parseDim(std::string str);
-        std::string parseShape(std::string str);
+    private: 
+
+        const QString fractureLabelText = "Layer: ";
+        void displayImage();
+        VFDSController *vfdsController;
 
         //Init Methods
         void setupSignalsAndSlots();
@@ -109,7 +104,9 @@ class MainWindow : public QMainWindow
         QAction *quitAction;
         QAction *aboutAction;
         QAction *openAction;
-        //QAction *nextAction;
+        QAction *nextAction;
+        QAction *backAction;
+
         //QAction *cancelAction;
         //QAction *newAction;
         //QAction *saveAsAct;
@@ -123,7 +120,7 @@ class MainWindow : public QMainWindow
 
         //Labels
         QLabel *imageLabel;
-        QLabel *fracturesLabel;
+        QLabel *nFracturesLabel;
         QLabel *fractureLabel;
         QLabel *partLabel;
 

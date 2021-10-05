@@ -8,8 +8,8 @@ imgread::CTReader::CTReader(void) {
 }
 imgread::CTReader::~CTReader() {}
 
-int imgread::CTReader::getDim(std::string& hdrPath){
-    int dim;
+void imgread::CTReader::setDim(std::string &hdrPath)
+{
     std::ifstream in(hdrPath, std::ifstream::in);
     std::string line = "";
 
@@ -18,17 +18,44 @@ int imgread::CTReader::getDim(std::string& hdrPath){
     } while (line.at(0)=='#');
 
     dim = std::stoi(line);//catch conv error
-    return dim;
 }
 
-std::string imgread::CTReader::getDir(std::string& hdrPath){
-    std::string dir="";
+int imgread::CTReader::getDim(std::string& hdrPath)
+{
+    setDim(hdrPath);
+
+    if (dim>0){
+        return dim;
+    }
+    else
+        return -1;
+}
+
+int imgread::CTReader::getDim()
+{
+    if (dim>0){
+        return dim;
+    }
+    else
+        return -1;
+}
+
+void imgread::CTReader::setDir(std::string &hdrPath)
+{
     std::size_t endofpath = hdrPath.rfind("/");
 
     if (endofpath!=std::string::npos)
         dir = hdrPath.substr(0,endofpath);
-    //else
-        //some error
+}
+
+std::string imgread::CTReader::getDir(std::string& hdrPath)
+{
+    setDir(hdrPath);
+    return dir;
+}
+
+std::string imgread::CTReader::getDir()
+{
     return dir;
 }
 
@@ -183,5 +210,21 @@ unsigned char *** imgread::CTReader::readPGMStack(std::string& dir, int& dim)
 
     }
     return imgArr3D;
+}
+
+std::string imgread::CTReader::getPGM(std::string &hdrPath, const int& layer)
+{
+    std::string pgmFilePath="";
+    std::string fileName="";
+    std::string path=getDir(hdrPath);
+
+    std::size_t pathLen = getDir(hdrPath).length()+1;
+    std::size_t fileNameLen = hdrPath.rfind('.');
+    if (fileNameLen!=std::string::npos)
+        fileName = hdrPath.substr(pathLen,fileNameLen-pathLen);
+
+    pgmFilePath = path+"/"+fileName+std::to_string(layer)+".pgm";
+
+    return pgmFilePath;
 }
 
