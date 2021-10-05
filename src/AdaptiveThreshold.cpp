@@ -14,9 +14,15 @@ std::vector<int> denoise::AdaptiveThreshold::getHistogram(unsigned char *** & so
     int half_n = std::floor(this->n_size/2);
     for (int i = -half_n; i < half_n+1; ++i) {
         for (int j = -half_n; j < half_n+1; ++j) {
-            histogram.at((int)source[depth][i+col][j+row]) += 1;
+            // pad the boundaries with 0s
+            // the perimeter of all images should be background pixels anyway, so this will not drastically affect any calculations
+            if ((i+col < 0 || i+col >= this->dim) || (j+row < 0 || j+row >= this->dim))
+                histogram.at(0) += 1;
+            else
+                histogram.at((int)source[depth][i+col][j+row]) += 1;
         }
     }
+
     return histogram;
 }
 
@@ -28,13 +34,12 @@ double denoise::AdaptiveThreshold::getMean(std::vector<int> & histogram) {
         mean += i*histogram.at(i);
         n += histogram.at(i);
     }
-
     return mean/n;
 }
 
 // determine the local std dev of a pixel neighbourhood
 double denoise::AdaptiveThreshold::getStdDev(double mean, std::vector<int> & histogram) {
-    double var = 0;    
+    double var = 0;
     std::vector<int>::iterator it;
     // accumulate the variance of the histogram
     for(it = histogram.begin(); it != histogram.end(); ++it) {
@@ -44,11 +49,12 @@ double denoise::AdaptiveThreshold::getStdDev(double mean, std::vector<int> & his
     return std::sqrt(var);
 }
 
+
 // determine an adaptive threshold via successive refinement of the peak positions
-unsigned char denoise::AdaptiveThreshold::getThreshold(std::vector<int> & histogram, int max) {
+/*unsigned char denoise::AdaptiveThreshold::getThreshold() {
     // Initialise the starting threshold T0 as the weighted average of the pixel intensities, based on their appearance in the hisogram
-    double threshold = 0;
-    /*
+    double threshold = ;
+
     for (int i = 0; i < max; ++i) {
         threshold += i*histogram.at(i);
     }
@@ -67,14 +73,13 @@ unsigned char denoise::AdaptiveThreshold::getThreshold(std::vector<int> & histog
         getMean(threshold+1, max, o_mean, histogram);
 
         threshold_next = (b_mean + o_mean)/2;
-    }*/
+    }
 
     return threshold;
 
-}
+}*/
 
 void denoise::AdaptiveThreshold::execute(unsigned char *** & source, unsigned char *** & target, int depth) {
-    unsigned char *** src_copy = source;
     // get the total cumulative value of the dataset and max pixel value in the image
     int max = 0;
     double total = 0;
@@ -115,9 +120,32 @@ void denoise::AdaptiveThreshold::execute(unsigned char *** & source, unsigned ch
 
     // new code using local histograms over neighbourhoods of pixels
     // iterate over 2d image coordinates
-    for (int i = 0; i < dim; ++i) {
-        for (int j = 0; j < dim; ++j) {
-            
+    // determine half of the sliding pixel neighbourhood size
+    int n_half = std::floor(n_size/2);
+
+    for (int i = n_half; i < dim+n_size; i += n_size) {
+        for (int j = n_half; j < dim+n_size; j += n_size) {
+            // generate the local histogram
+            std::vector<int> histogram = getHistogram(source, depth, i, j, max);
+
+            double local_mean = getMean(histogram);
+            double std_dev = getStdDev(local_mean, histogram);
+            double threshold = (sigma_m * mean) + (sigma_s * std_dev);
+
+            // use this to threshold the pixel
+            int lower = i-n_half;
+            int upper = i-n_half+1;
+            // threshold the current pixel neighbourhood
+            for (int x = lower; x < upper; ++x) {
+                for(int y = lower; j < upper; ++j) {
+                    if ((x >= 0 && x < dim) && (y >= 0 && y < dim)) {
+                        if (source[depth][x][y] < threshold)
+                            target[depth][x][y] = 0;
+                        else
+                            target[depth][x][y] = max;
+                    }
+                }
+            }
         }
     }
 

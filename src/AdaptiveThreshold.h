@@ -5,6 +5,7 @@
 #define APADTIVETHRESHOLD_H
 #include <vector>
 #include <cmath>
+#include <iostream>
 
 namespace denoise {
     class AdaptiveThreshold{
