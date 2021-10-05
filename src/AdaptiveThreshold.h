@@ -20,7 +20,7 @@ namespace denoise {
             ~AdaptiveThreshold();
 
             void execute(unsigned char *** & source, unsigned char *** & target, int depth);
-            std::vector<int> getHistogram(unsigned char *** & source, int depth, int max);
+            std::vector<int> getHistogram(unsigned char *** & source, int depth, int col, int row, int max);
             unsigned char getThreshold(std::vector<int> & histogram, int max);
             void getMean(int start, int end, double & mean, std::vector<int> & histogram);
 

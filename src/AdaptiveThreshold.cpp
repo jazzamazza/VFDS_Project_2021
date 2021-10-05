@@ -9,11 +9,12 @@ denoise::AdaptiveThreshold::AdaptiveThreshold(int dim, int n_size, double sigma_
 denoise::AdaptiveThreshold::~AdaptiveThreshold() {}
 
 // returns a histogram containing the frequency of each pixel intensity across the source image
-std::vector<int> denoise::AdaptiveThreshold::getHistogram(unsigned char *** & source, int depth, int max) {
+std::vector<int> denoise::AdaptiveThreshold::getHistogram(unsigned char *** & source, int depth, int col, int row, int max) {
     std::vector<int> histogram(max+1);
-    for (int i = 0; i < this->dim; ++i) {
-        for (int j = 0; j < this->dim; ++j) {
-            histogram.at((int)source[depth][i][j]) += 1;
+    int half_n = std::floor(this->n_size/2);
+    for (int i = -half_n; i < half_n+1; ++i) {
+        for (int j = -half_n; j < half_n+1; ++j) {
+            histogram.at((int)source[depth][i+col][j+row]) += 1;
         }
     }
     return histogram;
@@ -104,7 +105,7 @@ void denoise::AdaptiveThreshold::execute(unsigned char *** & source, unsigned ch
     // iterate over 2d image coordinates
     for (int i = 0; i < dim; ++i) {
         for (int j = 0; j < dim; ++j) {
-
+            
         }
     }
 
