@@ -64,9 +64,14 @@ class MainWindow : public QMainWindow
         void detectFractures();
         void detectionDialogShow();
 
+    public slots:
+
+    signals:
+        
+
 
     private: 
-        QWidget *infoWidget;
+        
         DetectionDialog detectionDialog;
         const QString fractureLabelText = "Layer: ";
         const QString nFracturesLabelText = "Fractures detected: ";
@@ -95,7 +100,9 @@ class MainWindow : public QMainWindow
         double scaleFactor = 1;
 
         // Layout and Widgets
+
         QWidget *mainWidget;
+        QWidget *infoWidget;
         QHBoxLayout *centralWidgetLayout;
         QVBoxLayout *sidePanelLayout;
         QGridLayout *viewLayout;

@@ -76,14 +76,41 @@ void VFDSController::detectFractures()
 {
     if(readDataSuccess)
     {
+        
+        
+        
+    }
+}
+
+void VFDSController::charToVoxel()
+{
+    if(readDataSuccess)
+    {
         vimgData = func::toVoxels(imageData,depth);
-        std::cout << "char to voxel"<<std::endl;
+        voxelDataLoaded=true;
+    }
+       
+}
+
+void VFDSController::fillBackground()
+{
+    if(readDataSuccess && voxelDataLoaded)
+    {
+        func::paintBackground(vimgData,depth,depth,depth,150);
+        backgroundFilled = true;
+    }
+}
+
+void VFDSController::runSplitMerge()
+{
+    if(readDataSuccess && voxelDataLoaded && backgroundFilled){
         fractures = func::splitMerge(vimgData,depth,depth,depth);
-        std::cout << "sm done" <<std::endl;
         splitMergeSuccess=true;
         nFractures = fractures.size();
     }
 }
+
+
 
 std::string VFDSController::getHeaderFilePath()
 {
