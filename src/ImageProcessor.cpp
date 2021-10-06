@@ -792,4 +792,46 @@ unsigned char *** func::preparePPMCube(unsigned char *** & sourceCube, int dim, 
 
 }
 
+unsigned char *** func::transform(unsigned char *** & sourceCube, int dim, std::string axis)
+{
+	unsigned char *** newCube = new unsigned char ** [dim];
+	if( (axis == "y") || (axis == "Y") )
+	{
+		for(int z = 0; z < dim; z++)
+		{
+			unsigned char ** layer = new unsigned char * [dim]; 
+			for(int x = 0; x < dim; x++)
+			{
+				unsigned char * row = new unsigned char [dim];
+				for(int y = 0; y < dim; y++)
+				{
+					row[y] = std::move(sourceCube[y][x][z]);
+				}
+				layer[x] = row;
+			}
+			newCube[z] = layer;
+		}
+	}
+	else
+	{
+		for(int z = 0; z < dim; z++)
+		{
+			unsigned char ** layer = new unsigned char * [dim];
+			for(int x = 0; x < dim; x++)
+			{
+				unsigned char * row = new unsigned char [dim];
+				for(int y = 0; y < dim; y++)
+				{
+					row[y] = std::move(sourceCube[x][z][y]);
+				}
+				layer[x] = row;
+			}
+			newCube[z] = layer;
+		}
+	}
+	delete [] sourceCube;
+	return newCube;
+
+}	
+
 

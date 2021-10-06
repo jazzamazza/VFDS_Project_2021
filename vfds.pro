@@ -26,9 +26,9 @@ HEADERS += src/BackgroundData.h \
            src/mainwindow.h \
            src/PartData.h \
            src/Split.h \
-           src/VFDSController.h \
-           src/Voxel.h
-#           test/catch.hpp
+           src/Voxel.h \
+           test/catch.hpp \
+           src/AdaptiveThreshold.h
 SOURCES += src/BackgroundData.cpp \
            src/CTReader.cpp \
 #           src/Driver.cpp \
@@ -44,6 +44,7 @@ SOURCES += src/BackgroundData.cpp \
            src/Split.cpp \
            src/VFDSController.cpp \
            src/Voxel.cpp \
+           src/AdaptiveThreshold.cpp\
 #           test/speedTestDriver.cpp \
 #           test/SplitMergeTesting.cpp \
 #           test/unit_test.cpp

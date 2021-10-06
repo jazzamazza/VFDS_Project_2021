@@ -81,7 +81,7 @@ imgdata::Voxel imgdata::Voxel::operator+(const Voxel & v)
 namespace imgdata{
 std::ostream & operator<<(std::ostream & out, const Voxel & v)
 {
-	out << "(" << v.x << ", " << v.y << ", " << v.z << ")-> " << int(v.intensity);   
+	out << "(" << v.x << ", " << v.y << ", " << v.z << ")";   
 	return out;
 }
 }
