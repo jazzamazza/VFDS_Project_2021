@@ -94,15 +94,15 @@ int main(int argc, char* argv[])
 	}
 	std::cout << sum << " fractured voxels detected" << std::endl;
 	
-	func::writeToPGM("big", frac, dim);
-
-	/*testing save
+	//save
 	func::saveGroupFractures(frac, "f123", dim);
-	std::vector<Fracture> loaded = func::loadGroupFractures("f123");
-	int loadedDim = func::loadDim("f123");*/
 
-	unsigned char *** RBGformat = func::preparePPMCube(pgms, dim, frac);
-	func::writeCubeColour("fracsInColour", RBGformat, dim);
+	//load
+	std::vector<Fracture> loaded = func::loadGroupFractures("f123");
+	int loadedDim = func::loadDim("f123");
+
+	unsigned char *** RBGformat = func::preparePPMCube(pgms, loadedDim, loaded);
+	func::writeCubeColour("fracsInColour", RBGformat, loadedDim);
 
 
 
