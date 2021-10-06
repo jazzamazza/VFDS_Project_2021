@@ -30,14 +30,7 @@ MainWindow::~MainWindow()
 {
 }
 
-void MainWindow::setupLayout(){
-    centralWidgetLayout->addLayout(viewLayout);
-    //centralWidgetLayout->addWidget(mainWidget);
-    sidePanelLayout->addLayout(sidePanelButtonsLayout);
-    //centralWidgetLayout->addLayout(buttonsLayout);
-    centralWidgetLayout->addLayout(sidePanelLayout);
-    mainWidget->setLayout(centralWidgetLayout);
-}
+
 
 void MainWindow::setupCoreWidgets(){
     //Setup Widgets and Layout
@@ -54,20 +47,19 @@ void MainWindow::setupCoreWidgets(){
 
     //Setup labels
     imageLabel = new QLabel();
-    //imageLabel -> setMinimumSize(500,500);
-    imageLabel -> setFixedSize(500,500);
+    imageLabel -> setMinimumSize(600,600);
+    //imageLabel -> setFixedSize(500,500);
     imageLabel -> setBackgroundRole(QPalette::Base);
     imageLabel->setAlignment(Qt::AlignCenter);
-    //imageLabel -> setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    //imageLabel -> setScaledContents(true);
+    imageLabel -> setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    imageLabel -> setScaledContents(true);
 //todo
     scrollArea = new QScrollArea();
     scrollArea->setBackgroundRole(QPalette::Dark);
     scrollArea->setWidget(imageLabel);
-    scrollArea->setVisible(false);
-
-    imageLabel->setFrameShape(QFrame::StyledPanel);
-    //imageLabel->setFrameShadow(QFrame::Raised);
+    scrollArea->setAlignment(Qt::AlignCenter);
+    //scrollArea->setVisible(false);
+    scrollArea->setFrameShape(QFrame::StyledPanel);
 
     //Setup buttons
     //loadPushButton = new QPushButton("Load");
@@ -79,14 +71,14 @@ void MainWindow::setupCoreWidgets(){
     fileLineEdit = new QLineEdit();
 
     //Layout
-    viewLayout->addWidget(imageLabel, 0, 0);
+    viewLayout->addWidget(scrollArea, 0, 0);
     viewLayout->setColumnMinimumWidth(0,505);
     viewLayout->setRowMinimumHeight(0,505);
     //viewLayout->addWidget(imageLabel,1,0);
     //formLayout->addWidget(fileLineEdit,0,1);
     //gridLayout->addWidget(imageLabel,1,0);
 
-    sidePanelLayout->addWidget(nFracturesLabel = new QLabel(nFracturesLabelText));
+    sidePanelLayout->addWidget(nFracturesLabel = new QLabel(nFracturesLabelText + "unknown"));
     //nFracturesLabel->setText("Fractures detected: ");
 
     sidePanelLayout->addWidget(fractureLabel = new QLabel(fractureLabelText));
@@ -105,6 +97,15 @@ void MainWindow::setupCoreWidgets(){
     
 }
 
+void MainWindow::setupLayout(){
+    centralWidgetLayout->addLayout(viewLayout);
+    //centralWidgetLayout->addWidget(mainWidget);
+    sidePanelLayout->addLayout(sidePanelButtonsLayout);
+    //centralWidgetLayout->addLayout(buttonsLayout);
+    centralWidgetLayout->addLayout(sidePanelLayout);
+    mainWidget->setLayout(centralWidgetLayout);
+}
+
 void MainWindow::createMenus(){
     fileMenu = menuBar()->addMenu("&File");
 
@@ -112,7 +113,7 @@ void MainWindow::createMenus(){
     //detectionMenu = menuBar()->addMenu("Detection");
     toolsMenu = menuBar()->addMenu("&Tools");
 
-    detectionPreferences = new QAction("&Detection",this);
+    detectionPreferences = new QAction("&Detection Parameters",this);
     toolsMenu->addAction(detectionPreferences);
     
     //newAction = new QAction("&New", this);
@@ -177,20 +178,20 @@ void MainWindow::open(){
     //Get path to hdr file from fileDialog
     QString filename = fileDialog->getOpenFileName(this,tr("Choose"),"", tr("Header File (*.hdr)"));
 
-    if (QString::compare(filename,QString())!=0)//no file selected i.e. cancel open
+    if (QString::compare(filename,QString())!=0)//no file selected i.e. cancel clicked
     {
         std::string hdrFilePath = filename.toStdString();
 
+        //create new VFDSController for file
         vfdsController = new VFDSController(hdrFilePath);
-
-        //vfdsController->setHeaderFilePath(hdrFilePath);
 
         //Load data set
         vfdsController->readData();
 
-
         //if ct reader successfully reads data
         MainWindow::displayImage();
+        statusBar()->showMessage("Image loaded...");
+
         backPushButton->setEnabled(false);
         nextPushButton->setEnabled(true);
         nextAction->setEnabled(true);
@@ -255,8 +256,26 @@ void MainWindow::back()
 
 void MainWindow::detectFractures()
 {
-    vfdsController->detectFractures();
-    nFracturesLabel->setText(nFracturesLabelText+QString::number(vfdsController->getNFractures()));
+    statusBar()->showMessage("Fracture detection started...");
+    vfdsController->charToVoxel();
+    if (vfdsController->voxelDataLoaded)
+    {
+        statusBar()->showMessage("1/3: Raw data parsed...");
+        vfdsController->fillBackground();
+        if (vfdsController->backgroundFilled)
+        {
+            statusBar()->showMessage("2/3: Background data processed...");
+            vfdsController->runSplitMerge();
+            if (vfdsController->splitMergeSuccess)
+            {
+                statusBar()->showMessage("3/3: Fractures detected...");
+                nFracturesLabel->setText(nFracturesLabelText+QString::number(vfdsController->getNFractures()));
+            }
+        }
+    }
+    
+    
+    
 
 }
 
@@ -282,7 +301,8 @@ void MainWindow::displayImage()
             if(valid)
             {
                imageLabel->setPixmap(QPixmap::fromImage(image));
-               statusBar()->showMessage("Image loaded");
+              // scrollArea->setVisible(true);
+               
             }
             else
             {

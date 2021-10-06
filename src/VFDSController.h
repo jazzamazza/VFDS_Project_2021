@@ -45,10 +45,7 @@ private:
 
     bool newDataSet=true;
     bool readDataSuccess=false;
-    bool splitMergeSuccess=false;
-    bool saveEnable=false;
-    bool loadEnable=false;
-    bool renderingOn=false;
+    
 
 public:
     VFDSController(std::string &hdrFilePath);
@@ -74,8 +71,18 @@ public:
     void decImageN();
     int getDepth() const;
     std::size_t getNFractures() const;
+
+    void charToVoxel();
+    void fillBackground();
+    void runSplitMerge();
+
+    bool splitMergeSuccess=false;
+    bool saveEnable=false;
+    bool loadEnable=false;
+    bool renderingOn=false;
+    bool voxelDataLoaded=false;
+    bool backgroundFilled =false;
+
 };
-
-
 
 #endif
