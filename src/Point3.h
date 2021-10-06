@@ -11,7 +11,7 @@ namespace raycst {
     class Point3 : public Object3<int> {
         public:
             Point3();
-            Point3(int x, int y, int z);
+            Point3(int z, int y, int x);
             ~Point3();
             
             Point3(const Point3 & vec);
