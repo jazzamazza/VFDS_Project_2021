@@ -13,8 +13,19 @@
 
 #include <iostream>
 
-class VFDSController
+#include <QObject>
+
+class VFDSController : public QObject
 {
+    Q_OBJECT
+
+public slots:
+    
+
+signals:
+    void dataRead(bool read);
+   
+
 private:
     /* data */
 
@@ -41,15 +52,12 @@ private:
     //adaptive threshold stuff to do
 
     enum traversalAxis {x,y,z} axis; //axis of traversal
-    enum denoiseAlg{Median, Bilateral} denoise; //to do
-
-    bool newDataSet=true;
-    bool readDataSuccess=false;
-    
+    enum denoiseAlg{Median, Bilateral} denoise; //to do    
 
 public:
-    VFDSController(std::string &hdrFilePath);
+    VFDSController(std::string &hdrFilePath, QObject *parent);
     ~VFDSController();
+
 
     void readData();
     void detectFractures();
@@ -79,9 +87,12 @@ public:
     bool splitMergeSuccess=false;
     bool saveEnable=false;
     bool loadEnable=false;
+    bool detectEnable=false;
     bool renderingOn=false;
     bool voxelDataLoaded=false;
     bool backgroundFilled =false;
+    bool newDataSet=true;
+    bool readDataSuccess=false;
 
 };
 

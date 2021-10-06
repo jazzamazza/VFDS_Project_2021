@@ -65,6 +65,7 @@ class MainWindow : public QMainWindow
         void detectionDialogShow();
 
     public slots:
+        void dataLoaded(bool read);
 
     signals:
         
@@ -73,8 +74,8 @@ class MainWindow : public QMainWindow
     private: 
         
         DetectionDialog detectionDialog;
-        const QString fractureLabelText = "Layer: ";
-        const QString nFracturesLabelText = "Fractures detected: ";
+        const QString fractureLabelText = "Layer:\n";
+        const QString nFracturesLabelText = "Fractures detected:\n";
         void displayImage();
         VFDSController *vfdsController;
 
@@ -137,7 +138,9 @@ class MainWindow : public QMainWindow
         QLabel *imageLabel;
         QLabel *nFracturesLabel;
         QLabel *fractureLabel;
-        QLabel *partLabel;
+        QLabel *headingLabel;
+        QLabel *statisticsLabel;
+        
 
         //Buttons
         QPushButton *nextPushButton;
@@ -145,7 +148,6 @@ class MainWindow : public QMainWindow
         QPushButton *detectFracturesPushButton;
 
         //Input
-        QLineEdit *fileLineEdit;
         QFileDialog *fileDialog;
 };
 #endif // MAINWINDOW_H

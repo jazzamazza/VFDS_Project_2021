@@ -8,22 +8,19 @@ VFDS Main Window
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    //set window properties
     setWindowTitle("Volumetric Fracture Detection System");
-
-    //setSizePolicy(QSizePoli)
-
-    //setFixedSize(750,600);
     setMinimumSize(750,600);
     statusBar()->showMessage("Ready...");
 
+    //setup window
     setupCoreWidgets();
     setupLayout();
     createMenus();
-
     setCentralWidget(mainWidget);
 
+    //setup event handling
     setupSignalsAndSlots();
-    //std::cout << "width: " << imageLabel->size().width() << " height: "<< imageLabel->size().height();
 }
 
 MainWindow::~MainWindow()
@@ -31,106 +28,99 @@ MainWindow::~MainWindow()
 }
 
 
-
 void MainWindow::setupCoreWidgets(){
-    //Setup Widgets and Layout
-
+    //Setup Widgets
     mainWidget = new QWidget();
     infoWidget = new QWidget();
+
+    //Setup buttons
+    nextPushButton = new QPushButton("Next");
+    backPushButton = new QPushButton("Back");
+    detectFracturesPushButton = new QPushButton("Detect fractures");
+    nextPushButton->setEnabled(false);
+    backPushButton->setEnabled(false);
+    detectFracturesPushButton->setEnabled(false);
+
+    //Setup input
+    fileDialog = new QFileDialog();
+
+    //Setup labels and display
+    imageLabel = new QLabel();
+    imageLabel -> setMinimumSize(550,550);
+    imageLabel -> setBackgroundRole(QPalette::Base);
+    imageLabel->setAlignment(Qt::AlignCenter);
+    imageLabel -> setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    imageLabel -> setScaledContents(true);
+
+    statisticsLabel = new QLabel("Statistics");
+    QFont statFont = statisticsLabel->font();
+    statFont.setWeight(QFont::Bold);
+    statFont.setUnderline(true);
+    statisticsLabel->setFont(statFont);
+    statisticsLabel->setAlignment(Qt::AlignCenter);
+    nFracturesLabel = new QLabel(nFracturesLabelText + "unknown");
+    fractureLabel = new QLabel(fractureLabelText);
+    
+    scrollArea = new QScrollArea();
+    scrollArea->setBackgroundRole(QPalette::Dark);
+    scrollArea->setWidget(imageLabel);
+    scrollArea->setAlignment(Qt::AlignCenter);
+    //scrollArea->setVisible(false);
+    scrollArea->setFrameShape(QFrame::StyledPanel);    
+}
+
+void MainWindow::setupLayout(){
 
     centralWidgetLayout = new QHBoxLayout();
     viewLayout = new QGridLayout();
     sidePanelLayout = new QVBoxLayout();
     sidePanelButtonsLayout = new QHBoxLayout();
 
-    //sidePanelLayout
+    //Layout layouts
+    centralWidgetLayout->addLayout(viewLayout);
+    //centralWidgetLayout->addWidget(infoWidget);
+    centralWidgetLayout->addLayout(sidePanelLayout);
 
-    //Setup labels
-    imageLabel = new QLabel();
-    imageLabel -> setMinimumSize(600,600);
-    //imageLabel -> setFixedSize(500,500);
-    imageLabel -> setBackgroundRole(QPalette::Base);
-    imageLabel->setAlignment(Qt::AlignCenter);
-    imageLabel -> setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    imageLabel -> setScaledContents(true);
-//todo
-    scrollArea = new QScrollArea();
-    scrollArea->setBackgroundRole(QPalette::Dark);
-    scrollArea->setWidget(imageLabel);
-    scrollArea->setAlignment(Qt::AlignCenter);
-    //scrollArea->setVisible(false);
-    scrollArea->setFrameShape(QFrame::StyledPanel);
 
-    //Setup buttons
-    //loadPushButton = new QPushButton("Load");
-    nextPushButton = new QPushButton("Next");
-    backPushButton = new QPushButton("Back");
-    detectFracturesPushButton = new QPushButton("Detect fractures");
-
-    //Setup input
-    fileLineEdit = new QLineEdit();
-
-    //Layout
+    //Set up view layout
     viewLayout->addWidget(scrollArea, 0, 0);
-    viewLayout->setColumnMinimumWidth(0,505);
-    viewLayout->setRowMinimumHeight(0,505);
-    //viewLayout->addWidget(imageLabel,1,0);
-    //formLayout->addWidget(fileLineEdit,0,1);
-    //gridLayout->addWidget(imageLabel,1,0);
+    viewLayout->setColumnMinimumWidth(0,600);
+    viewLayout->setRowMinimumHeight(0,600);
 
-    sidePanelLayout->addWidget(nFracturesLabel = new QLabel(nFracturesLabelText + "unknown"));
-    //nFracturesLabel->setText("Fractures detected: ");
-
-    sidePanelLayout->addWidget(fractureLabel = new QLabel(fractureLabelText));
-    //fractureLabel->setText("Fracture");
-    //fractureLabel->setText("Layer: ");
+    //set up sidepanel layout
+    //sidePanelLayout->addStretch();
+    sidePanelLayout->addWidget(statisticsLabel);
+    sidePanelLayout->addWidget(nFracturesLabel);
+    sidePanelLayout->addWidget(fractureLabel);
     sidePanelLayout->addStretch();
     sidePanelLayout->addWidget(detectFracturesPushButton);
-
-
-    //sidePanelButtonsLayout->addStretch();
+    sidePanelLayout->addLayout(sidePanelButtonsLayout);
     sidePanelButtonsLayout->addWidget(nextPushButton);
     sidePanelButtonsLayout->addWidget(backPushButton);
 
-    nextPushButton->setEnabled(false);
-    backPushButton->setEnabled(false);
-    
-}
-
-void MainWindow::setupLayout(){
-    centralWidgetLayout->addLayout(viewLayout);
-    //centralWidgetLayout->addWidget(mainWidget);
-    sidePanelLayout->addLayout(sidePanelButtonsLayout);
-    //centralWidgetLayout->addLayout(buttonsLayout);
-    centralWidgetLayout->addLayout(sidePanelLayout);
     mainWidget->setLayout(centralWidgetLayout);
+
 }
 
 void MainWindow::createMenus(){
+    
     fileMenu = menuBar()->addMenu("&File");
 
-    //displayMenu = menuBar()->addMenu("Display");
-    //detectionMenu = menuBar()->addMenu("Detection");
-    toolsMenu = menuBar()->addMenu("&Tools");
-
-    detectionPreferences = new QAction("&Detection Parameters",this);
-    toolsMenu->addAction(detectionPreferences);
-    
-    //newAction = new QAction("&New", this);
-    //newAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
     openAction = new QAction("&Open", this);
     openAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_O));
     fileMenu->addAction(openAction);
-
-
-
-    
     fileMenu->addSeparator();
     quitAction = new QAction("Quit", this);
     quitAction->setShortcuts(QKeySequence::Quit);
     fileMenu->addAction(quitAction);
 
-    helpMenu = menuBar()->addMenu("Help");
+    toolsMenu = menuBar()->addMenu("&Tools");
+
+    detectionPreferences = new QAction("&Detection Parameters",this);
+    toolsMenu->addAction(detectionPreferences);
+
+    helpMenu = menuBar()->addMenu("&Help");
+
     aboutAction = new QAction("About", this);
     aboutAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_H));
     helpMenu->addAction(aboutAction);
@@ -139,7 +129,6 @@ void MainWindow::createMenus(){
 
 void MainWindow::setupSignalsAndSlots() {
     // Setup Signals and Slots
-
     nextAction = new QAction();
     nextAction -> setShortcut(QKeySequence(Qt::Key_Right));
     nextPushButton->addAction(nextAction);
@@ -149,9 +138,6 @@ void MainWindow::setupSignalsAndSlots() {
     backAction -> setShortcut(QKeySequence(Qt::Key_Left));
     backPushButton->addAction(backAction);
     backAction->setEnabled(false);
-
-    //detectFracturesAction = new QAction();
-    //detectFracturesPushButton->addAction(detectFracturesAction);
 
     connect(quitAction, &QAction::triggered, this, &QApplication::quit);
     connect(aboutAction, &QAction::triggered, this, &MainWindow::about);
@@ -167,14 +153,20 @@ void MainWindow::setupSignalsAndSlots() {
 
     connect(detectionPreferences, &QAction::triggered, this, &MainWindow::detectionDialogShow);
 
-    //connect(detectionPreferences, &QAction::triggered,DetectionDialog(this),detectionDialog.show());
+    //connect(vfdsController, &VFDSController::dataRead,this,&MainWindow::dataLoaded);
+
+    
 }
 
+void MainWindow::dataLoaded(bool read){
+    if (read)
+    {
+        detectFracturesPushButton->setEnabled(true);
+    }
+    
+}
 
 void MainWindow::open(){
-    //detectionDialog.show();
-    fileDialog = new QFileDialog();
-
     //Get path to hdr file from fileDialog
     QString filename = fileDialog->getOpenFileName(this,tr("Choose"),"", tr("Header File (*.hdr)"));
 
@@ -183,7 +175,7 @@ void MainWindow::open(){
         std::string hdrFilePath = filename.toStdString();
 
         //create new VFDSController for file
-        vfdsController = new VFDSController(hdrFilePath);
+        vfdsController = new VFDSController(hdrFilePath,this);
 
         //Load data set
         vfdsController->readData();
@@ -256,18 +248,26 @@ void MainWindow::back()
 
 void MainWindow::detectFractures()
 {
+    statusBar()->clearMessage();
     statusBar()->showMessage("Fracture detection started...");
+    
     vfdsController->charToVoxel();
     if (vfdsController->voxelDataLoaded)
     {
+        std::cout<<"load"<<std::endl;
+        statusBar()->clearMessage();
         statusBar()->showMessage("1/3: Raw data parsed...");
         vfdsController->fillBackground();
         if (vfdsController->backgroundFilled)
         {
+            std::cout<<"load"<<std::endl;
+            statusBar()->clearMessage();
             statusBar()->showMessage("2/3: Background data processed...");
             vfdsController->runSplitMerge();
             if (vfdsController->splitMergeSuccess)
             {
+                std::cout<<"load"<<std::endl;
+                statusBar()->clearMessage();
                 statusBar()->showMessage("3/3: Fractures detected...");
                 nFracturesLabel->setText(nFracturesLabelText+QString::number(vfdsController->getNFractures()));
             }

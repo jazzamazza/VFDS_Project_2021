@@ -50,8 +50,9 @@ std::size_t VFDSController::getNFractures() const
     return nFractures;
 }
 
-VFDSController::VFDSController(std::string &hdrFilePath){
+VFDSController::VFDSController(std::string &hdrFilePath, QObject *parent){
     headerFilePath = hdrFilePath;
+     //connect(this, &VFDSController::dataRead,this,&MainWindow::dataLoaded);
 }
 
 VFDSController::~VFDSController(){
@@ -70,14 +71,14 @@ void VFDSController::readData()
     depth = ctReader.getDim();
     dataFolderPath = ctReader.getDir();
     pgmPath = ctReader.getPGM(headerFilePath,imageN);
+
+    emit dataRead(readDataSuccess);
 }
 
 void VFDSController::detectFractures()
 {
     if(readDataSuccess)
     {
-        
-        
         
     }
 }
