@@ -8,6 +8,7 @@
 #include "CTReader.h"
 #include "Filter.h"
 //#include "mainwindow.h"
+#include "AdaptiveThreshold.h"
 
 #include <string>
 #include <vector>
@@ -27,7 +28,7 @@ public slots:
 
 signals:
     void dataRead(bool read);
-    void updateStatus(QString status);
+    void updateStatus(std::string status);
 
    
 
@@ -47,8 +48,13 @@ private:
 
     unsigned char*** imageData; //Raw Array of pixel data
     unsigned char*** colourImageData;
+    unsigned char*** thresholdImageData;
+
+
     int depth = 0; //Dimensions of image stack
     int imageN = 0;
+
+
     std::size_t nFractures = 0;
     std::string pgmPath;
 
@@ -65,11 +71,14 @@ public:
     VFDSController(std::string &hdrFilePath);
     ~VFDSController();
 
-    void loadFractures();
-    void saveFractures();
+    void loadFractures(std::string folderpath);
+    void saveFractures(std::string folderpath);
 
     void readData(std::string hdrFilePath);
     void detectFractures();
+
+    double sigma_s = 0.0;
+    double sigma_m = 0.0;
 
     std::string getHeaderFilePath();
     void setHeaderFilePath(const std::string &newHeaderFilePath);
@@ -89,9 +98,10 @@ public:
     int getDepth() const;
     std::size_t getNFractures() const;
 
-    void charToVoxel();
+    void charToVoxel(bool at);
     void fillBackground();
     void runSplitMerge();
+    //void charToVoxel(unsigned char*** atData);
 
 
 
@@ -99,12 +109,14 @@ public:
     bool saveEnable=false;
     bool loadEnable=false;
     bool detectEnable=false;
+    bool atEnable=false;
     bool renderingOn=false;
     bool voxelDataLoaded=false;
     bool backgroundFilled =false;
     bool newDataSet=true;
     bool readDataSuccess=false;
 
+    void applyThreshold();
 };
 
 #endif

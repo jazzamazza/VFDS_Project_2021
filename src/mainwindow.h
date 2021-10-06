@@ -29,6 +29,9 @@ VFDS Main Window
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
+#include <QDoubleSpinBox>
+#include <QCheckBox>
+
 #include "VFDSController.h"
 #include "ImageProcessor.h"
 #include "CTReader.h"
@@ -59,22 +62,24 @@ class MainWindow : public QMainWindow
         void next();
         void back();
         void detectFractures();
-        void detectionDialogShow();
-        void colourFracs();
+        //void detectionDialogShow();
+        //void thresholdQShow(QAbstractButton *button);
+
         void save();
         void load();
 
     public slots:
         void dataLoaded(bool read);
-        void statusChange(QString status);
+        void statusChange(std::string status);
+        void colourFracs();
 
     signals:
-        
+
 
 
     private: 
         
-        DetectionDialog detectionDialog;
+        //DetectionDialog detectionDialog;
         const QString fractureLabelText = "Layer:\n";
         const QString nFracturesLabelText = "Fractures detected:\n";
         void displayImage();
@@ -109,6 +114,7 @@ class MainWindow : public QMainWindow
         QVBoxLayout *sidePanelLayout;
         QGridLayout *viewLayout;
         QHBoxLayout *sidePanelButtonsLayout;
+        QGridLayout *sidePanel3DButtonsLayout;
 
         // Menus
         QMenu *fileMenu;
@@ -135,6 +141,10 @@ class MainWindow : public QMainWindow
         //QAction *zoomOutAction;
         //QAction *normalSizeAction;
         //QAction *fitToWindowAction;
+        QAction *upAction;
+        QAction *downAction;
+        QAction *leftAction;
+        QAction *rightAction;
 
         //Labels
         QLabel *imageLabel;
@@ -142,14 +152,28 @@ class MainWindow : public QMainWindow
         QLabel *fractureLabel;
         QLabel *headingLabel;
         QLabel *statisticsLabel;
+        QLabel *sigmLabel;
+        QLabel *sigsLabel;
         
 
         //Buttons
         QPushButton *nextPushButton;
         QPushButton *backPushButton;
         QPushButton *detectFracturesPushButton;
+        QPushButton *upButton;
+        QPushButton *downButton;
+        QPushButton *leftButton;
+        QPushButton *rightButton;
 
         //Input
         QFileDialog *fileDialog;
+        QMessageBox *atQuestion;
+        QDoubleSpinBox *sig_mSpin;
+        QDoubleSpinBox *sig_sSpin;
+        QCheckBox *thresholdCBox;
+
+
+
+
 };
 #endif // MAINWINDOW_H
