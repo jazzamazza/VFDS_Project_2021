@@ -9,18 +9,22 @@
 #include <iostream>
 
 namespace raycst {
+    template <typename T>
     class Object3 {
         public:
-            double x, y, z;
-            Object3();
-            Object3(double x, double y, double z);
-            ~Object3();
+            T x, y, z;
+            Object3() : x(0), y(0), z(0) {}
+            Object3(T x, T y, T z) : x(x), y(y), z(z) {}
+            ~Object3() {}
 
-            Object3 operator+(const Object3 & rhs);
+            Object3 operator+(const Object3 & rhs) {
+                    raycst::Object3 add((this->x+rhs.x), (this->y+rhs.y), (this->z+rhs.z));
+                    return add; 
+            }
 
-            const double getX() const;
-            const double getY() const;
-            const double getZ() const;
+            const T getX() const {return this->x;}
+            const T getY() const {return this->y;}
+            const T getZ() const {return this->z;}
 
     };
 }
