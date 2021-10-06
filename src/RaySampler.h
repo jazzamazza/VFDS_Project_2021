@@ -5,7 +5,7 @@
 #ifndef RAYSAMPLER_H
 #define RAYSAMPLER_H
 #include "VolumeVisualizer.h"
-#include "CTReader.h"
+#include <vector>
 
 namespace raycst {
     class RaySampler {
@@ -16,9 +16,9 @@ namespace raycst {
             RaySampler(int sz, int st);
             ~RaySampler();
 
-            raycst::Point3 ** buildSampleOrigins(unsigned char*** & source, VolumeVisualizer & vv, double w);
-            void sampleColour(double & cout, double & cin, double ccurrent, double opacity);
-
+            unsigned char ** sample(unsigned char*** & source, VolumeVisualizer & vv, double w);
+            void sampleColour(double & cout, double & cin, double ccurrent);
+            double shootRay(unsigned char*** & source, Vector3 direction, Point3 & origin);
 
     };
 }
