@@ -281,41 +281,86 @@ void MainWindow::about()
 
 void MainWindow::next()
 {
-    vfdsController.incImageN();
-    MainWindow::displayImage();
-    //fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()));
-    fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()+1)+"/"+QString::number(vfdsController.getDepth()));
+    if(!colourmade){
+        vfdsController.incImageN();
+        MainWindow::displayImage();
+        //fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()));
+        fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()+1)+"/"+QString::number(vfdsController.getDepth()));
 
-    if (vfdsController.getImageN()==vfdsController.getDepth()-1)
+        if (vfdsController.getImageN()==vfdsController.getDepth()-1)
+        {
+            nextPushButton->setEnabled(false);
+            nextAction->setEnabled(false);
+        }
+
+        if (vfdsController.getImageN() > 0)
+        {
+            backPushButton->setEnabled(true);
+            backAction->setEnabled(true);
+        }
+    }
+    else
     {
-        nextPushButton->setEnabled(false);
-        nextAction->setEnabled(false);
+        vfdsController.incImageN();
+        MainWindow::displaycImg();
+        //fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()));
+        fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()+1)+"/"+QString::number(vfdsController.getDepth()));
+
+        if (vfdsController.getImageN()==vfdsController.getDepth()-1)
+        {
+            nextPushButton->setEnabled(false);
+            nextAction->setEnabled(false);
+        }
+
+        if (vfdsController.getImageN() > 0)
+        {
+            backPushButton->setEnabled(true);
+            backAction->setEnabled(true);
+        }
     }
 
-    if (vfdsController.getImageN() > 0)
-    {
-        backPushButton->setEnabled(true);
-        backAction->setEnabled(true);
-    }
+
 }
 
 void MainWindow::back()
-{
-    vfdsController.decImageN();
-    MainWindow::displayImage();
-    //fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()));
-    fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()+1)+"/"+QString::number(vfdsController.getDepth()));
+{ 
 
-    if (vfdsController.getImageN() == 0)
-    {
-        backPushButton->setEnabled(false);
-        backAction->setEnabled(false);
+    if(!colourmade){
+        vfdsController.decImageN();
+        MainWindow::displayImage();
+        //fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()));
+        fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()+1)+"/"+QString::number(vfdsController.getDepth()));
+
+        if (vfdsController.getImageN() == 0)
+        {
+            backPushButton->setEnabled(false);
+            backAction->setEnabled(false);
+        }
+
+        if (vfdsController.getImageN() < vfdsController.getDepth()-1)
+        {
+            nextPushButton->setEnabled(true);
+            nextAction->setEnabled(true);
+        }
     }
-
-    if (vfdsController.getImageN() < vfdsController.getDepth()-1)
+    else
     {
-        nextPushButton->setEnabled(true);
-        nextAction->setEnabled(true);
+        vfdsController.decImageN();
+        MainWindow::displaycImg();
+        //fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()));
+        fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()+1)+"/"+QString::number(vfdsController.getDepth()));
+
+        if (vfdsController.getImageN() == 0)
+        {
+            backPushButton->setEnabled(false);
+            backAction->setEnabled(false);
+        }
+
+        if (vfdsController.getImageN() < vfdsController.getDepth()-1)
+        {
+            nextPushButton->setEnabled(true);
+            nextAction->setEnabled(true);
+        }
     }
 
 }
@@ -387,34 +432,10 @@ void MainWindow::detectFractures()
 void MainWindow::colourFracs()
 {
 vfdsController.colourFractures();
+colourmade=true;
+vfdsController.setImageN(0);
 
-if(vfdsController.getReadDataSuccess()){
 
-    std::string pgmFilePath = "out/colour0.ppm";
-
-    QString imgfile = QString::fromStdString(pgmFilePath);
-
-    if (pgmFilePath.compare("")!=0)
-    {
-        QImage image;
-        bool valid = image.load(imgfile);
-        //bool valid = true;
-        if(valid)
-        {
-           imageLabel->setPixmap(QPixmap::fromImage(image));
-          // scrollArea->setVisible(true);
-
-        }
-        else
-        {
-            QMessageBox::warning(this,"Invalid file","Please select a valid PGM file",QMessageBox::Ok,QMessageBox::Default);
-        }
-    }
-    else
-    {
-        QMessageBox::warning(this,"Invalid file path","Invalid file path",QMessageBox::Ok,QMessageBox::Default);
-    }
-}
 
 }
 
@@ -447,6 +468,37 @@ void MainWindow::displayImage()
                imageLabel->setPixmap(QPixmap::fromImage(image));
               // scrollArea->setVisible(true);
                
+            }
+            else
+            {
+                QMessageBox::warning(this,"Invalid file","Please select a valid PGM file",QMessageBox::Ok,QMessageBox::Default);
+            }
+        }
+        else
+        {
+            QMessageBox::warning(this,"Invalid file path","Invalid file path",QMessageBox::Ok,QMessageBox::Default);
+        }
+    }
+}
+
+void MainWindow::displaycImg()
+{
+    if(vfdsController.getReadDataSuccess()){
+
+        std::string pgmFilePath = "out/colour"+std::to_string(vfdsController.getImageN())+".ppm";
+
+        QString imgfile = QString::fromStdString(pgmFilePath);
+
+        if (pgmFilePath.compare("")!=0)
+        {
+            QImage image;
+            bool valid = image.load(imgfile);
+            //bool valid = true;
+            if(valid)
+            {
+               imageLabel->setPixmap(QPixmap::fromImage(image));
+              // scrollArea->setVisible(true);
+
             }
             else
             {

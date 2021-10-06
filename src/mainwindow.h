@@ -78,11 +78,12 @@ class MainWindow : public QMainWindow
 
 
     private: 
-        
+        bool colourmade;
         //DetectionDialog detectionDialog;
         const QString fractureLabelText = "Layer:\n";
         const QString nFracturesLabelText = "Fractures detected:\n";
         void displayImage();
+        void displaycImg();
         VFDSController vfdsController = VFDSController();
 
         //Init Methods
