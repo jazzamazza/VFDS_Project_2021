@@ -17,7 +17,7 @@ namespace raycst {
     class Vector3 : public Object3<double> {
         public:
             Vector3();
-            Vector3(double x, double y, double z);
+            Vector3(double z, double y, double x);
             ~Vector3();
             Vector3(const Vector3 & vec);
             Vector3& operator=(const Vector3 & rhs);
