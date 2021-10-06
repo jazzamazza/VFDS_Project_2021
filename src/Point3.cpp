@@ -3,13 +3,13 @@
 // 22/09/21
 #include "Point3.h"
 
-raycst::Point3::Point3() : raycst::Object3() {}
+raycst::Point3::Point3() : raycst::Object3<int>() {}
 
-raycst::Point3::Point3(double x, double y, double z) : raycst::Object3(x,y,z) {}
+raycst::Point3::Point3(int x, int y, int z) : raycst::Object3<int>(x,y,z) {}
 
 raycst::Point3::~Point3() {}
 
-raycst::Point3::Point3(const raycst::Point3 & pnt) : raycst::Object3(pnt.x, pnt.y,pnt.z) {}
+raycst::Point3::Point3(const raycst::Point3 & pnt) : raycst::Object3<int>(pnt.x, pnt.y,pnt.z) {}
 
 raycst::Point3& raycst::Point3::operator=(const raycst::Point3 & rhs) {
     if(this != &rhs) {
@@ -38,7 +38,7 @@ raycst::Vector3 raycst::Point3::operator-(const raycst::Point3 & rhs) {
 }
 
 
-raycst::Point3 raycst::Point3::operator*(double val) {
+raycst::Point3 raycst::Point3::operator*(int val) {
     raycst::Point3 multiply((this->x*val), (this->y*val), (this->z*val));
     return multiply;
 }

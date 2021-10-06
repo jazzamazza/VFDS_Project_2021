@@ -4,13 +4,13 @@
 
 #include "Vector3.h"
 
-raycst::Vector3::Vector3() : raycst::Object3(0,0,0) {}
+raycst::Vector3::Vector3() : raycst::Object3<double>(0,0,0) {}
 
 raycst::Vector3::~Vector3() {}
 
-raycst::Vector3::Vector3(double x, double y, double z) : raycst::Object3(x,y,z) {}
+raycst::Vector3::Vector3(double x, double y, double z) : raycst::Object3<double>(x,y,z) {}
 
-raycst::Vector3::Vector3(const raycst::Vector3 & vec) : raycst::Object3(vec.x, vec.y,vec.z) {}
+raycst::Vector3::Vector3(const raycst::Vector3 & vec) : raycst::Object3<double>(vec.x, vec.y,vec.z) {}
 
 raycst::Vector3& raycst::Vector3::operator=(const raycst::Vector3 & rhs) {
     if(this != &rhs) {

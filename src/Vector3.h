@@ -14,7 +14,7 @@ namespace raycst {
     // forward declaration
     class Point3;
 
-    class Vector3 : public Object3 {
+    class Vector3 : public Object3<double> {
         public:
             Vector3();
             Vector3(double x, double y, double z);
