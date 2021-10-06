@@ -22,6 +22,7 @@ HEADERS += src/BackgroundData.h \
            src/Fracture.h \
            src/ImageDataClass.h \
            src/ImageProcessor.h \
+           src/detectiondialog.h \
            src/mainwindow.h \
            src/PartData.h \
            src/Split.h \
@@ -35,6 +36,7 @@ SOURCES += src/BackgroundData.cpp \
            src/Fracture.cpp \
            src/ImageDataClass.cpp \
            src/ImageProcessor.cpp \
+           src/detectiondialog.cpp \
            src/main.cpp \
            src/mainwindow.cpp \
 #           src/misc.cpp \
@@ -45,3 +47,6 @@ SOURCES += src/BackgroundData.cpp \
 #           test/speedTestDriver.cpp \
 #           test/SplitMergeTesting.cpp \
 #           test/unit_test.cpp
+
+FORMS += \
+    src/detectiondialog.ui

@@ -8,7 +8,7 @@ VFDS Main Window
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
-    setWindowTitle("VFDS App");
+    setWindowTitle("Volumetric Fracture Detection System");
 
     //setSizePolicy(QSizePoli)
 
@@ -43,28 +43,37 @@ void MainWindow::setupCoreWidgets(){
     //Setup Widgets and Layout
 
     mainWidget = new QWidget();
+    infoWidget = new QWidget();
+
     centralWidgetLayout = new QHBoxLayout();
     viewLayout = new QGridLayout();
     sidePanelLayout = new QVBoxLayout();
     sidePanelButtonsLayout = new QHBoxLayout();
+
+    //sidePanelLayout
 
     //Setup labels
     imageLabel = new QLabel();
     //imageLabel -> setMinimumSize(500,500);
     imageLabel -> setFixedSize(500,500);
     imageLabel -> setBackgroundRole(QPalette::Base);
+    imageLabel->setAlignment(Qt::AlignCenter);
     //imageLabel -> setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    imageLabel -> setScaledContents(true);
+    //imageLabel -> setScaledContents(true);
 //todo
-    /*scrollArea = new QScrollArea();
+    scrollArea = new QScrollArea();
     scrollArea->setBackgroundRole(QPalette::Dark);
     scrollArea->setWidget(imageLabel);
-    scrollArea->setVisible(false);*/
+    scrollArea->setVisible(false);
+
+    imageLabel->setFrameShape(QFrame::StyledPanel);
+    //imageLabel->setFrameShadow(QFrame::Raised);
 
     //Setup buttons
     //loadPushButton = new QPushButton("Load");
     nextPushButton = new QPushButton("Next");
     backPushButton = new QPushButton("Back");
+    detectFracturesPushButton = new QPushButton("Detect fractures");
 
     //Setup input
     fileLineEdit = new QLineEdit();
@@ -77,13 +86,14 @@ void MainWindow::setupCoreWidgets(){
     //formLayout->addWidget(fileLineEdit,0,1);
     //gridLayout->addWidget(imageLabel,1,0);
 
-    sidePanelLayout->addWidget(nFracturesLabel = new QLabel());
-    nFracturesLabel->setText("Fractures detected: ");
+    sidePanelLayout->addWidget(nFracturesLabel = new QLabel(nFracturesLabelText));
+    //nFracturesLabel->setText("Fractures detected: ");
 
-    sidePanelLayout->addWidget(fractureLabel = new QLabel());
-    fractureLabel->setText("Fracture");
-    fractureLabel->setText("Layer: ");
+    sidePanelLayout->addWidget(fractureLabel = new QLabel(fractureLabelText));
+    //fractureLabel->setText("Fracture");
+    //fractureLabel->setText("Layer: ");
     sidePanelLayout->addStretch();
+    sidePanelLayout->addWidget(detectFracturesPushButton);
 
 
     //sidePanelButtonsLayout->addStretch();
@@ -97,12 +107,21 @@ void MainWindow::setupCoreWidgets(){
 
 void MainWindow::createMenus(){
     fileMenu = menuBar()->addMenu("&File");
+
+    //displayMenu = menuBar()->addMenu("Display");
+    //detectionMenu = menuBar()->addMenu("Detection");
+    toolsMenu = menuBar()->addMenu("&Tools");
+
+    detectionPreferences = new QAction("&Detection",this);
+    toolsMenu->addAction(detectionPreferences);
     
     //newAction = new QAction("&New", this);
     //newAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
     openAction = new QAction("&Open", this);
     openAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_O));
     fileMenu->addAction(openAction);
+
+
 
     
     fileMenu->addSeparator();
@@ -130,6 +149,9 @@ void MainWindow::setupSignalsAndSlots() {
     backPushButton->addAction(backAction);
     backAction->setEnabled(false);
 
+    //detectFracturesAction = new QAction();
+    //detectFracturesPushButton->addAction(detectFracturesAction);
+
     connect(quitAction, &QAction::triggered, this, &QApplication::quit);
     connect(aboutAction, &QAction::triggered, this, &MainWindow::about);
     connect(openAction, &QAction::triggered, this, &MainWindow::open);
@@ -139,8 +161,17 @@ void MainWindow::setupSignalsAndSlots() {
 
     connect(backPushButton,SIGNAL(clicked()),this,SLOT(back()));
     connect(backAction, &QAction::triggered, this, &MainWindow::back);
+
+    connect(detectFracturesPushButton,SIGNAL(clicked()),this,SLOT(detectFractures()));
+
+    connect(detectionPreferences, &QAction::triggered, this, &MainWindow::detectionDialogShow);
+
+    //connect(detectionPreferences, &QAction::triggered,DetectionDialog(this),detectionDialog.show());
 }
+
+
 void MainWindow::open(){
+    //detectionDialog.show();
     fileDialog = new QFileDialog();
 
     //Get path to hdr file from fileDialog
@@ -157,6 +188,7 @@ void MainWindow::open(){
         //Load data set
         vfdsController->readData();
 
+
         //if ct reader successfully reads data
         MainWindow::displayImage();
         backPushButton->setEnabled(false);
@@ -164,7 +196,7 @@ void MainWindow::open(){
         nextAction->setEnabled(true);
         backAction->setEnabled(true);
 
-        fractureLabel->setText(fractureLabelText+QString::number(vfdsController->getImageN()));
+        fractureLabel->setText(fractureLabelText+QString::number(vfdsController->getImageN()+1)+"/"+QString::number(vfdsController->getDepth()));
     }
     else
     QMessageBox::warning(this,"No file selected","Please select a file",QMessageBox::Ok,QMessageBox::Default);
@@ -184,7 +216,8 @@ void MainWindow::next()
 {
     vfdsController->incImageN();
     MainWindow::displayImage();
-    fractureLabel->setText(fractureLabelText+QString::number(vfdsController->getImageN()));
+    //fractureLabel->setText(fractureLabelText+QString::number(vfdsController->getImageN()));
+    fractureLabel->setText(fractureLabelText+QString::number(vfdsController->getImageN()+1)+"/"+QString::number(vfdsController->getDepth()));
 
     if (vfdsController->getImageN()==vfdsController->getDepth()-1)
     {
@@ -203,7 +236,8 @@ void MainWindow::back()
 {
     vfdsController->decImageN();
     MainWindow::displayImage();
-    fractureLabel->setText(fractureLabelText+QString::number(vfdsController->getImageN()));
+    //fractureLabel->setText(fractureLabelText+QString::number(vfdsController->getImageN()));
+    fractureLabel->setText(fractureLabelText+QString::number(vfdsController->getImageN()+1)+"/"+QString::number(vfdsController->getDepth()));
 
     if (vfdsController->getImageN() == 0)
     {
@@ -217,6 +251,18 @@ void MainWindow::back()
         nextAction->setEnabled(true);
     }
 
+}
+
+void MainWindow::detectFractures()
+{
+    vfdsController->detectFractures();
+    nFracturesLabel->setText(nFracturesLabelText+QString::number(vfdsController->getNFractures()));
+
+}
+
+void MainWindow::detectionDialogShow()
+{
+    detectionDialog.show();
 }
 
 void MainWindow::displayImage()

@@ -45,6 +45,11 @@ int VFDSController::getDepth() const
     return depth;
 }
 
+std::size_t VFDSController::getNFractures() const
+{
+    return nFractures;
+}
+
 VFDSController::VFDSController(std::string &hdrFilePath){
     headerFilePath = hdrFilePath;
 }
@@ -55,14 +60,29 @@ VFDSController::~VFDSController(){
 void VFDSController::readData()
 {
     imageData=ctReader.readPGMStack(headerFilePath);
+    //std::cout << (sizeof(unsigned char)*256*256*265)/1024/1024<<" megabytes is size of imgdata"<<std::endl;
+    //std::cout << (sizeof(imgdata::Voxel)*256*256*265)/1024/1024<<" megabytes is size of voxel rep of imgdata"<<std::endl;
+    //std::cout << sizeof(int)*3<<" bytes is 3 int"<<std::endl;
+    //std::cout << sizeof(std::vector<int>)*3<<" bytes is 3 vector of int"<<std::endl;
 
     readDataSuccess=true;
     imageN = 0;
     depth = ctReader.getDim();
     dataFolderPath = ctReader.getDir();
-    pgmPath=ctReader.getPGM(headerFilePath,imageN);
+    pgmPath = ctReader.getPGM(headerFilePath,imageN);
+}
 
-    //func::splitMerge()
+void VFDSController::detectFractures()
+{
+    if(readDataSuccess)
+    {
+        vimgData = func::toVoxels(imageData,depth);
+        std::cout << "char to voxel"<<std::endl;
+        fractures = func::splitMerge(vimgData,depth,depth,depth);
+        std::cout << "sm done" <<std::endl;
+        splitMergeSuccess=true;
+        nFractures = fractures.size();
+    }
 }
 
 std::string VFDSController::getHeaderFilePath()

@@ -19,6 +19,7 @@ private:
     /* data */
 
     imgread::CTReader ctReader;
+    imgdata::Voxel*** vimgData;
 
     std::string headerFilePath; //PGM Dataset .hdr file path
     std::string dataFolderPath; //PGM Dataset folder path
@@ -31,6 +32,7 @@ private:
     unsigned char*** imageData; //Raw Array of pixel data
     int depth = 0; //Dimensions of image stack
     int imageN = 0;
+    std::size_t nFractures = 0;
     std::string pgmPath;
 
     //filters to do
@@ -43,6 +45,7 @@ private:
 
     bool newDataSet=true;
     bool readDataSuccess=false;
+    bool splitMergeSuccess=false;
     bool saveEnable=false;
     bool loadEnable=false;
     bool renderingOn=false;
@@ -52,6 +55,7 @@ public:
     ~VFDSController();
 
     void readData();
+    void detectFractures();
 
     std::string getHeaderFilePath();
     void setHeaderFilePath(const std::string &newHeaderFilePath);
@@ -69,6 +73,7 @@ public:
     void incImageN();
     void decImageN();
     int getDepth() const;
+    std::size_t getNFractures() const;
 };
 
 
