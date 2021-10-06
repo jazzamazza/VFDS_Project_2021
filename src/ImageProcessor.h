@@ -62,9 +62,6 @@ namespace func
 	//load dimensions
 	int loadDim(std::string folderName);
 
-	//prepare cube for ppm format
-	unsigned char *** preparePPMCube(int dim);
-
 	//prepare cube for ppm with fractures
 	unsigned char *** preparePPMCube(unsigned char *** & sourceCube, int dim, std::vector<imgdata::Fracture> & fractures);
 

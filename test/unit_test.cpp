@@ -334,8 +334,8 @@ TEST_CASE("imgpro: Split Class")
 	{
 		imgpro::Split s;
 		REQUIRE(s.getData() == nullptr);
-		REQUIRE(s.getAllFrac() == NULL);
-		REQUIRE(s.getSomeFrac() == NULL);
+		REQUIRE(s.getAllFrac() == false);
+		REQUIRE(s.getSomeFrac() == true);
 		REQUIRE(s.getDepth() == 0);
 		REQUIRE(s.getRows() == 0);
 		REQUIRE(s.getCols() == 0);
@@ -346,8 +346,8 @@ TEST_CASE("imgpro: Split Class")
 		imgpro::Split s(cube, dim, dim, dim);
 
 		REQUIRE(s.getData() == cube);
-		REQUIRE(s.getAllFrac() == NULL);
-		REQUIRE(s.getSomeFrac() == NULL);
+		REQUIRE(s.getAllFrac() == false);
+		REQUIRE(s.getSomeFrac() == true);
 		REQUIRE(s.getDepth() == dim);
 		REQUIRE(s.getRows() == dim);
 		REQUIRE(s.getCols() == dim);
@@ -371,8 +371,8 @@ TEST_CASE("imgpro: Split Class")
 		imgpro::Split s2(imgpro::Split(cube,dim,dim,dim));
 
 
-		REQUIRE(s2.getAllFrac() == NULL);
-		REQUIRE(s2.getSomeFrac() == NULL);
+		REQUIRE(s2.getAllFrac() == false);
+		REQUIRE(s2.getSomeFrac() == true);
 		REQUIRE(s2.getDepth() == dim);
 		REQUIRE(s2.getRows() == dim);
 		REQUIRE(s2.getCols() == dim);
@@ -395,8 +395,8 @@ TEST_CASE("imgpro: Split Class")
 	{
 		imgpro::Split s2 = imgpro::Split(cube, dim, dim, dim);
 	
-		REQUIRE(s2.getAllFrac() == NULL);
-		REQUIRE(s2.getSomeFrac() == NULL);
+		REQUIRE(s2.getAllFrac() == false);
+		REQUIRE(s2.getSomeFrac() == true);
 		REQUIRE(s2.getDepth() == dim);
 		REQUIRE(s2.getRows() == dim);
 		REQUIRE(s2.getCols() == dim);

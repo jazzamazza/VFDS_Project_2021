@@ -8,7 +8,7 @@
 #include <sstream>
 #include <fstream>
 
-//#include <bits/stdc++.h>
+#include <bits/stdc++.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -16,34 +16,36 @@
 using namespace imgdata;
 using namespace imgpro;
 
-//global
+
+//recursively cuts parent into child splits until only comprised of
+//fractured voxels, then makes a fracture and collects it
 void func::split(Split & parent, std::vector<Fracture> & collector, int threshold, int & idCount)
 {
         if(parent.getAllFrac()) //if all 0's
         {
-		//std::cout << "all\n" << parent << std::endl;
-		Fracture f(idCount++, "black");
-		f.insertSplit(parent);
-                collector.push_back(f);
+		Fracture f(idCount++, "black"); //create Fracture
+		f.insertSplit(parent); //insert Voxels from split into Fracture
+                collector.push_back(f); //add fracture to collector
 
         }
-        else
+        else //not all 0's so partition
         {
-                parent.cut();
-                Split * kids = parent.getKids();
-                for(int i = 0; i < 8; i++)
+                parent.cut(); //divides dataset into children
+                Split * kids = parent.getKids(); //retreives children
+                for(int i = 0; i < 8; i++) 
                 {
-                        Split kid = kids[i];
-			kid.test(threshold);
+                        Split kid = kids[i]; //for each child
+			kid.test(threshold); //test child to see if has any 0's/only 0's
                         if(kid.getSomeFrac()) //if any 0's
                         {
-				//std::cout << "some\n" << *kid << std::endl;
-                                split(kid, collector, threshold, idCount);
+                                split(kid, collector, threshold, idCount); //split again
                         }
+			//if doesnt have any 0's then can discard this children
                 }
         }
 }
 
+//tracing method
 void func::printCollection(std::vector<Fracture> & coll)
 {
 	for(std::vector<Fracture>::iterator i = coll.begin(); i != coll.end(); ++i)
@@ -52,6 +54,7 @@ void func::printCollection(std::vector<Fracture> & coll)
 	}
 }
 
+//convert dataset of unsigned chars to voxels
 Voxel*** func::toVoxels(unsigned char *** &cube, int dim)
 {
 	imgdata::Voxel *** ret = new Voxel ** [dim];
@@ -72,96 +75,95 @@ Voxel*** func::toVoxels(unsigned char *** &cube, int dim)
 	return ret;
 }
 
+//merges connecting fractures
 std::vector<Fracture> func::merge(std::vector<Fracture> & collection)
 {
+	//First Merge Portion (not comprehensive)
+	//Based for Classic Merge-Sort Alg
 	bool change(true);
 	while(change)
 	{
 		change = false;
 		std::vector<int> toErase;
-	        //iterate through the collected fracture Objects. (fractured pixels)
+
+	        //iterate through collection of Fractures 2 by 2
 	        for(int i = 0; i + 1 < collection.size(); i+=2)
 	        {
-			//std::cout << collection[i] << std::endl;
-			//std::cout << collection[i+1] << std::endl;	
-			if(collection[i].meets(collection[i+1]) )
+			if(collection[i].meets(collection[i+1]) ) //if they meet
 			{
 				change = true;
-				collection[i].join(collection[i+1]);
-				//std::cout << "PB " << i +1 << std::endl;
-				toErase.push_back(i+1);
+				collection[i].join(collection[i+1]); //move Voxels into first fracture
+				toErase.push_back(i+1); //add second fracture to erase vector
 			}
-			else
+			else //they don't meet
 			{
-				if(collection[i] > collection[i+1])
+				if(collection[i] > collection[i+1]) //if the first fracture is bigger(further from the origin) than the second
 				{
+					//swap positions in vector
 					Fracture temp = collection[i];
-					collection[i] = collection[i+1];
+					collection[i] = collection[i+1]; 
 					collection[i+1] = temp;
 				}
 			}
 		}
-		//func::printCollection(collection);
-		//std::cout << "erasing" << std::endl;
+		//erase all fractures that were joined to another
 		for(int e = toErase.size()-1; e >= 0; e--)
 		{
-			//std::cout << toErase[e] << std::endl;
 			collection.erase(collection.begin() + toErase[e]);
 		}
-		//func::printCollection(collection);
 
 	}
-	//std::cout << "Merge again" << std::endl;
+
+	//Second Merge Portion (comprehensive)
+	//Exhaustitive checking
 	change = true;
         while(change)
         {
                 change = false;
                 std::set<int> toErase;
 		std::set<int> usedSet;
-                //iterate through the collected fracture Objects. (fractured pixels)
+                //iterate through the collected fractures
                 for(int i = 0; i < collection.size(); i++)
                 {
-			if(usedSet.find(i) == usedSet.end())
+			if(usedSet.find(i) == usedSet.end()) //check that it hasnt been used already
 			{
-				for(int p = 0; p < collection.size(); p++)
+				//iterator through collected fractures
+				for(int p = 0; p < collection.size(); p++) 
 				{
-					if(usedSet.find(p) == usedSet.end())
+					if(usedSet.find(p) == usedSet.end()) //check that it hasnt been used already
 					{
-						if(collection[i].getID() != collection[p].getID())
+						if(collection[i].getID() != collection[p].getID()) //check they arent the same fracture
 						{
-							if(collection[i].meets(collection[p]))
+							if(collection[i].meets(collection[p])) //if they meet
 							{
-								collection[i].join(collection[p]);
-								toErase.insert(p);
-								change = true;
-								usedSet.insert(p);
+								collection[i].join(collection[p]); //move voxels into one fracture
+								toErase.insert(p); //add other to erase vector
+								change = true; //change has occurred
+								usedSet.insert(p); //can't use again
 							}
 						}
 					}
 				}
 			}
                 }
+		//erase all fractures that were joined to another
                 for(std::set<int>::reverse_iterator e = toErase.rbegin(); e != toErase.rend(); ++e)
                 {
                         collection.erase(collection.begin() + *e);
                 }
 
         }
-
 	return collection;
-
 }
 
+//Encapsulates Split and Merge
 std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, int depth)
 {
-	//Start Split and merge
+	//Create Mothersplit
         Split MotherSplit(imgArr3D, depth, rows, cols);
-        //std::cout << "MotherSplit"<< std::endl;    //uncomment for case demo
 
-        //initiate collection
-
-	int threshold = 50;
         //test before collect
+	int threshold = 50;
         MotherSplit.test(threshold);
 
         //collect 
@@ -169,15 +171,12 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 	int idCount(0);
         func::split(MotherSplit, collection, threshold, idCount);
 
-        //print
-       // std::cout << "collected" << std::endl;
-        //func::printCollection(collection);
-
-	//loop
+	//return merged collection
 	return func::merge(collection);
 
 }
 
+//returns a portion of layer as a vector of voxels
 std::vector<Voxel> func::getBlock(Voxel ** & layer, int r, int c, int sizeX, int sizeY)
 {
 	std::vector<Voxel> ret;
@@ -191,8 +190,12 @@ std::vector<Voxel> func::getBlock(Voxel ** & layer, int r, int c, int sizeX, int
 	return ret;
 }
 
+//paint background to an intensity (val)
+//by tranversing the dataset with a 3by3 'paintbrush' 
+//until either the edge of the dataset or the part is found
 void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int val)
 {
+	//for each CT Scan
 	for(int z = 0; z < depth; z++)
 	{
 		Voxel ** layer = cube[z];
@@ -250,7 +253,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 			c = 0;
 			r += 3;
 		}
-		//rightside
+		//right to left
 		r = 0;
                	c = cols-3;
 
@@ -307,7 +310,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                         c = cols-3;
                         r += 3;
                 }
-		//top side
+		//top to bottom
 		r = 0;
                 c = 0;
                 hit = false;
@@ -325,7 +328,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 
                         while( (!hit) && (r < rows) )
                         {
-				int SC(2);
+				int SC(2); //second chance
                                 std::vector<Voxel> block;
                                 int rowSize;
                                 if(r+3 < rows)
@@ -363,7 +366,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                         r = 0;
                         c += 3;
                 }
-		//bottom
+		//bottom to top
 		r = rows-3;
                 c = 0;
 
@@ -395,7 +398,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                                 else
                                 {
                                         rowSize = 3;
-                                        jump = r; //revisit this line
+                                        jump = r;
 					if(jump == 0)
 					{
 						jump++;	
@@ -432,6 +435,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 	
 }
 
+//writes fractures onto blank (black) pgms in white
 void func::writeToPGM(const std::string & outFileName, std::vector<Fracture> collection, int dim)
 {
 	unsigned char *** cube = new unsigned char ** [dim];
@@ -496,6 +500,8 @@ void func::writeToPGM(const std::string & outFileName, std::vector<Fracture> col
 
 
 }
+
+//writes 3D structure(type: Voxel) to PGMS
 void func::writeCube(const std::string & outFileName, Voxel*** sourceCube, int dim)
 {
 	unsigned char *** cube = new unsigned char ** [dim];
@@ -548,6 +554,7 @@ void func::writeCube(const std::string & outFileName, Voxel*** sourceCube, int d
 
 }
 
+//writes 3D structure to PPM (colour)
 void func::writeCubeColour(std::string name, unsigned char *** RBGformat, int dim)
 {
 
@@ -570,6 +577,7 @@ void func::writeCubeColour(std::string name, unsigned char *** RBGformat, int di
 
 }
 
+//write 3D structure(type: unsigned chars) to PGMs
 void func::writeRawCube(const std::string & outFileName, unsigned char*** cube, int dim)
 {
 	for(int z = 0; z < dim; z++)
@@ -594,7 +602,7 @@ void func::writeRawCube(const std::string & outFileName, unsigned char*** cube, 
 
 }
 
-
+//save fracture
 void func::saveFracture(Fracture & fracture, std::string saveName)
 {
 	std::ofstream out(saveName);
@@ -604,12 +612,13 @@ void func::saveFracture(Fracture & fracture, std::string saveName)
 	out.close();
 }
 
+//save group of fractures
 void func::saveGroupFractures(std::vector<Fracture> & fractures, char * folderName, int dim)
 {
 	int check = mkdir(folderName, 0777);
 	std::string fn(folderName);
 	
-	std::ofstream out(fn+"/info.txt");
+	std::ofstream out(fn+"/info.hdr");
 
 	out << dim << "\n";
 
@@ -617,11 +626,12 @@ void func::saveGroupFractures(std::vector<Fracture> & fractures, char * folderNa
 	{
 		std::string id = std::to_string(i->getID());
 		out << id << std::endl;
-		func::saveFracture(*i, fn+"/fracture"+id+".txt");
+		func::saveFracture(*i, fn+"/fracture"+id+".frc");
 	}
 	out.close();
 }
 
+//load fracture
 Fracture func::loadFracture(std::string fileName)
 {
 	std::ifstream in(fileName);
@@ -676,9 +686,10 @@ Fracture func::loadFracture(std::string fileName)
 
 }
 
+//load group of fractures
 std::vector<Fracture> func::loadGroupFractures(std::string folderName)
 {
-	std::ifstream in(folderName+"/info.txt");
+	std::ifstream in(folderName+"/info.hdr");
 	int dim;
 	in >> dim;
 	std::vector<Fracture> ret;
@@ -688,7 +699,7 @@ std::vector<Fracture> func::loadGroupFractures(std::string folderName)
 		int id;
 
 		in >> id >> std::ws;
-		Fracture f = func::loadFracture(folderName+"/fracture"+std::to_string(id)+".txt");
+		Fracture f = func::loadFracture(folderName+"/fracture"+std::to_string(id)+".frc");
 		ret.push_back(f);
 	}
 	in.close();
@@ -698,9 +709,10 @@ std::vector<Fracture> func::loadGroupFractures(std::string folderName)
 	
 }
 
+//load dimensions
 int func::loadDim(std::string folderName)
 {
-	std::ifstream in(folderName+"/info.txt");
+	std::ifstream in(folderName+"/info.hdr");
 	int dim;
 	in >> dim;
 
@@ -708,30 +720,7 @@ int func::loadDim(std::string folderName)
 
 }
 
-unsigned char *** func::preparePPMCube(int dim)
-{
-        unsigned char *** cube = new unsigned char ** [dim];
-        for(int z = 0; z < dim; z++)
-        {
-                //prepare output
-                unsigned char ** layer = new unsigned char * [dim*dim];
-                for(int x = 0; x < dim*dim; x++)
-                {
-                        unsigned char * row = new unsigned char[3];
-                        row[0] = 0;
-                       	row[1] = 0;
-                        row[2] = 0;
-                        layer[x] = row;
-                }
-                cube[z] = layer;
-        }
-	return cube;
-
-
-}
-
-
-
+//prepare cube for ppm with fractures
 unsigned char *** func::preparePPMCube(unsigned char *** & sourceCube, int dim, std::vector<Fracture> & fractures)
 {
 	std::vector< std::pair<std::string, std::vector<int>>> colours({std::pair("white", std::vector<int>({255,255,255})), std::pair("red", std::vector<int>({255,0,0})), std::pair("green", std::vector<int>({0,255,0})), std::pair("blue", std::vector<int>({0,0,255})), std::pair("yellow", std::vector<int>({255,255,0}))});        
@@ -792,6 +781,7 @@ unsigned char *** func::preparePPMCube(unsigned char *** & sourceCube, int dim, 
 
 }
 
+//transform orientation
 unsigned char *** func::transform(unsigned char *** & sourceCube, int dim, std::string axis)
 {
 	unsigned char *** newCube = new unsigned char ** [dim];
