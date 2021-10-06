@@ -42,18 +42,12 @@ int main(int argc, char* argv[])
 
     	int dim = ctr.getDim(files);
 
+	//std::vector<Fracture> blank({});
+	//unsigned char *** RBGformat = func::preparePPMCube(pgms, dim, blank);
+	//func::writeCubeColour("ogInColour",RBGformat, dim);
 
 
-	func::writeRawCube("FirstTopView", pgms, dim);
 
-	pgms = func::transform(pgms, dim, "x");
-
-	pgms = func::transform(pgms, dim, "x");
-
-	func::writeRawCube("frontView", pgms, dim);
-
-
-/*
 	std::cout << "Converting to Voxels start" << std::endl;
 	Voxel *** vox = func::toVoxels(pgms, dim);
 	std::cout << "Convert to Voxels end" << std::endl;
@@ -100,15 +94,15 @@ int main(int argc, char* argv[])
 	}
 	std::cout << sum << " fractured voxels detected" << std::endl;
 	
-	func::writeToPGM("big", frac, dim);
-
-	//testing save
+	//save
 	func::saveGroupFractures(frac, "f123", dim);
+
+	//load
 	std::vector<Fracture> loaded = func::loadGroupFractures("f123");
 	int loadedDim = func::loadDim("f123");
 
-	unsigned char *** RBGformat = func::preparePPMCube(pgms, dim, loaded);
-	func::writeCubeColour("fracsInColour", RBGformat, dim);*/
+	unsigned char *** RBGformat = func::preparePPMCube(pgms, loadedDim, loaded);
+	func::writeCubeColour("fracsInColour", RBGformat, loadedDim);
 
 
 
