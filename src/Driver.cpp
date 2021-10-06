@@ -90,12 +90,12 @@ int main(int argc, char* argv[])
 	func::writeToPGM("big", frac, dim);
 
 	//testing save
-	//func::saveGroupFractures(frac, "f123", dim);
-	//std::vector<Fracture> loaded = func::loadGroupFractures("f123");
-	//int loadedDim = func::loadDim("f123");
+	func::saveGroupFractures(frac, "f123", dim);
+	std::vector<Fracture> loaded = func::loadGroupFractures("f123");
+	int loadedDim = func::loadDim("f123");
 
-	//unsigned char *** RBGformat = func::preparePPMCube(pgms, dim, frac);
-	//func::writeCubeColour("fracsInColour", RBGformat, dim);
+	unsigned char *** RBGformat = func::preparePPMCube(pgms, dim, loaded);
+	func::writeCubeColour("fracsInColour", RBGformat, dim);
 
 
 
