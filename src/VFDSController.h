@@ -7,6 +7,7 @@
 #include "Fracture.h"
 #include "CTReader.h"
 #include "Filter.h"
+//#include "mainwindow.h"
 
 #include <string>
 #include <vector>
@@ -21,10 +22,13 @@ class VFDSController : public QObject
     Q_OBJECT
 
 public slots:
-    
+    void colourFractures();
+
 
 signals:
     void dataRead(bool read);
+    void updateStatus(QString status);
+
    
 
 private:
@@ -42,6 +46,7 @@ private:
     std::vector<imgdata::Fracture> fractures; //Vector of Fractures
 
     unsigned char*** imageData; //Raw Array of pixel data
+    unsigned char*** colourImageData;
     int depth = 0; //Dimensions of image stack
     int imageN = 0;
     std::size_t nFractures = 0;
@@ -60,6 +65,8 @@ public:
     VFDSController(std::string &hdrFilePath);
     ~VFDSController();
 
+    void loadFractures();
+    void saveFractures();
 
     void readData(std::string hdrFilePath);
     void detectFractures();
@@ -86,7 +93,7 @@ public:
     void fillBackground();
     void runSplitMerge();
 
-    void colourFractures();
+
 
     bool splitMergeSuccess=false;
     bool saveEnable=false;

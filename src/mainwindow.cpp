@@ -109,6 +109,11 @@ void MainWindow::createMenus(){
     openAction = new QAction("&Open", this);
     openAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_O));
     fileMenu->addAction(openAction);
+    loadAction = new QAction("&Load fractures",this);
+    saveAction = new QAction("&Save fractures",this);
+    fileMenu->addAction(saveAction);
+    fileMenu->addAction(loadAction);
+
     fileMenu->addSeparator();
     quitAction = new QAction("Quit", this);
     quitAction->setShortcuts(QKeySequence::Quit);
@@ -118,6 +123,8 @@ void MainWindow::createMenus(){
 
     detectionPreferences = new QAction("&Detection Parameters",this);
     toolsMenu->addAction(detectionPreferences);
+    colourFracturesAction = new QAction("&Colour fractures",this);
+    toolsMenu->addAction(colourFracturesAction);
 
     helpMenu = menuBar()->addMenu("&Help");
 
@@ -155,6 +162,10 @@ void MainWindow::setupSignalsAndSlots() {
 
     connect(&vfdsController,&VFDSController::dataRead,this,&MainWindow::dataLoaded);
 
+    connect(&vfdsController,&VFDSController::colourFractures,this,&MainWindow::colourFracs);
+
+    connect(&vfdsController,&VFDSController::updateStatus,this,&MainWindow::statusChange);
+
     //connect(vfdsController, &VFDSController::dataRead,this,&MainWindow::dataLoaded);
 
     
@@ -163,7 +174,11 @@ void MainWindow::setupSignalsAndSlots() {
 void MainWindow::dataLoaded(bool bRead)
 {
         detectFracturesPushButton->setEnabled(bRead);
-    
+}
+
+void MainWindow::statusChange(QString status)
+{
+    statusBar()->showMessage(status);
 }
 
 void MainWindow::open(){
@@ -282,6 +297,21 @@ void MainWindow::detectFractures()
 void MainWindow::detectionDialogShow()
 {
     detectionDialog.show();
+}
+
+void MainWindow::colourFracs()
+{
+
+}
+
+void MainWindow::save()
+{
+
+}
+
+void MainWindow::load()
+{
+
 }
 
 void MainWindow::displayImage()

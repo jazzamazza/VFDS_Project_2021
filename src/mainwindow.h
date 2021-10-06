@@ -50,10 +50,6 @@ class MainWindow : public QMainWindow
 
     private slots:
         void open();
-        //void saveAs();
-        //void load();
-        //void print();
-        //void copy();
         //void paste();
         //void zoomIn();
         //void zoomOut();
@@ -64,9 +60,13 @@ class MainWindow : public QMainWindow
         void back();
         void detectFractures();
         void detectionDialogShow();
+        void colourFracs();
+        void save();
+        void load();
 
     public slots:
         void dataLoaded(bool read);
+        void statusChange(QString status);
 
     signals:
         
@@ -124,11 +124,12 @@ class MainWindow : public QMainWindow
         QAction *backAction;
         QAction *detectFracturesAction;
         QAction *detectionPreferences;
+        QAction *colourFracturesAction;
         //QAction *cancelAction;
         //QAction *newAction;
-        //QAction *saveAsAct;
+        QAction *saveAction;
         //QAction *printAct;
-        //QAction *loadAction;
+        QAction *loadAction;
         //QAction *copyAct;
         //QAction *zoomInAction;
         //QAction *zoomOutAction;
