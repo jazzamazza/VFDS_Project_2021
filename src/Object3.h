@@ -17,8 +17,8 @@ namespace raycst {
             Object3(T x, T y, T z) : x(x), y(y), z(z) {}
             ~Object3() {}
 
-            Object3<T> operator+(const Object3<T> & rhs) {
-                    raycst::Object3<T> add((this->x+rhs.x), (this->y+rhs.y), (this->z+rhs.z));
+            Object3 operator+(const Object3 & rhs) {
+                    raycst::Object3 add((this->x+rhs.x), (this->y+rhs.y), (this->z+rhs.z));
                     return add; 
             }
 
