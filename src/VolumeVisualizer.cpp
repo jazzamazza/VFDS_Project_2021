@@ -1,8 +1,15 @@
 // VolumeVisualizer class for the capstone assessment
 #include "VolumeVisualizer.h"
 
-raycst::VolumeVisualizer::VolumeVisualizer(int size, raycst::Point3 cop, raycst::Vector3 up) : size(size), cop(cop), up(up), vpn() {
-    raycst::VolumeVisualizer::setVPN();
+raycst::VolumeVisualizer::VolumeVisualizer() : size(0), cop(raycst::Point3(0,0,0)), up(raycst::Vector3(0,0,0)), vpn(raycst::Vector3(0,0,0)) {}
+
+raycst::VolumeVisualizer::VolumeVisualizer(int size) : size(size) , up(raycst::Vector3(0,1,0)) {
+    // set the centre of projection to the centre of the x and y planes and a length + 0.3*(radius of sphere surrounding the data cube) away from the data cube
+    int r = std::sqrt(2*std::pow(this->size/2, 2));
+    int z_start = size + r*0.3;
+    setCOP(size/2, size/2, z_start);
+    setVPN();
+    setUP();
 }
 
 void raycst::VolumeVisualizer::setVPN() {
@@ -15,9 +22,14 @@ void raycst::VolumeVisualizer::setVPN() {
     vpn.normalize();
 }
 
-void raycst::VolumeVisualizer::setCOP(raycst::Point3 cop) {
+void raycst::VolumeVisualizer::setUP() {
+    // simply get the 2nd axis of a parallel plane
+    this->up = getAxis_2();
+}
+
+void raycst::VolumeVisualizer::setCOP(int x, int y, int z) {
     // set the new centre of projection
-    this->cop = cop;
+    this->cop = raycst::Point3(x,y,z);
     // calculate and set the new plane normal
     setVPN();
 }
@@ -41,4 +53,37 @@ raycst::Vector3 raycst::VolumeVisualizer::getVPN() {
 
 raycst::Point3 raycst::VolumeVisualizer::getCOP() {
     return this->cop;
+}
+
+// allows the COP to move in 1 of 4 directions in a spherical border around the data cube
+// 0: UP (+y axis), 1: DOWN (-y axis), 2: RIGHT, 3: LEFT
+void raycst::VolumeVisualizer::moveCOP(int dir) {
+    double radius = std::sqrt(2*std::pow(this->size/2, 2));
+    int nx = cop.getX(), ny = cop.getY(), nz = cop.getZ();
+    if (dir == 0) {
+        // we move 'left' chiefly along the x axis of the surrounding sphere, but must also modify the z value of cop
+        nz += radius*(1-std::cos(30));
+        nx -= radius*(std::sin(30));
+
+    }
+
+    else if (dir == 1) {
+        // we move 'down' chiefly along the y axis of the surrounding sphere, but must also modify the z value of cop
+        nz -= radius*(1-std::cos(30));
+        ny -= radius*(std::sin(30));
+    }
+
+    else if (dir == 2) {
+        // we move 'right' chiefly along the x axis of the surrounding sphere, but must also modify the z value of cop
+        nz += radius*(1-std::cos(30));
+        nx += radius*(std::sin(30));
+    }
+    
+    else if (dir == 3) {
+        // we move 'up' chiefly along the y axis of the surrounding sphere, but must also modify the z value of cop
+        nz += radius*(1-std::cos(30));
+        ny += radius*(std::sin(30));
+    }
+
+    setCOP(nz, ny, nx);
 }
