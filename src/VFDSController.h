@@ -7,14 +7,30 @@
 #include "Fracture.h"
 #include "CTReader.h"
 #include "Filter.h"
+//#include "mainwindow.h"
 
 #include <string>
 #include <vector>
 
 #include <iostream>
 
-class VFDSController
+#include <QObject>
+#include <QWidget>
+
+class VFDSController : public QObject
 {
+    Q_OBJECT
+
+public slots:
+    void colourFractures();
+
+
+signals:
+    void dataRead(bool read);
+    void updateStatus(QString status);
+
+   
+
 private:
     /* data */
 
@@ -30,6 +46,7 @@ private:
     std::vector<imgdata::Fracture> fractures; //Vector of Fractures
 
     unsigned char*** imageData; //Raw Array of pixel data
+    unsigned char*** colourImageData;
     int depth = 0; //Dimensions of image stack
     int imageN = 0;
     std::size_t nFractures = 0;
@@ -41,17 +58,17 @@ private:
     //adaptive threshold stuff to do
 
     enum traversalAxis {x,y,z} axis; //axis of traversal
-    enum denoiseAlg{Median, Bilateral} denoise; //to do
-
-    bool newDataSet=true;
-    bool readDataSuccess=false;
-    
+    enum denoiseAlg{Median, Bilateral} denoise; //to do    
 
 public:
+    VFDSController(QObject *parent=nullptr);
     VFDSController(std::string &hdrFilePath);
     ~VFDSController();
 
-    void readData();
+    void loadFractures();
+    void saveFractures();
+
+    void readData(std::string hdrFilePath);
     void detectFractures();
 
     std::string getHeaderFilePath();
@@ -76,12 +93,17 @@ public:
     void fillBackground();
     void runSplitMerge();
 
+
+
     bool splitMergeSuccess=false;
     bool saveEnable=false;
     bool loadEnable=false;
+    bool detectEnable=false;
     bool renderingOn=false;
     bool voxelDataLoaded=false;
     bool backgroundFilled =false;
+    bool newDataSet=true;
+    bool readDataSuccess=false;
 
 };
 

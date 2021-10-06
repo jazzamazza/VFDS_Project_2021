@@ -29,14 +29,14 @@ void VFDSController::setPgmPath()
 void VFDSController::incImageN()
 {
     if(imageN<depth-1){
-       imageN++;
+        imageN++;
     }
 }
 
 void VFDSController::decImageN()
 {
     if(imageN>0){
-       imageN--;
+        imageN--;
     }
 }
 
@@ -50,15 +50,30 @@ std::size_t VFDSController::getNFractures() const
     return nFractures;
 }
 
+VFDSController::VFDSController(QObject *parent)
+{
+    setParent(parent);
+    //connect(parent,)
+    //connect(&parent,)
+}
+
 VFDSController::VFDSController(std::string &hdrFilePath){
     headerFilePath = hdrFilePath;
+    //setParent(parent);
+    //connect(this, &VFDSController::dataRead,this,&MainWindow::dataLoaded);
 }
 
 VFDSController::~VFDSController(){
 }
 
-void VFDSController::readData()
+void VFDSController::loadFractures()
 {
+   //fractures = func::loadGroupFractures()
+}
+
+void VFDSController::readData(std::string hdrFilePath)
+{
+    headerFilePath=hdrFilePath;
     imageData=ctReader.readPGMStack(headerFilePath);
     //std::cout << (sizeof(unsigned char)*256*256*265)/1024/1024<<" megabytes is size of imgdata"<<std::endl;
     //std::cout << (sizeof(imgdata::Voxel)*256*256*265)/1024/1024<<" megabytes is size of voxel rep of imgdata"<<std::endl;
@@ -70,14 +85,14 @@ void VFDSController::readData()
     depth = ctReader.getDim();
     dataFolderPath = ctReader.getDir();
     pgmPath = ctReader.getPGM(headerFilePath,imageN);
+
+    emit dataRead(readDataSuccess);
 }
 
 void VFDSController::detectFractures()
 {
     if(readDataSuccess)
     {
-        
-        
         
     }
 }
@@ -89,7 +104,7 @@ void VFDSController::charToVoxel()
         vimgData = func::toVoxels(imageData,depth);
         voxelDataLoaded=true;
     }
-       
+
 }
 
 void VFDSController::fillBackground()
@@ -108,6 +123,38 @@ void VFDSController::runSplitMerge()
         splitMergeSuccess=true;
         nFractures = fractures.size();
     }
+}
+
+void VFDSController::colourFractures()
+{
+    int cc(0);
+    //func::writeCubeColour()
+    for (std::vector<imgdata::Fracture>::iterator i = fractures.begin(); i!=fractures.end(); ++i) {
+        if(cc%5 == 0)
+        {
+            i->setColour("white");
+        }
+        else if(cc%5 == 1)
+        {
+            i->setColour("red");
+        }
+        else if(cc%5 == 2)
+        {
+            i->setColour("green");
+        }
+        else if(cc%5 == 3)
+        {
+            i->setColour("blue");
+        }
+        else if( cc%5 == 4)
+        {
+            i->setColour("yellow");
+        }
+        cc++;
+    }
+
+    colourImageData = func::preparePPMCube(imageData,depth,fractures);
+
 }
 
 

@@ -9,6 +9,7 @@ VFDS Main Window
 #include <QMainWindow>
 #include <QApplication>
 #include <QtGui>
+#include <QObject>
 //#include <Qt>
 
 #include <QLabel>
@@ -49,10 +50,6 @@ class MainWindow : public QMainWindow
 
     private slots:
         void open();
-        //void saveAs();
-        //void load();
-        //void print();
-        //void copy();
         //void paste();
         //void zoomIn();
         //void zoomOut();
@@ -63,8 +60,13 @@ class MainWindow : public QMainWindow
         void back();
         void detectFractures();
         void detectionDialogShow();
+        void colourFracs();
+        void save();
+        void load();
 
     public slots:
+        void dataLoaded(bool read);
+        void statusChange(QString status);
 
     signals:
         
@@ -73,10 +75,10 @@ class MainWindow : public QMainWindow
     private: 
         
         DetectionDialog detectionDialog;
-        const QString fractureLabelText = "Layer: ";
-        const QString nFracturesLabelText = "Fractures detected: ";
+        const QString fractureLabelText = "Layer:\n";
+        const QString nFracturesLabelText = "Fractures detected:\n";
         void displayImage();
-        VFDSController *vfdsController;
+        VFDSController vfdsController = VFDSController();
 
         //Init Methods
         void setupSignalsAndSlots();
@@ -122,11 +124,12 @@ class MainWindow : public QMainWindow
         QAction *backAction;
         QAction *detectFracturesAction;
         QAction *detectionPreferences;
+        QAction *colourFracturesAction;
         //QAction *cancelAction;
         //QAction *newAction;
-        //QAction *saveAsAct;
+        QAction *saveAction;
         //QAction *printAct;
-        //QAction *loadAction;
+        QAction *loadAction;
         //QAction *copyAct;
         //QAction *zoomInAction;
         //QAction *zoomOutAction;
@@ -137,7 +140,9 @@ class MainWindow : public QMainWindow
         QLabel *imageLabel;
         QLabel *nFracturesLabel;
         QLabel *fractureLabel;
-        QLabel *partLabel;
+        QLabel *headingLabel;
+        QLabel *statisticsLabel;
+        
 
         //Buttons
         QPushButton *nextPushButton;
@@ -145,7 +150,6 @@ class MainWindow : public QMainWindow
         QPushButton *detectFracturesPushButton;
 
         //Input
-        QLineEdit *fileLineEdit;
         QFileDialog *fileDialog;
 };
 #endif // MAINWINDOW_H
