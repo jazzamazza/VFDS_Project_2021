@@ -6,16 +6,17 @@
 #define VOXEL_H
 
 #include <vector>
+#include <ostream>
 
 namespace imgdata {
     class Voxel {
         private:
-            std::vector<int> coords;
-            int intensity;
+            int x,y,z;
+            unsigned char intensity;
 
         public:
             Voxel(void);
-            Voxel(int x, int y, int z, int intensity);
+            Voxel(int x, int y, int z, unsigned char intensity);
 
             ~Voxel();
 
@@ -25,10 +26,15 @@ namespace imgdata {
             Voxel(Voxel&& v);
             Voxel& operator=(Voxel&& rhs);
 
-            const std::vector<int> getCoords() const;
+            const unsigned char getIntensity() const;
             const int getX() const;
             const int getY() const;
             const int getZ() const;
+	    Voxel operator+(const Voxel & v);
+	    bool operator>(const Voxel & v) const;
+	    friend std::ostream & operator<<(std::ostream & out, const Voxel & v);
+	    bool operator==(const Voxel & v) const;
+	    bool touching(const imgdata::Voxel & v) const;
     };
 }
 

@@ -9,6 +9,7 @@
 #include <string>
 #include <iostream>
 #include "Voxel.h"
+#include "Split.h"
 
 namespace imgdata {
     class Fracture {
@@ -31,17 +32,20 @@ namespace imgdata {
             Fracture& operator=(Fracture&& rhs);
 
             friend std::ostream & operator<<(std::ostream& out, Fracture& rhs);
+	    bool operator>(const Fracture & rhs) const;
 
             int getVoxels(void) const;
             int getID(void) const;
+            std::string getColour(void) const;
             std::vector<Voxel> getCoords(void) const;
+	    bool meets(const Fracture & f) const;
 
+	    void join(Fracture & f);
             void insertVoxel(imgdata::Voxel& vox);
-            /* 
-            To be implemented at a later point
+	    void insertSplit(imgpro::Split & s); 
 
-            void changeColour(std::string colour, int fid);
-            */
+            void setColour(std::string colour);
+    
 
     };
 }

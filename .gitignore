@@ -1,0 +1,9 @@
+*.o
+moc*.cpp
+moc*.h
+*.app/
+.DS_Store
+.qmake.stash
+.vscode/
+data/
+Makefile
