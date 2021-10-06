@@ -16,8 +16,8 @@ namespace raycst {
             RaySampler(int sz, int st);
             ~RaySampler();
 
-            unsigned char ** sample(unsigned char*** & source, VolumeVisualizer & vv, double w);
-            void sampleColour(double & cout, double & cin, double ccurrent);
+            unsigned char ** sample(unsigned char*** & source, VolumeVisualizer & vv);
+            double sampleColour(double c_in, double c_current);
             double shootRay(unsigned char*** & source, Vector3 direction, Point3 & origin);
 
     };
