@@ -50,16 +50,23 @@ std::size_t VFDSController::getNFractures() const
     return nFractures;
 }
 
-VFDSController::VFDSController(std::string &hdrFilePath, QObject *parent){
+VFDSController::VFDSController(QObject *parent)
+{
+    setParent(parent);
+}
+
+VFDSController::VFDSController(std::string &hdrFilePath){
     headerFilePath = hdrFilePath;
+    //setParent(parent);
      //connect(this, &VFDSController::dataRead,this,&MainWindow::dataLoaded);
 }
 
 VFDSController::~VFDSController(){
 }
 
-void VFDSController::readData()
+void VFDSController::readData(std::string hdrFilePath)
 {
+    headerFilePath=hdrFilePath;
     imageData=ctReader.readPGMStack(headerFilePath);
     //std::cout << (sizeof(unsigned char)*256*256*265)/1024/1024<<" megabytes is size of imgdata"<<std::endl;
     //std::cout << (sizeof(imgdata::Voxel)*256*256*265)/1024/1024<<" megabytes is size of voxel rep of imgdata"<<std::endl;
@@ -109,6 +116,11 @@ void VFDSController::runSplitMerge()
         splitMergeSuccess=true;
         nFractures = fractures.size();
     }
+}
+
+void VFDSController::colourFractures()
+{
+    //func::writeCubeColour()
 }
 
 

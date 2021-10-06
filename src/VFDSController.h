@@ -14,6 +14,7 @@
 #include <iostream>
 
 #include <QObject>
+#include <QWidget>
 
 class VFDSController : public QObject
 {
@@ -55,11 +56,12 @@ private:
     enum denoiseAlg{Median, Bilateral} denoise; //to do    
 
 public:
-    VFDSController(std::string &hdrFilePath, QObject *parent);
+    VFDSController(QObject *parent=nullptr);
+    VFDSController(std::string &hdrFilePath);
     ~VFDSController();
 
 
-    void readData();
+    void readData(std::string hdrFilePath);
     void detectFractures();
 
     std::string getHeaderFilePath();
@@ -83,6 +85,8 @@ public:
     void charToVoxel();
     void fillBackground();
     void runSplitMerge();
+
+    void colourFractures();
 
     bool splitMergeSuccess=false;
     bool saveEnable=false;

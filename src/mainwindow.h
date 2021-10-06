@@ -9,6 +9,7 @@ VFDS Main Window
 #include <QMainWindow>
 #include <QApplication>
 #include <QtGui>
+#include <QObject>
 //#include <Qt>
 
 #include <QLabel>
@@ -77,7 +78,7 @@ class MainWindow : public QMainWindow
         const QString fractureLabelText = "Layer:\n";
         const QString nFracturesLabelText = "Fractures detected:\n";
         void displayImage();
-        VFDSController *vfdsController;
+        VFDSController vfdsController = VFDSController();
 
         //Init Methods
         void setupSignalsAndSlots();

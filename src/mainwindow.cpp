@@ -153,16 +153,16 @@ void MainWindow::setupSignalsAndSlots() {
 
     connect(detectionPreferences, &QAction::triggered, this, &MainWindow::detectionDialogShow);
 
+    connect(&vfdsController,&VFDSController::dataRead,this,&MainWindow::dataLoaded);
+
     //connect(vfdsController, &VFDSController::dataRead,this,&MainWindow::dataLoaded);
 
     
 }
 
-void MainWindow::dataLoaded(bool read){
-    if (read)
-    {
-        detectFracturesPushButton->setEnabled(true);
-    }
+void MainWindow::dataLoaded(bool bRead)
+{
+        detectFracturesPushButton->setEnabled(bRead);
     
 }
 
@@ -175,10 +175,10 @@ void MainWindow::open(){
         std::string hdrFilePath = filename.toStdString();
 
         //create new VFDSController for file
-        vfdsController = new VFDSController(hdrFilePath,this);
+        //vfdsController = new VFDSController(hdrFilePath);
 
         //Load data set
-        vfdsController->readData();
+        vfdsController.readData(hdrFilePath);
 
         //if ct reader successfully reads data
         MainWindow::displayImage();
@@ -189,7 +189,7 @@ void MainWindow::open(){
         nextAction->setEnabled(true);
         backAction->setEnabled(true);
 
-        fractureLabel->setText(fractureLabelText+QString::number(vfdsController->getImageN()+1)+"/"+QString::number(vfdsController->getDepth()));
+        fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()+1)+"/"+QString::number(vfdsController.getDepth()));
     }
     else
     QMessageBox::warning(this,"No file selected","Please select a file",QMessageBox::Ok,QMessageBox::Default);
@@ -207,18 +207,18 @@ void MainWindow::about()
 
 void MainWindow::next()
 {
-    vfdsController->incImageN();
+    vfdsController.incImageN();
     MainWindow::displayImage();
-    //fractureLabel->setText(fractureLabelText+QString::number(vfdsController->getImageN()));
-    fractureLabel->setText(fractureLabelText+QString::number(vfdsController->getImageN()+1)+"/"+QString::number(vfdsController->getDepth()));
+    //fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()));
+    fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()+1)+"/"+QString::number(vfdsController.getDepth()));
 
-    if (vfdsController->getImageN()==vfdsController->getDepth()-1)
+    if (vfdsController.getImageN()==vfdsController.getDepth()-1)
     {
         nextPushButton->setEnabled(false);
         nextAction->setEnabled(false);
     }
 
-    if (vfdsController->getImageN() > 0)
+    if (vfdsController.getImageN() > 0)
     {
         backPushButton->setEnabled(true);
         backAction->setEnabled(true);
@@ -227,18 +227,18 @@ void MainWindow::next()
 
 void MainWindow::back()
 {
-    vfdsController->decImageN();
+    vfdsController.decImageN();
     MainWindow::displayImage();
-    //fractureLabel->setText(fractureLabelText+QString::number(vfdsController->getImageN()));
-    fractureLabel->setText(fractureLabelText+QString::number(vfdsController->getImageN()+1)+"/"+QString::number(vfdsController->getDepth()));
+    //fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()));
+    fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()+1)+"/"+QString::number(vfdsController.getDepth()));
 
-    if (vfdsController->getImageN() == 0)
+    if (vfdsController.getImageN() == 0)
     {
         backPushButton->setEnabled(false);
         backAction->setEnabled(false);
     }
 
-    if (vfdsController->getImageN() < vfdsController->getDepth()-1)
+    if (vfdsController.getImageN() < vfdsController.getDepth()-1)
     {
         nextPushButton->setEnabled(true);
         nextAction->setEnabled(true);
@@ -251,25 +251,25 @@ void MainWindow::detectFractures()
     statusBar()->clearMessage();
     statusBar()->showMessage("Fracture detection started...");
     
-    vfdsController->charToVoxel();
-    if (vfdsController->voxelDataLoaded)
+    vfdsController.charToVoxel();
+    if (vfdsController.voxelDataLoaded)
     {
         std::cout<<"load"<<std::endl;
         statusBar()->clearMessage();
         statusBar()->showMessage("1/3: Raw data parsed...");
-        vfdsController->fillBackground();
-        if (vfdsController->backgroundFilled)
+        vfdsController.fillBackground();
+        if (vfdsController.backgroundFilled)
         {
             std::cout<<"load"<<std::endl;
             statusBar()->clearMessage();
             statusBar()->showMessage("2/3: Background data processed...");
-            vfdsController->runSplitMerge();
-            if (vfdsController->splitMergeSuccess)
+            vfdsController.runSplitMerge();
+            if (vfdsController.splitMergeSuccess)
             {
                 std::cout<<"load"<<std::endl;
                 statusBar()->clearMessage();
                 statusBar()->showMessage("3/3: Fractures detected...");
-                nFracturesLabel->setText(nFracturesLabelText+QString::number(vfdsController->getNFractures()));
+                nFracturesLabel->setText(nFracturesLabelText+QString::number(vfdsController.getNFractures()));
             }
         }
     }
@@ -287,9 +287,9 @@ void MainWindow::detectionDialogShow()
 void MainWindow::displayImage()
 {
     //if ct reader successfully reads data
-    if(vfdsController->getReadDataSuccess()){
+    if(vfdsController.getReadDataSuccess()){
 
-        std::string pgmFilePath = vfdsController->getPgmPath();
+        std::string pgmFilePath = vfdsController.getPgmPath();
 
         QString imgfile = QString::fromStdString(pgmFilePath);
 
