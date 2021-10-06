@@ -54,8 +54,7 @@ private:
     int depth = 0; //Dimensions of image stack
     int imageN = 0;
 
-    double sigma_s = 0.0;
-    double sigma_m = 0.0;
+
     std::size_t nFractures = 0;
     std::string pgmPath;
 
@@ -78,6 +77,9 @@ public:
     void readData(std::string hdrFilePath);
     void detectFractures();
 
+    double sigma_s = 0.0;
+    double sigma_m = 0.0;
+
     std::string getHeaderFilePath();
     void setHeaderFilePath(const std::string &newHeaderFilePath);
 
@@ -96,10 +98,10 @@ public:
     int getDepth() const;
     std::size_t getNFractures() const;
 
-    void charToVoxel();
+    void charToVoxel(bool at);
     void fillBackground();
     void runSplitMerge();
-    void charToVoxel(unsigned char*** atData);
+    //void charToVoxel(unsigned char*** atData);
 
 
 

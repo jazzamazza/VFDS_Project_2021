@@ -119,7 +119,7 @@ void denoise::AdaptiveThreshold::execute(unsigned char *** & source, unsigned ch
                         if (source[depth][y][x] < threshold)
                             target[depth][y][x] = 0;
                         else
-                            target[depth][y][x] = max;
+                            target[depth][y][x] = 128;
                     }
                 }
             }

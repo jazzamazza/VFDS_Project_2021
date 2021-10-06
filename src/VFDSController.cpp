@@ -1,4 +1,4 @@
-#include "VFDSController.h"
+﻿#include "VFDSController.h"
 
 int VFDSController::getImageN() const
 {
@@ -124,22 +124,18 @@ void VFDSController::detectFractures()
     }
 }
 
-void VFDSController::charToVoxel()
+void VFDSController::charToVoxel(bool at)
 {
-    if(readDataSuccess && detectEnable)
+
+    if(readDataSuccess && detectEnable && at)
     {
-        vimgData = func::toVoxels(imageData,depth);
+        vimgData = func::toVoxels(thresholdImageData,depth);
         voxelDataLoaded=true;
         emit updateStatus("1/3: Raw data parsed...");
     }
-
-}
-
-void VFDSController::charToVoxel(unsigned char*** atData)
-{
-    if(readDataSuccess && detectEnable)
+    else
     {
-        vimgData = func::toVoxels(atData,depth);
+        vimgData = func::toVoxels(imageData,depth);
         voxelDataLoaded=true;
         emit updateStatus("1/3: Raw data parsed...");
     }

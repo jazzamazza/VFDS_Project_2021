@@ -29,6 +29,9 @@ VFDS Main Window
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
+#include <QDoubleSpinBox>
+#include <QCheckBox>
+
 #include "VFDSController.h"
 #include "ImageProcessor.h"
 #include "CTReader.h"
@@ -59,8 +62,8 @@ class MainWindow : public QMainWindow
         void next();
         void back();
         void detectFractures();
-        void detectionDialogShow();
-        void thresholdQShow(QAbstractButton *button);
+        //void detectionDialogShow();
+        //void thresholdQShow(QAbstractButton *button);
 
         void save();
         void load();
@@ -76,7 +79,7 @@ class MainWindow : public QMainWindow
 
     private: 
         
-        DetectionDialog detectionDialog;
+        //DetectionDialog detectionDialog;
         const QString fractureLabelText = "Layer:\n";
         const QString nFracturesLabelText = "Fractures detected:\n";
         void displayImage();
@@ -149,6 +152,8 @@ class MainWindow : public QMainWindow
         QLabel *fractureLabel;
         QLabel *headingLabel;
         QLabel *statisticsLabel;
+        QLabel *sigmLabel;
+        QLabel *sigsLabel;
         
 
         //Buttons
@@ -163,5 +168,12 @@ class MainWindow : public QMainWindow
         //Input
         QFileDialog *fileDialog;
         QMessageBox *atQuestion;
+        QDoubleSpinBox *sig_mSpin;
+        QDoubleSpinBox *sig_sSpin;
+        QCheckBox *thresholdCBox;
+
+
+
+
 };
 #endif // MAINWINDOW_H

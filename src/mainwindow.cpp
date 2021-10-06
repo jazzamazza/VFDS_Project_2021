@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     //setup event handling
     setupSignalsAndSlots();
+
 }
 
 MainWindow::~MainWindow()
@@ -37,6 +38,9 @@ void MainWindow::setupCoreWidgets(){
     nextPushButton = new QPushButton("Next");
     backPushButton = new QPushButton("Back");
     detectFracturesPushButton = new QPushButton("Detect fractures");
+    sigmLabel = new QLabel("sigm: ");
+    sigsLabel = new QLabel("sigs: ");
+
     nextPushButton->setEnabled(false);
     backPushButton->setEnabled(false);
     detectFracturesPushButton->setEnabled(false);
@@ -48,6 +52,9 @@ void MainWindow::setupCoreWidgets(){
 
     //Setup input
     fileDialog = new QFileDialog();
+    sig_mSpin = new QDoubleSpinBox();
+    sig_sSpin = new QDoubleSpinBox();
+    thresholdCBox = new QCheckBox();
 
     //Setup labels and display
     imageLabel = new QLabel();
@@ -56,6 +63,7 @@ void MainWindow::setupCoreWidgets(){
     imageLabel->setAlignment(Qt::AlignCenter);
     imageLabel -> setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     imageLabel -> setScaledContents(true);
+
 
     statisticsLabel = new QLabel("Statistics");
     QFont statFont = statisticsLabel->font();
@@ -72,6 +80,8 @@ void MainWindow::setupCoreWidgets(){
     scrollArea->setAlignment(Qt::AlignCenter);
     //scrollArea->setVisible(false);
     scrollArea->setFrameShape(QFrame::StyledPanel);    
+
+
 }
 
 void MainWindow::setupLayout(){
@@ -103,13 +113,17 @@ void MainWindow::setupLayout(){
 
     sidePanelLayout->addLayout(sidePanel3DButtonsLayout);
 
-    //sidePanel3DButtonsLayout->addWidget(new QLabel("3D Navigation"),0,1);
+    sidePanel3DButtonsLayout->addWidget(new QLabel("3D Navigation"),0,1);
     sidePanel3DButtonsLayout->addWidget(upButton,1,1);
     sidePanel3DButtonsLayout->addWidget(leftButton,2,0);
     sidePanel3DButtonsLayout->addWidget(rightButton,2,2);
     sidePanel3DButtonsLayout->addWidget(downButton,3,1);
-
-    //sidePanel3DButtonsLayout.set
+    sidePanel3DButtonsLayout->addWidget(sigmLabel,4,0);
+    sidePanel3DButtonsLayout->addWidget(sig_mSpin,4,1);
+    sidePanel3DButtonsLayout->addWidget(sigsLabel,5,0);
+    sidePanel3DButtonsLayout->addWidget(sig_sSpin,5,1);
+    sidePanel3DButtonsLayout->addWidget(new QLabel("activate threshold"),6,0);
+    sidePanel3DButtonsLayout->addWidget(thresholdCBox,6,1);
 
     sidePanelLayout->addStretch();
 
@@ -187,10 +201,6 @@ void MainWindow::setupSignalsAndSlots() {
     rightAction->setEnabled(false);
 
 
-
-
-
-
     connect(quitAction, &QAction::triggered, this, &QApplication::quit);
     connect(aboutAction, &QAction::triggered, this, &MainWindow::about);
     connect(openAction, &QAction::triggered, this, &MainWindow::open);
@@ -201,15 +211,17 @@ void MainWindow::setupSignalsAndSlots() {
     connect(backPushButton,SIGNAL(clicked()),this,SLOT(back()));
     connect(backAction, &QAction::triggered, this, &MainWindow::back);
 
-    connect(detectFracturesPushButton,SIGNAL(clicked()),this,SLOT(detectionDialogShow()));
-    connect(atQuestion,&QMessageBox::buttonClicked,this,&MainWindow::thresholdQShow);
+    connect(detectFracturesPushButton,SIGNAL(clicked()),this,SLOT(detectFractures()));
+    //connect(atQuestion,&QMessageBox::buttonClicked,this,&MainWindow::thresholdQShow);
 
-    connect(detectionPreferences, &QAction::triggered, this, &MainWindow::detectionDialogShow);
-ct
+    //connect(detectionPreferences, &QAction::triggered, this, &MainWindow::detectFractures);
     connect(&vfdsController,&VFDSController::dataRead,this,&MainWindow::dataLoaded);
     //connect(&vfdsController,SIGNAL(updateStatus(QString status)),this,SLOT(statusChange(QString status)));
     connect(&vfdsController,&VFDSController::updateStatus,this,&MainWindow::statusChange);
     //connect(&vfdsController,&VFDSController::colourFractures,this,&MainWindow::colourFracs);
+    //connect()
+
+   // connect(&detectionDialog,&QDialog::accepted,this,&MainWindow::detectFractures);
 
 
 
@@ -312,47 +324,65 @@ void MainWindow::detectFractures()
 {
     statusBar()->clearMessage();
     statusBar()->showMessage("Fracture detection started...");
-
-    vfdsController.charToVoxel();
-    if (vfdsController.voxelDataLoaded)
-    {
+    if(thresholdCBox->isChecked()){
+        vfdsController.sigma_m=sig_mSpin->value();
+        vfdsController.sigma_s=sig_sSpin->value();
+        vfdsController.applyThreshold();
+        vfdsController.charToVoxel(true);
         std::cout<<"load"<<std::endl;
         statusBar()->clearMessage();
-        //statusBar()->showMessage("1/3: Raw data parsed...");
+        statusBar()->showMessage("1/3: Raw data parsed...");
         vfdsController.fillBackground();
         if (vfdsController.backgroundFilled)
         {
             std::cout<<"load"<<std::endl;
             statusBar()->clearMessage();
-            //statusBar()->showMessage("2/3: Background data processed...");
+            statusBar()->showMessage("2/3: Background data processed...");
             vfdsController.runSplitMerge();
             if (vfdsController.splitMergeSuccess)
             {
                 std::cout<<"load"<<std::endl;
                 statusBar()->clearMessage();
-                //statusBar()->showMessage("3/3: Fractures detected...");
+                statusBar()->showMessage("3/3: Fractures detected...");
                 nFracturesLabel->setText(nFracturesLabelText+QString::number(vfdsController.getNFractures()));
             }
         }
-    }
-    
-
-}
-
-void MainWindow::detectionDialogShow()
-{
-   detectionDialog.show();
-}
-
-void MainWindow::thresholdQShow(QAbstractButton *button)
-{
-    //button->
-    if (vfdsController.detectEnable){
-        atQuestion = new QMessageBox(QMessageBox::Question,"Denoising","Do you want to enable Adaptive Thresholding?",QMessageBox::Yes|QMessageBox::No,this,Qt::Dialog);
-        atQuestion->show();
 
     }
+    else
+    {
+        statusBar()->clearMessage();
+        statusBar()->showMessage("Fracture detection started...");
+
+        vfdsController.charToVoxel(false);
+        if (vfdsController.voxelDataLoaded)
+        {
+            std::cout<<"load"<<std::endl;
+            statusBar()->clearMessage();
+            statusBar()->showMessage("1/3: Raw data parsed...");
+            vfdsController.fillBackground();
+            if (vfdsController.backgroundFilled)
+            {
+                std::cout<<"load"<<std::endl;
+                statusBar()->clearMessage();
+                statusBar()->showMessage("2/3: Background data processed...");
+                vfdsController.runSplitMerge();
+                if (vfdsController.splitMergeSuccess)
+                {
+                    std::cout<<"load"<<std::endl;
+                    statusBar()->clearMessage();
+                    statusBar()->showMessage("3/3: Fractures detected...");
+                    nFracturesLabel->setText(nFracturesLabelText+QString::number(vfdsController.getNFractures()));
+                }
+            }
+        }
+
+    }
+
+
 }
+
+
 
 void MainWindow::colourFracs()
 {
