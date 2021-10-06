@@ -11,18 +11,6 @@ imgpro::Split::Split(): data(nullptr), children(nullptr), allFracture(NULL), som
 //Destructor
 imgpro::Split::~Split()
 {
-	/*if(this->data != nullptr)
-	{
-		for(int z = 0; z < this->depth; z++)
-		{
-			for(int x = 0; x < this->rows; x++)
-			{
-				delete [] this->data[z][x];
-			}
-			delete [] this->data[z];
-		}
-		delete [] this->data;	
-	}*/
 	if(this->children != nullptr)
 	{
 		delete [] children;
@@ -184,54 +172,50 @@ imgpro::Split& imgpro::Split::operator=(imgpro::Split && s)
 	return *this;
 }
 
+//returns array of kids
 imgpro::Split* imgpro::Split::getKids()
 {
 	return this->children;
-	/*if (this->data != nullptr)
-	{
-		for(int z = 0; z < this->depth; z++)
-		{
-			for(int x = 0; x < this->rows; x++)
-			{
-				delete [] this->data[z][x];
-			}
-			delete [] this->data[z];
-		}
-		delete [] this->data;
-	}*/
 }
 
+//returns dimensions of split as a vector of ints
 std::vector<int> imgpro::Split::getDim()
 {
 	std::vector<int> ret({this->rows, this->cols, this->depth});
 	return ret;
 }
 
+//returns deptp
 int imgpro::Split::getDepth()
 {
 	return this->depth;
 }
 
+//returns length
 int imgpro::Split::getRows()
 {
 	return this->rows;
 }
 
+//returns breadth
 int imgpro::Split::getCols()
 {
 	return this->cols;
 }
 
+//returns id
 int imgpro::Split::getID()
 {
 	return this->ID;
 }
 
+//returns the data
 Voxel*** imgpro::Split::getData()
 {
 	return this->data;
 }
 
+//tests the dataset to update AllFractures and someFractures
 void imgpro::Split::test(int threshold)
 {
 	this->someFracture = false;
@@ -255,16 +239,19 @@ void imgpro::Split::test(int threshold)
 	}	
 }
 
+//returns true if all Voxels are fractured, else false
 bool imgpro::Split::getAllFrac()
 {
 	return this->allFracture;
 }
 
+//returns true if some Voxels are fractured, else false
 bool imgpro::Split::getSomeFrac()
 {
 	return this->someFracture;
 }
 
+//splits dataset into 8 regions, assigns each regions to a child split 
 void imgpro::Split::cut()
 {
 	this->children = new Split[8];
@@ -422,6 +409,7 @@ void imgpro::Split::cut()
 	
 }
 
+//returns boundary of Split region
 std::vector<Voxel> imgpro::Split::getBoundary()
 {
 	std::vector<Voxel> boundary;
@@ -453,6 +441,7 @@ std::vector<Voxel> imgpro::Split::getBoundary()
 }
 
 namespace imgpro{
+//prints split data, for tracing
 std::ostream & operator<<(std::ostream & out, Split & s)
 {
 	for(int z = 0; z < s.depth; z++)
@@ -471,12 +460,13 @@ std::ostream & operator<<(std::ostream & out, Split & s)
 
 }}
 
-
+//set ID 
 void imgpro::Split::setID(int ID)
 {
 	this->ID = ID;
 }
 
+//not equals operator
 bool imgpro::Split::operator!=(Split & s)
 {
 	bool ret = false;
