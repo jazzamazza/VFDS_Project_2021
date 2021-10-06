@@ -65,6 +65,8 @@ namespace func
 	//prepare cube for ppm with fractures
 	unsigned char *** preparePPMCube(unsigned char *** & sourceCube, int dim, std::vector<imgdata::Fracture> & fractures);
 
+	unsigned char *** addFracturesToCube(unsigned char *** & sourceCube, std::vector<imgdata::Fracture> & collection, int dim);
+
 	//transform orientation
 	unsigned char *** transform(unsigned char *** & sourceCube, int dim, std::string axis);
 	

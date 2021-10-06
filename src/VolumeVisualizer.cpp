@@ -1,5 +1,6 @@
 // VolumeVisualizer class for the capstone assessment
 #include "VolumeVisualizer.h"
+#include <math.h>
 
 raycst::VolumeVisualizer::VolumeVisualizer() : size(0), cop(raycst::Point3(0,0,0)), up(raycst::Vector3(0,0,0)), vpn(raycst::Vector3(0,0,0)) {}
 
@@ -60,29 +61,28 @@ raycst::Point3 raycst::VolumeVisualizer::getCOP() {
 void raycst::VolumeVisualizer::moveCOP(int dir) {
     double radius = std::sqrt(2*std::pow(this->size/2, 2));
     int nx = cop.getX(), ny = cop.getY(), nz = cop.getZ();
-    if (dir == 0) {
-        // we move 'left' chiefly along the x axis of the surrounding sphere, but must also modify the z value of cop
-        nz += radius*(1-std::cos(30));
-        nx -= radius*(std::sin(30));
 
+    if (dir == 0) 
+    {
+	    //up
+	    ny += 10;
+	    nz = 128 - std::sqrt(radius*radius - (ny - 128)*(ny-128));
+	    
     }
 
-    else if (dir == 1) {
-        // we move 'down' chiefly along the y axis of the surrounding sphere, but must also modify the z value of cop
-        nz -= radius*(1-std::cos(30));
-        ny -= radius*(std::sin(30));
+    else if (dir == 1) 
+    {
+	    //left
     }
 
-    else if (dir == 2) {
-        // we move 'right' chiefly along the x axis of the surrounding sphere, but must also modify the z value of cop
-        nz += radius*(1-std::cos(30));
-        nx += radius*(std::sin(30));
+    else if (dir == 2) 
+    {
+	    //right
     }
     
-    else if (dir == 3) {
-        // we move 'up' chiefly along the y axis of the surrounding sphere, but must also modify the z value of cop
-        nz += radius*(1-std::cos(30));
-        ny += radius*(std::sin(30));
+    else if (dir == 3) 
+    {
+	    //down
     }
 
     setCOP(nz, ny, nx);

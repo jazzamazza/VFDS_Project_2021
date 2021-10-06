@@ -781,6 +781,22 @@ unsigned char *** func::preparePPMCube(unsigned char *** & sourceCube, int dim, 
 
 }
 
+unsigned char *** func::addFracturesToCube(unsigned char *** & sourceCube, std::vector<Fracture> & collection, int dim)
+{
+        //iterate through components
+        for(std::vector<Fracture>::iterator i = collection.begin(); i != collection.end(); ++i)
+        {
+                std::vector<Voxel> voxels = i->getCoords();
+                for(std::vector<Voxel>::iterator p = voxels.begin(); p != voxels.end(); ++p)
+                {
+                        sourceCube[p->getZ()][p->getX()][p->getY()] = 255;
+                }
+        }
+
+	return sourceCube;
+
+}
+
 //transform orientation
 unsigned char *** func::transform(unsigned char *** & sourceCube, int dim, std::string axis)
 {
