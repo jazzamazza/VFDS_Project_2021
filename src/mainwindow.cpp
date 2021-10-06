@@ -224,6 +224,7 @@ void MainWindow::setupSignalsAndSlots() {
 
     connect(colourFracturesAction, &QAction::triggered, this, &MainWindow::colourFracs);
 
+    connect(saveAction, &QAction::triggered, this, &MainWindow::save);
 
     
 }
@@ -231,8 +232,7 @@ void MainWindow::setupSignalsAndSlots() {
 void MainWindow::dataLoaded(bool bRead)
 {
         detectFracturesPushButton->setEnabled(bRead);
-        colourFracturesAction->setEnabled(bRead);
-        saveAction->setEnabled(bRead);
+
 }
 
 void MainWindow::statusChange(std::string status)
@@ -424,6 +424,8 @@ void MainWindow::detectFractures()
 
     }
 
+    colourFracturesAction->setEnabled(true);
+    saveAction->setEnabled(true);
 
 }
 
@@ -441,7 +443,7 @@ vfdsController.setImageN(0);
 
 void MainWindow::save()
 {
-
+    vfdsController.saveFractures("saved");
 }
 
 void MainWindow::load()
