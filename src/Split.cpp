@@ -6,30 +6,22 @@
 #include "Split.h"
 using namespace imgdata;
 //Default
-Split::Split(): data(nullptr), allFracture(NULL), someFracture(NULL), depth(0), rows(0), cols(0), ID(-1){}
+imgpro::Split::Split(): data(nullptr), children(nullptr), allFracture(NULL), someFracture(NULL), depth(0), rows(0), cols(0), ID(-1){}
 
 //Destructor
-Split::~Split()
+imgpro::Split::~Split()
 {
-	if(this->data != nullptr)
+	if(this->children != nullptr)
 	{
-		for(int z = 0; z < this->depth; z++)
-		{
-			for(int x = 0; x < this->rows; x++)
-			{
-				delete [] this->data[z][x];
-			}
-			delete [] this->data[z];
-		}
-		delete [] this->data;	
+		delete [] children;
 	}
 }
 
 //Custom
-Split::Split(Voxel*** & data, int depth, int rows, int cols): data(data), allFracture(NULL), someFracture(NULL), depth(depth), rows(rows), cols(cols), ID(-1){}
+imgpro::Split::Split(Voxel*** & data, int depth, int rows, int cols): data(data), children(nullptr), allFracture(NULL), someFracture(NULL), depth(depth), rows(rows), cols(cols), ID(-1){}
 
 //Copy Constructor
-Split::Split(const Split & s): data(nullptr), allFracture(s.allFracture), someFracture(s.someFracture), depth(s.depth), rows(s.rows), cols(s.cols), ID(s.ID)
+imgpro::Split::Split(const Split & s): data(nullptr), children(nullptr), allFracture(s.allFracture), someFracture(s.someFracture), depth(s.depth), rows(s.rows), cols(s.cols), ID(s.ID)
 {
 	if(s.data != nullptr)
 	{
@@ -50,15 +42,19 @@ Split::Split(const Split & s): data(nullptr), allFracture(s.allFracture), someFr
 		}
                 this->data = std::move(cube);
 	}
-	for(std::vector<std::shared_ptr<Split>>::const_iterator i = s.children.begin(); i != s.children.end(); ++i)
+	imgpro::Split * temp = new imgpro::Split[8];
+	if(s.children != nullptr)
 	{
-		std::shared_ptr<Split> temp = *i;
-		this->children.push_back(std::make_shared<Split>(*temp));
+		for(int i = 0; i < 8; i++)
+		{
+			temp[i] = s.children[i];
+		}
 	}
+	this->children = std::move(temp);
 }
 
 //Copy Assignment Operator
-Split& Split::operator=(const Split & s)
+imgpro::Split& imgpro::Split::operator=(const imgpro::Split & s)
 {
 	if(this != &s)
 	{
@@ -74,6 +70,10 @@ Split& Split::operator=(const Split & s)
                 	}
                 	delete [] this->data;
         	}
+		if(this->children != nullptr)
+		{
+			delete [] children;
+		}
 
 		this->allFracture = s.allFracture;
 		this->someFracture = s.someFracture;
@@ -82,11 +82,15 @@ Split& Split::operator=(const Split & s)
 		this->cols = s.cols;
 		this->ID = s.ID;
 		
-		for(std::vector<std::shared_ptr<Split>>::const_iterator i = s.children.begin(); i != s.children.end(); ++i)
-        	{
-			std::shared_ptr<Split> temp = *i;
-                	this->children.push_back(std::make_shared<Split>(*temp));
-        	}
+		imgpro::Split * temp = new imgpro::Split [8];		
+		if(s.children != nullptr)
+		{
+			for(int i = 0; i < 8; i++)
+			{
+				temp[i] = s.children[i];
+			}
+		}
+		this->children = std::move(temp);
 		
 		if(s.data != nullptr)
 		{
@@ -112,22 +116,22 @@ Split& Split::operator=(const Split & s)
 }
 
 //Move Constructor 
-Split::Split(Split && s): data(nullptr), allFracture(s.allFracture), someFracture(s.someFracture), depth(s.depth), rows(s.rows), cols(s.cols), ID(s.ID)
+imgpro::Split::Split(imgpro::Split && s): data(nullptr), children(nullptr), allFracture(s.allFracture), someFracture(s.someFracture), depth(s.depth), rows(s.rows), cols(s.cols), ID(s.ID)
 {
-	for(std::vector<std::shared_ptr<Split>>::iterator i = s.children.begin(); i != s.children.end(); ++i)
-	{
-                this->children.push_back(std::move(*i));
-        }
 
 	if(s.data != nullptr)
 	{
 		this->data = std::move(s.data);
 	}
+	if(s.children != nullptr)
+	{
+		this->children = std::move(s.children);
+	}
 	
 }
 
 //Move Assignment Operator
-Split& Split::operator=(Split && s)
+imgpro::Split& imgpro::Split::operator=(imgpro::Split && s)
 {
 	if (this != &s)
 	{
@@ -143,9 +147,18 @@ Split& Split::operator=(Split && s)
                         }
                         delete [] this->data;
 		}
+		if(this->children != nullptr)
+		{
+			delete [] this->children;
+		}
+
 		if(s.data != nullptr)
 		{
 			this->data = std::move(s.data);
+		}
+		if(s.children != nullptr)
+		{
+			this->children = std::move(s.children);
 		}
 		this->allFracture = s.allFracture;
 		this->someFracture = s.someFracture;
@@ -154,52 +167,56 @@ Split& Split::operator=(Split && s)
                 this->cols = s.cols;
 		this->ID = s.ID;
 
-		for(std::vector<std::shared_ptr<Split>>::iterator i = s.children.begin(); i != s.children.end(); ++i)
-        	{
-                	this->children.push_back(std::move(*i));
-        	}
 
 	}
 	return *this;
 }
 
-std::vector<std::shared_ptr<Split>> Split::getKids()
+//returns array of kids
+imgpro::Split* imgpro::Split::getKids()
 {
 	return this->children;
 }
 
-std::vector<int> Split::getDim()
+//returns dimensions of split as a vector of ints
+std::vector<int> imgpro::Split::getDim()
 {
 	std::vector<int> ret({this->rows, this->cols, this->depth});
 	return ret;
 }
 
-int Split::getDepth()
+//returns deptp
+int imgpro::Split::getDepth()
 {
 	return this->depth;
 }
 
-int Split::getRows()
+//returns length
+int imgpro::Split::getRows()
 {
 	return this->rows;
 }
 
-int Split::getCols()
+//returns breadth
+int imgpro::Split::getCols()
 {
 	return this->cols;
 }
 
-int Split::getID()
+//returns id
+int imgpro::Split::getID()
 {
 	return this->ID;
 }
 
-Voxel*** Split::getData()
+//returns the data
+Voxel*** imgpro::Split::getData()
 {
 	return this->data;
 }
 
-void Split::test(int threshold)
+//tests the dataset to update AllFractures and someFractures
+void imgpro::Split::test(int threshold)
 {
 	this->someFracture = false;
 	this->allFracture = true;
@@ -222,18 +239,22 @@ void Split::test(int threshold)
 	}	
 }
 
-bool Split::getAllFrac()
+//returns true if all Voxels are fractured, else false
+bool imgpro::Split::getAllFrac()
 {
 	return this->allFracture;
 }
 
-bool Split::getSomeFrac()
+//returns true if some Voxels are fractured, else false
+bool imgpro::Split::getSomeFrac()
 {
 	return this->someFracture;
 }
 
-void Split::cut()
+//splits dataset into 8 regions, assigns each regions to a child split 
+void imgpro::Split::cut()
 {
+	this->children = new Split[8];
 	//get cut spot
 	int cuty = cols/2;
 	int cutx = rows/2;
@@ -251,13 +272,13 @@ void Split::cut()
 			Voxel* row = new Voxel[cuty];
 			for(int y = 0; y < cuty; y++)
 			{
-				row[y] = this->data[z][x][y];	
+				row[y] = std::move(this->data[z][x][y]);	
 			}
 			grid[x] = row;
 		}
 		TBLcube[z] = grid;
 	}
-	this->children.push_back(std::make_shared<Split>(TBLcube, cutz, cutx, cuty));
+	this->children[0] = Split(TBLcube, cutz, cutx, cuty);
 
 	//2 TBR - Top Back Right
 	Voxel*** TBRcube = new Voxel**[cutz];
@@ -269,13 +290,13 @@ void Split::cut()
                         Voxel* row = new Voxel[cols-cuty];
                         for(int y = cuty; y < cols; y++)
                         {
-                                row[y-cuty] = this->data[z][x][y];
+                                row[y-cuty] = std::move(this->data[z][x][y]);
                         }
                         grid[x] = row;
                 }
                 TBRcube[z] = grid;
         }
-        this->children.push_back(std::make_shared<Split>(TBRcube, cutz, cutx, cols-cuty)); 
+        this->children[1] = Split(TBRcube, cutz, cutx, cols-cuty); 
 	
 	//3 TFL - Top Front Left
 	Voxel*** TFLcube = new Voxel**[cutz];
@@ -287,13 +308,13 @@ void Split::cut()
                         Voxel* row = new Voxel[cuty];
                         for(int y = 0; y < cuty; y++)
                         {
-                                row[y] = this->data[z][x][y];
+                                row[y] = std::move(this->data[z][x][y]);
                         }
                         grid[x-cutx] = row;
                 }
                 TFLcube[z] = grid;
         }
-        this->children.push_back(std::make_shared<Split>(TFLcube, cutz, rows-cutx, cuty));
+        this->children[2] = Split(TFLcube, cutz, rows-cutx, cuty);
 	
 	//4 TFR - Top Front Right
 	Voxel*** TFRcube = new Voxel**[cutz];
@@ -305,13 +326,13 @@ void Split::cut()
                         Voxel* row = new Voxel[cols-cuty];
                         for(int y = cuty; y < cols; y++)
                         {
-                                row[y-cuty] = this->data[z][x][y];
+                                row[y-cuty] = std::move(this->data[z][x][y]);
                         }
                         grid[x-cutx] = row;
                 }
                 TFRcube[z] = grid;
         }
-        this->children.push_back(std::make_shared<Split>(TFRcube, cutz, rows-cutx, cols-cuty));
+        this->children[3] = Split(TFRcube, cutz, rows-cutx, cols-cuty);
 
 	//5 BBL - Bottom Back Left
 	Voxel*** BBLcube = new Voxel**[depth-cutz];
@@ -323,13 +344,13 @@ void Split::cut()
                         Voxel* row = new Voxel[cuty];
                         for(int y = 0; y < cuty; y++)
                         {
-                                row[y] = this->data[z][x][y];
+                                row[y] = std::move(this->data[z][x][y]);
                         }
                         grid[x] = row;
                 }
                 BBLcube[z-cutz] = grid;
         }
-        this->children.push_back(std::make_shared<Split>(BBLcube, depth-cutz, cutx, cuty));
+        this->children[4] = Split(BBLcube, depth-cutz, cutx, cuty);
 
 	//6 BBR - Bottom Back Right
 	Voxel*** BBRcube = new Voxel**[depth-cutz];
@@ -341,13 +362,13 @@ void Split::cut()
                         Voxel* row = new Voxel[cols-cuty];
                         for(int y = cuty; y < cols; y++)
                         {
-                                row[y-cuty] = this->data[z][x][y];
+                                row[y-cuty] = std::move(this->data[z][x][y]);
                         }
                         grid[x] = row;
                 }
                 BBRcube[z-cutz] = grid;
         }
-        this->children.push_back(std::make_shared<Split>(BBRcube, depth-cutz, cutx, cols-cuty));
+        this->children[5] = Split(BBRcube, depth-cutz, cutx, cols-cuty);
 
 	//7 BFL - Bottom Front Left
 	Voxel*** BFLcube = new Voxel**[depth-cutz];
@@ -359,13 +380,13 @@ void Split::cut()
                         Voxel* row = new Voxel[cuty];
                         for(int y = 0; y < cuty; y++)
                         {
-                                row[y] = this->data[z][x][y];
+                                row[y] = std::move(this->data[z][x][y]);
                         }
                         grid[x-cutx] = row;
                 }
                 BFLcube[z-cutz] = grid;
         }
-        this->children.push_back(std::make_shared<Split>(BFLcube, depth-cutz, rows-cutx, cuty));
+        this->children[6] = Split(BFLcube, depth-cutz, rows-cutx, cuty);
 
 	//8 BFR - Bottom Front Right
 	Voxel*** BFRcube = new Voxel**[depth-cutz];
@@ -377,20 +398,19 @@ void Split::cut()
                         Voxel* row = new Voxel[cols-cuty];
                         for(int y = cuty; y < cols; y++)
                         {
-                                row[y-cuty] = this->data[z][x][y];
+                                row[y-cuty] = std::move(this->data[z][x][y]);
                         }
                         grid[x-cutx] = row;
                 }
                 BFRcube[z-cutz] = grid;
         }
-        this->children.push_back(std::make_shared<Split>(BFRcube, depth-cutz, rows-cutx, cols-cuty));
-
-	//delete parent data
+        this->children[7] = Split(BFRcube, depth-cutz, rows-cutx, cols-cuty);
 
 	
 }
 
-std::vector<Voxel> Split::getBoundary()
+//returns boundary of Split region
+std::vector<Voxel> imgpro::Split::getBoundary()
 {
 	std::vector<Voxel> boundary;
 	if(this->data != nullptr)
@@ -420,7 +440,8 @@ std::vector<Voxel> Split::getBoundary()
 	return boundary;
 }
 
-
+namespace imgpro{
+//prints split data, for tracing
 std::ostream & operator<<(std::ostream & out, Split & s)
 {
 	for(int z = 0; z < s.depth; z++)
@@ -437,14 +458,16 @@ std::ostream & operator<<(std::ostream & out, Split & s)
         }
         return out;
 
-}
+}}
 
-void Split::setID(int ID)
+//set ID 
+void imgpro::Split::setID(int ID)
 {
 	this->ID = ID;
 }
 
-bool Split::operator!=(Split & s)
+//not equals operator
+bool imgpro::Split::operator!=(Split & s)
 {
 	bool ret = false;
 	if(this->ID != s.ID)

@@ -42,13 +42,10 @@ namespace imgdata {
 
 	    void join(Fracture & f);
             void insertVoxel(imgdata::Voxel& vox);
-	    void insertSplit(Split & s);
+	    void insertSplit(imgpro::Split & s); 
 
-            /* 
-            To be implemented at a later point
-
-            void changeColour(std::string colour, int fid);
-            */
+            void setColour(std::string colour);
+    
 
     };
 }

@@ -9,6 +9,7 @@
 #include "src/PartData.h"
 #include "src/Voxel.h"
 #include "src/Fracture.h"
+#include "src/Split.h"
 
 TEST_CASE ("imgdata: Voxel class") {
     SECTION("Default Constructor") {
@@ -305,7 +306,100 @@ TEST_CASE ("imgread: CTReader class") {
     SECTION("readPGMStack Member Function") {
         // This checks that no seg faults take place during the read-in or de-allocation
         imgread::CTReader ctr;
-        auto testctr = ctr.imgread::CTReader::readPGMStack("cross", 128);
-        ctr.imgread::CTReader::deletePGMStack(testctr, 128);
+	std::string fname("images/cross256_14/test-D256-V3086-F14-.hdr");
+        auto testctr = ctr.imgread::CTReader::readPGMStack(fname);
     }
+}
+
+
+TEST_CASE("imgpro: Split Class")
+{
+	int dim = 3;
+	imgdata::Voxel *** cube = new imgdata::Voxel ** [dim];
+	for(int z = 0; z < dim; z++)
+	{
+		imgdata::Voxel ** layer = new imgdata::Voxel * [dim];
+		for(int x = 0; x < dim; x++)
+		{
+			imgdata::Voxel * row = new imgdata::Voxel [dim];
+			row[0] = imgdata::Voxel(x,0,z,0);
+			row[1] = imgdata::Voxel(x,1,z,100);
+			row[2] = imgdata::Voxel(x,2,z,200);
+			layer[x] = row;
+		}
+		cube[z] = layer;
+	}
+
+	SECTION("Default Constructor")
+	{
+		imgpro::Split s;
+		REQUIRE(s.getData() == nullptr);
+		REQUIRE(s.getAllFrac() == NULL);
+		REQUIRE(s.getSomeFrac() == NULL);
+		REQUIRE(s.getDepth() == 0);
+		REQUIRE(s.getRows() == 0);
+		REQUIRE(s.getCols() == 0);
+		REQUIRE(s.getID() == -1);
+	}
+	SECTION("Custom Constructor")
+	{
+		imgpro::Split s(cube, dim, dim, dim);
+
+		REQUIRE(s.getData() == cube);
+		REQUIRE(s.getAllFrac() == NULL);
+		REQUIRE(s.getSomeFrac() == NULL);
+		REQUIRE(s.getDepth() == dim);
+		REQUIRE(s.getRows() == dim);
+		REQUIRE(s.getCols() == dim);
+		REQUIRE(s.getID() == -1);
+	}
+	SECTION("Copy Constructor")
+	{
+		imgpro::Split s1(cube, dim, dim, dim);
+		imgpro::Split s2(s1);
+
+		REQUIRE(s2.getData() != s1.getData());	
+		REQUIRE(s2.getAllFrac() == s1.getAllFrac());
+		REQUIRE(s2.getSomeFrac() == s1.getSomeFrac());
+		REQUIRE(s2.getDepth() == s1.getDepth());
+		REQUIRE(s2.getRows() == s1.getRows());
+		REQUIRE(s2.getCols() == s1.getCols());
+		REQUIRE(s2.getID() == s1.getID());
+	}
+	SECTION("Move Constructor")
+	{
+		imgpro::Split s2(imgpro::Split(cube,dim,dim,dim));
+
+
+		REQUIRE(s2.getAllFrac() == NULL);
+		REQUIRE(s2.getSomeFrac() == NULL);
+		REQUIRE(s2.getDepth() == dim);
+		REQUIRE(s2.getRows() == dim);
+		REQUIRE(s2.getCols() == dim);
+		REQUIRE(s2.getID() == -1);
+	}
+	SECTION("Copy Assignment Operator")
+	{
+		imgpro::Split s1(cube, dim, dim, dim);
+		imgpro::Split s2 = s1;
+
+		REQUIRE(s2.getData() != s1.getData());	
+		REQUIRE(s2.getAllFrac() == s1.getAllFrac());
+		REQUIRE(s2.getSomeFrac() == s1.getSomeFrac());
+		REQUIRE(s2.getDepth() == s1.getDepth());
+		REQUIRE(s2.getRows() == s1.getRows());
+		REQUIRE(s2.getCols() == s1.getCols());
+		REQUIRE(s2.getID() == s1.getID());
+	}
+	SECTION("Move Assignment Operator")
+	{
+		imgpro::Split s2 = imgpro::Split(cube, dim, dim, dim);
+	
+		REQUIRE(s2.getAllFrac() == NULL);
+		REQUIRE(s2.getSomeFrac() == NULL);
+		REQUIRE(s2.getDepth() == dim);
+		REQUIRE(s2.getRows() == dim);
+		REQUIRE(s2.getCols() == dim);
+		REQUIRE(s2.getID() == -1);
+	}
 }

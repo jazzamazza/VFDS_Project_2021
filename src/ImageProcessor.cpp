@@ -8,22 +8,21 @@
 #include <sstream>
 #include <fstream>
 
-#include <bits/stdc++.h>
+//#include <bits/stdc++.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
 #include <iostream>
 using namespace imgdata;
+using namespace imgpro;
 
 //global
-int ID = 0;
-int check(0);
-void func::collect(Split & parent, std::vector<Fracture> & collector, int threshold)
+void func::split(Split & parent, std::vector<Fracture> & collector, int threshold, int & idCount)
 {
         if(parent.getAllFrac()) //if all 0's
         {
 		//std::cout << "all\n" << parent << std::endl;
-		Fracture f(ID++, "black");
+		Fracture f(idCount++, "black");
 		f.insertSplit(parent);
                 collector.push_back(f);
 
@@ -31,15 +30,15 @@ void func::collect(Split & parent, std::vector<Fracture> & collector, int thresh
         else
         {
                 parent.cut();
-                std::vector<std::shared_ptr<Split>> vec = parent.getKids();
-                for(std::vector<std::shared_ptr<Split>>::iterator i = vec.begin(); i != vec.end(); ++i)
+                Split * kids = parent.getKids();
+                for(int i = 0; i < 8; i++)
                 {
-                        std::shared_ptr<Split> kid = *i;
-			kid->test(threshold);
-                        if(kid->getSomeFrac()) //if any 0's
+                        Split kid = kids[i];
+			kid.test(threshold);
+                        if(kid.getSomeFrac()) //if any 0's
                         {
 				//std::cout << "some\n" << *kid << std::endl;
-                                collect(*kid, collector, threshold);
+                                split(kid, collector, threshold, idCount);
                         }
                 }
         }
@@ -53,28 +52,28 @@ void func::printCollection(std::vector<Fracture> & coll)
 	}
 }
 
-std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, int depth)
+Voxel*** func::toVoxels(unsigned char *** &cube, int dim)
 {
-	//Start Split and merge
-        Split MotherSplit(imgArr3D, depth, rows, cols);
-        //std::cout << MotherSplit << "\n" << std::endl;    //uncomment for case demo
+	imgdata::Voxel *** ret = new Voxel ** [dim];
+	for(int z = 0; z < dim; z++)
+	{
+		imgdata::Voxel ** layer = new Voxel * [dim];
+		for(int x = 0; x < dim; x++)
+		{
+			imgdata::Voxel * row = new Voxel [dim];
+			for(int y = 0; y < dim; y++)
+			{
+				row[y] = Voxel(x,y,z,cube[z][x][y]);
+			}
+			layer[x] = row;
+		}
+		ret[z] = layer;
+	}
+	return ret;
+}
 
-        //initiate collection
-        std::vector<Fracture> collection;
-
-	int threshold = 50;
-        //test before collect
-        MotherSplit.test(threshold);
-
-        //collect 
-        func::collect(MotherSplit, collection, threshold);
-
-        //print
-        //std::cout << "collected" << std::endl;
-        //func::printCollection(collection);
-
-
-	//loop
+std::vector<Fracture> func::merge(std::vector<Fracture> & collection)
+{
 	bool change(true);
 	while(change)
 	{
@@ -151,6 +150,31 @@ std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, 
 
 	return collection;
 
+}
+
+std::vector<Fracture> func::splitMerge(Voxel*** & imgArr3D, int rows, int cols, int depth)
+{
+	//Start Split and merge
+        Split MotherSplit(imgArr3D, depth, rows, cols);
+        //std::cout << "MotherSplit"<< std::endl;    //uncomment for case demo
+
+        //initiate collection
+
+	int threshold = 50;
+        //test before collect
+        MotherSplit.test(threshold);
+
+        //collect 
+        std::vector<Fracture> collection;
+	int idCount(0);
+        func::split(MotherSplit, collection, threshold, idCount);
+
+        //print
+       // std::cout << "collected" << std::endl;
+        //func::printCollection(collection);
+
+	//loop
+	return func::merge(collection);
 
 }
 
@@ -191,6 +215,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 
 			while( (!hit) && (c < cols) )
 			{
+				int secondChance(2);
 				std::vector<Voxel> block;
 				int colSize;
 				if(c+3 < cols)
@@ -212,7 +237,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 					}
 					else
 					{
-						hit = true;
+						secondChance--;
+						if(secondChance <= 0)
+						{
+							hit = true;
+						}
 					}
 				}
 				c += 3;
@@ -240,6 +269,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 			
                         while( (!hit) && (c >= 0) )
                         {
+				int SC(2); //secondchance
                                 int colSize;
 				std::vector<Voxel> rblock;
 				int jump;
@@ -252,7 +282,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                                 else
                                 {
                                         colSize = 3;
-					jump = c; //revisit this line
+					jump = c;
                                         rblock = func::getBlock(layer, r, c, rowSize, colSize);
                                 }
 
@@ -263,8 +293,12 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                                                 cube[z][r + i/colSize][c + (i%colSize)] = Voxel(r + i/colSize, c + (i%colSize), z, val);
                                         }
                                         else 
-					{ 
-                                                hit = true;
+					{
+						SC--;
+						if(SC <= 0)
+						{
+                                                	hit = true;
+						}
                                         }
                                 }
                                 c -= jump;
@@ -291,6 +325,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
 
                         while( (!hit) && (r < rows) )
                         {
+				int SC(2);
                                 std::vector<Voxel> block;
                                 int rowSize;
                                 if(r+3 < rows)
@@ -314,7 +349,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                                         {
 						if(block[i].getIntensity() != val)
 						{
-                                                	hit = true;
+							SC--;
+							if(SC <= 0)
+							{
+                                                		hit = true;
+							}
 						}
                                         }
                                 }
@@ -343,6 +382,7 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                         
                         while( (!hit) && (r >= 0) )
                         {
+				int SC(2);
                                 int rowSize;
                                 std::vector<Voxel> rblock;
                                 int jump;
@@ -373,7 +413,11 @@ void func::paintBackground(Voxel*** & cube, int rows, int cols, int depth, int v
                                         {
 						if(rblock[i].getIntensity() != val)
 						{
-                                                	hit = true;
+							SC--;
+							if (SC <= 0)
+							{
+                                                		hit = true;
+							}
 						}
                                         }
                                 }
@@ -560,12 +604,14 @@ void func::saveFracture(Fracture & fracture, std::string saveName)
 	out.close();
 }
 
-void func::saveGroupFractures(std::vector<Fracture> & fractures, char * folderName)
+void func::saveGroupFractures(std::vector<Fracture> & fractures, char * folderName, int dim)
 {
 	int check = mkdir(folderName, 0777);
 	std::string fn(folderName);
 	
 	std::ofstream out(fn+"/info.txt");
+
+	out << dim << "\n";
 
 	for(std::vector<Fracture>::iterator i = fractures.begin(); i != fractures.end(); ++i)
 	{
@@ -587,9 +633,17 @@ Fracture func::loadFracture(std::string fileName)
 	int comma = line.find(",");
 	std::string stringID = line.substr(colon+2,comma-colon-2);
 
+	line = line.substr(comma+2);
+	line = line.substr(line.find(",")+1);
+
+	colon = line.find(":");
+	comma = line.find(".");
+	std::string colour = line.substr(colon+2,comma-colon-2);
+
+
 	int id = std::stoi(stringID);
 
-	Fracture f(id,"black");
+	Fracture f(id, colour);
 
 	while(std::getline(in, line))
 	{
@@ -625,7 +679,8 @@ Fracture func::loadFracture(std::string fileName)
 std::vector<Fracture> func::loadGroupFractures(std::string folderName)
 {
 	std::ifstream in(folderName+"/info.txt");
-	
+	int dim;
+	in >> dim;
 	std::vector<Fracture> ret;
 
 	while(!in.eof())
@@ -641,6 +696,100 @@ std::vector<Fracture> func::loadGroupFractures(std::string folderName)
 	
 	return ret;
 	
+}
+
+int func::loadDim(std::string folderName)
+{
+	std::ifstream in(folderName+"/info.txt");
+	int dim;
+	in >> dim;
+
+	return dim;
+
+}
+
+unsigned char *** func::preparePPMCube(int dim)
+{
+        unsigned char *** cube = new unsigned char ** [dim];
+        for(int z = 0; z < dim; z++)
+        {
+                //prepare output
+                unsigned char ** layer = new unsigned char * [dim*dim];
+                for(int x = 0; x < dim*dim; x++)
+                {
+                        unsigned char * row = new unsigned char[3];
+                        row[0] = 0;
+                       	row[1] = 0;
+                        row[2] = 0;
+                        layer[x] = row;
+                }
+                cube[z] = layer;
+        }
+	return cube;
+
+
+}
+
+
+
+unsigned char *** func::preparePPMCube(unsigned char *** & sourceCube, int dim, std::vector<Fracture> & fractures)
+{
+	std::vector< std::pair<std::string, std::vector<int>>> colours({std::pair("white", std::vector<int>({255,255,255})), std::pair("red", std::vector<int>({255,0,0})), std::pair("green", std::vector<int>({0,255,0})), std::pair("blue", std::vector<int>({0,0,255})), std::pair("yellow", std::vector<int>({255,255,0}))});        
+        
+	unsigned char *** cube = new unsigned char ** [dim];
+        for(int z = 0; z < dim; z++)
+        {
+                //prepare output
+                unsigned char ** layer = new unsigned char * [dim*dim];
+                for(int x = 0; x < dim*dim; x++)
+                {
+                        unsigned char * row = new unsigned char[3];
+                        row[0] = 0;
+                       	row[1] = 0;
+                        row[2] = 0;
+                        layer[x] = row;
+                }
+                cube[z] = layer;
+        }
+	
+        for(int z = 0; z < dim; z++)
+	{
+                for(int x = 0; x < dim; x++)
+		{
+			for(int y = 0; y < dim; y++)
+			{	
+				int nx = x*dim + y;
+				if(sourceCube[z][x][y] != 0)
+				{
+					cube[z][nx][0] = 150;
+					cube[z][nx][1] = 150;
+					cube[z][nx][2] = 150;
+				}
+			}
+		}
+	}
+	for(std::vector<Fracture>::iterator f = fractures.begin(); f != fractures.end(); ++f)
+	{
+		std::vector<Voxel> voxels = f->getCoords();
+		std::string colour = f->getColour();
+		for(std::vector<Voxel>::iterator v = voxels.begin(); v != voxels.end(); ++v)
+		{
+			for(int i = 0; i < colours.size(); i++)
+			{
+				if(colour == colours[i].first)
+				{
+					int x = v->getX()*dim + v->getY();
+					cube[v->getZ()][x][0] = colours[i].second[0];
+					cube[v->getZ()][x][1] = colours[i].second[1];
+					cube[v->getZ()][x][2] = colours[i].second[2];
+				}
+			}	
+		}
+	}
+	
+	return cube;
+
+
 }
 
 

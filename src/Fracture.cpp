@@ -3,7 +3,7 @@
 // 24/08/21 
 
 #include "Fracture.h"
-
+using namespace imgpro;
 // default constructor
 imgdata::Fracture::Fracture(void) : coords(std::vector<imgdata::Voxel>()), numVoxels(0), fid(-1), colour("null") {}
 // custom constructor
@@ -77,7 +77,7 @@ namespace imgdata {
 	}
         else
 	{
-        	out << "Fracture ID: " << rhs.getID() << ", Number of voxels: " << rhs.getVoxels() << std::endl;
+        	out << "Fracture ID: " << rhs.getID() << ", Number of voxels: " << rhs.getVoxels() << ", Fracture Colour: " << rhs.getColour() << "."<< std::endl;
 		for(std::vector<Voxel>::iterator i = rhs.coords.begin(); i != rhs.coords.end(); ++i)
 		{
 			out << "("  << i->getX() << "," << i->getY() << "," << i->getZ() << ")" << std::endl;
@@ -194,4 +194,9 @@ void imgdata::Fracture::insertSplit(Split & s)
 			}
 		}
 	}
+}
+
+void imgdata::Fracture::setColour(std::string colour)
+{
+	this->colour = colour;
 }
