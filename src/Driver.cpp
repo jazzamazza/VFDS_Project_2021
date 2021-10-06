@@ -16,7 +16,8 @@ VFDS DRIVER CLASS
 #include "Fracture.h"
 #include "CTReader.h"
 #include "Filter.h"
-
+#include "VolumeVisualizer.h"
+#include "RaySampler.h"
 
 int main(int argc, char* argv[])
 {
@@ -40,8 +41,42 @@ int main(int argc, char* argv[])
         unsigned char*** pgms = ctr.imgread::CTReader::readPGMStack(files);
         std::cout << "CTReader end" << std::endl;
 
+	std::vector<Fracture> loaded = func::loadGroupFractures("f123");
+	int loadedDim = func::loadDim("f123");
+
+	unsigned char *** pgmCube = func::addFracturesToCube(pgms, loaded, loadedDim);
+//	func::writeRawCube("fracsInColour", pgmCube, loadedDim);
+
+
+	raycst::VolumeVisualizer vv(256);
     	int dim = ctr.getDim(files);
 
+    	raycst::RaySampler rs(dim, 2);
+
+	//write out
+    	for (int i = 0; i < 18; ++i) 
+	{
+    		unsigned char ** ip = rs.sample(pgmCube, vv);
+       	 	vv.moveCOP(0);
+        	std::string sz = std::to_string(i);
+        	std::ofstream out("out/castup"+sz+".pgm", std::ofstream::binary);
+        	out << "P5" <<"\n";
+       	 	out << dim << " ";
+        	out << dim << "\n";
+        	out << "255" << "\n";
+
+        	char* wbuf = new char[dim];
+        	for(int x=0; x<dim; x++)
+        	{
+        	    wbuf = reinterpret_cast<char *>(ip[x]);
+        	    out.write(wbuf, dim);
+        	}
+
+        	out.close();
+    	}
+
+
+/*
 	//std::vector<Fracture> blank({});
 	//unsigned char *** RBGformat = func::preparePPMCube(pgms, dim, blank);
 	//func::writeCubeColour("ogInColour",RBGformat, dim);
@@ -93,17 +128,11 @@ int main(int argc, char* argv[])
 		cc++;
 	}
 	std::cout << sum << " fractured voxels detected" << std::endl;
-	
+*/	
 	//save
-	func::saveGroupFractures(frac, "f123", dim);
+	//func::saveGroupFractures(frac, "f123", dim);
 
 	//load
-	std::vector<Fracture> loaded = func::loadGroupFractures("f123");
-	int loadedDim = func::loadDim("f123");
-
-	unsigned char *** RBGformat = func::preparePPMCube(pgms, loadedDim, loaded);
-	func::writeCubeColour("fracsInColour", RBGformat, loadedDim);
-
 
 
     }
