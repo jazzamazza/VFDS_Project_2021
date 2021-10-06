@@ -8,7 +8,7 @@
 #include <sstream>
 #include <fstream>
 
-#include <bits/stdc++.h>
+//#include <bits/stdc++.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
