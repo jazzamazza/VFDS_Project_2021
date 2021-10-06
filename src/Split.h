@@ -13,14 +13,15 @@
 #include "Voxel.h"
 namespace imgpro
 {
+	//represents a portion of a 3D data set
 	class Split
 	{
 		private:
-			imgdata::Voxel*** data;
-			int depth, rows, cols;
-			bool allFracture, someFracture; 
-			Split * children;
-			int ID;
+			imgdata::Voxel*** data; //data
+			int depth, rows, cols; //dimensions
+			bool allFracture, someFracture; //whether the region is only fractured voxels or some fractured voxels
+			Split * children; // Each split object has 8 sub splits(the region split into 8)
+			int ID; //ID
 		public:
 			//core 3
 			Split();
