@@ -78,6 +78,7 @@ void VFDSController::detectFractures()
     {
         vimgData = func::toVoxels(imageData,depth);
         std::cout << "char to voxel"<<std::endl;
+        func::paintBackground(vimgData,depth,depth,depth,150);
         fractures = func::splitMerge(vimgData,depth,depth,depth);
         std::cout << "sm done" <<std::endl;
         splitMergeSuccess=true;
