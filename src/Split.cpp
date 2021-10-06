@@ -6,7 +6,7 @@
 #include "Split.h"
 using namespace imgdata;
 //Default
-imgpro::Split::Split(): data(nullptr), children(nullptr), allFracture(NULL), someFracture(NULL), depth(0), rows(0), cols(0), ID(-1){}
+imgpro::Split::Split(): data(nullptr), children(nullptr), allFracture(false), someFracture(true), depth(0), rows(0), cols(0), ID(-1){}
 
 //Destructor
 imgpro::Split::~Split()
@@ -18,7 +18,7 @@ imgpro::Split::~Split()
 }
 
 //Custom
-imgpro::Split::Split(Voxel*** & data, int depth, int rows, int cols): data(data), children(nullptr), allFracture(NULL), someFracture(NULL), depth(depth), rows(rows), cols(cols), ID(-1){}
+imgpro::Split::Split(Voxel*** & data, int depth, int rows, int cols): data(data), children(nullptr), allFracture(false), someFracture(true), depth(depth), rows(rows), cols(cols), ID(-1){}
 
 //Copy Constructor
 imgpro::Split::Split(const Split & s): data(nullptr), children(nullptr), allFracture(s.allFracture), someFracture(s.someFracture), depth(s.depth), rows(s.rows), cols(s.cols), ID(s.ID)
