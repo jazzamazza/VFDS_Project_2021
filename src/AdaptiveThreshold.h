@@ -2,7 +2,7 @@
 // htciai001
 // 04/10/21
 #ifndef ADAPTIVETHRESHOLD_H
-#define APADTIVETHRESHOLD_H
+#define ADAPTIVETHRESHOLD_H
 #include <vector>
 #include <cmath>
 #include <iostream>

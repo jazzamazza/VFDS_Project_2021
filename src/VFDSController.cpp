@@ -66,9 +66,15 @@ VFDSController::VFDSController(std::string &hdrFilePath){
 VFDSController::~VFDSController(){
 }
 
-void VFDSController::loadFractures()
+void VFDSController::loadFractures(std::string folderpath)
 {
-   //fractures = func::loadGroupFractures()
+    fractures = func::loadGroupFractures(folderpath);
+}
+
+void VFDSController::saveFractures(std::string folderpath)
+{
+    char* c = const_cast<char*>(folderpath.c_str());
+    func::saveGroupFractures(fractures,c,depth);
 }
 
 void VFDSController::readData(std::string hdrFilePath)
@@ -85,8 +91,29 @@ void VFDSController::readData(std::string hdrFilePath)
     depth = ctReader.getDim();
     dataFolderPath = ctReader.getDir();
     pgmPath = ctReader.getPGM(headerFilePath,imageN);
+    detectEnable=true;
 
     emit dataRead(readDataSuccess);
+}
+
+void VFDSController::applyThreshold()
+{
+    thresholdImageData = new unsigned char ** [depth];
+    for(int j = 0; j < depth; ++j) {
+        thresholdImageData[j] = new unsigned char * [depth];
+        for (int k = 0; k < depth; ++k) {
+            thresholdImageData[j][k] = new unsigned char [depth];
+        }
+    }
+
+    denoise::AdaptiveThreshold at(depth, 3, sigma_s, sigma_m);
+
+    for(int i =0; i<depth; ++i)
+    {
+        at.execute(imageData,thresholdImageData,i);
+    }
+
+
 }
 
 void VFDSController::detectFractures()
@@ -99,10 +126,22 @@ void VFDSController::detectFractures()
 
 void VFDSController::charToVoxel()
 {
-    if(readDataSuccess)
+    if(readDataSuccess && detectEnable)
     {
         vimgData = func::toVoxels(imageData,depth);
         voxelDataLoaded=true;
+        emit updateStatus("1/3: Raw data parsed...");
+    }
+
+}
+
+void VFDSController::charToVoxel(unsigned char*** atData)
+{
+    if(readDataSuccess && detectEnable)
+    {
+        vimgData = func::toVoxels(atData,depth);
+        voxelDataLoaded=true;
+        emit updateStatus("1/3: Raw data parsed...");
     }
 
 }
@@ -113,6 +152,7 @@ void VFDSController::fillBackground()
     {
         func::paintBackground(vimgData,depth,depth,depth,150);
         backgroundFilled = true;
+        emit updateStatus("2/3: Background painted...");
     }
 }
 

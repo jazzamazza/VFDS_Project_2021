@@ -60,16 +60,18 @@ class MainWindow : public QMainWindow
         void back();
         void detectFractures();
         void detectionDialogShow();
-        void colourFracs();
+        void thresholdQShow(QAbstractButton *button);
+
         void save();
         void load();
 
     public slots:
         void dataLoaded(bool read);
-        void statusChange(QString status);
+        void statusChange(std::string status);
+        void colourFracs();
 
     signals:
-        
+
 
 
     private: 
@@ -109,6 +111,7 @@ class MainWindow : public QMainWindow
         QVBoxLayout *sidePanelLayout;
         QGridLayout *viewLayout;
         QHBoxLayout *sidePanelButtonsLayout;
+        QGridLayout *sidePanel3DButtonsLayout;
 
         // Menus
         QMenu *fileMenu;
@@ -135,6 +138,10 @@ class MainWindow : public QMainWindow
         //QAction *zoomOutAction;
         //QAction *normalSizeAction;
         //QAction *fitToWindowAction;
+        QAction *upAction;
+        QAction *downAction;
+        QAction *leftAction;
+        QAction *rightAction;
 
         //Labels
         QLabel *imageLabel;
@@ -148,8 +155,13 @@ class MainWindow : public QMainWindow
         QPushButton *nextPushButton;
         QPushButton *backPushButton;
         QPushButton *detectFracturesPushButton;
+        QPushButton *upButton;
+        QPushButton *downButton;
+        QPushButton *leftButton;
+        QPushButton *rightButton;
 
         //Input
         QFileDialog *fileDialog;
+        QMessageBox *atQuestion;
 };
 #endif // MAINWINDOW_H
