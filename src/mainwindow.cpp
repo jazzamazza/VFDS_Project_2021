@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     //set window properties
     setWindowTitle("Volumetric Fracture Detection System");
-    setMinimumSize(750,600);
+    setMinimumSize(750,650);
     statusBar()->showMessage("Ready...");
 
     //setup window
@@ -113,17 +113,17 @@ void MainWindow::setupLayout(){
 
     sidePanelLayout->addLayout(sidePanel3DButtonsLayout);
 
-    sidePanel3DButtonsLayout->addWidget(new QLabel("3D Navigation"),0,1);
-    sidePanel3DButtonsLayout->addWidget(upButton,1,1);
-    sidePanel3DButtonsLayout->addWidget(leftButton,2,0);
-    sidePanel3DButtonsLayout->addWidget(rightButton,2,2);
-    sidePanel3DButtonsLayout->addWidget(downButton,3,1);
-    sidePanel3DButtonsLayout->addWidget(sigmLabel,4,0);
-    sidePanel3DButtonsLayout->addWidget(sig_mSpin,4,1);
-    sidePanel3DButtonsLayout->addWidget(sigsLabel,5,0);
-    sidePanel3DButtonsLayout->addWidget(sig_sSpin,5,1);
-    sidePanel3DButtonsLayout->addWidget(new QLabel("activate threshold"),6,0);
-    sidePanel3DButtonsLayout->addWidget(thresholdCBox,6,1);
+    sidePanel3DButtonsLayout->addWidget(new QLabel("Adaptive Threshold"),0,0);
+    //sidePanel3DButtonsLayout->addWidget(upButton,1,1);
+    //sidePanel3DButtonsLayout->addWidget(leftButton,2,0);
+    //sidePanel3DButtonsLayout->addWidget(rightButton,2,2);
+    //sidePanel3DButtonsLayout->addWidget(downButton,3,1);
+    sidePanel3DButtonsLayout->addWidget(sigmLabel,1,0);
+    sidePanel3DButtonsLayout->addWidget(sig_mSpin,1,1);
+    sidePanel3DButtonsLayout->addWidget(sigsLabel,2,0);
+    sidePanel3DButtonsLayout->addWidget(sig_sSpin,2,1);
+    sidePanel3DButtonsLayout->addWidget(new QLabel("Enable: "),3,0);
+    sidePanel3DButtonsLayout->addWidget(thresholdCBox,3,1);
 
     sidePanelLayout->addStretch();
 
@@ -155,8 +155,8 @@ void MainWindow::createMenus(){
 
     toolsMenu = menuBar()->addMenu("&Tools");
 
-    detectionPreferences = new QAction("&Detection Parameters",this);
-    toolsMenu->addAction(detectionPreferences);
+    //detectionPreferences = new QAction("&Detection Parameters",this);
+    //toolsMenu->addAction(detectionPreferences);
     colourFracturesAction = new QAction("&Colour fractures",this);
     toolsMenu->addAction(colourFracturesAction);
 
@@ -170,6 +170,7 @@ void MainWindow::createMenus(){
 
 void MainWindow::setupSignalsAndSlots() {
     // Setup Signals and Slots
+
     nextAction = new QAction();
     nextAction -> setShortcut(QKeySequence(Qt::Key_Right));
     nextPushButton->addAction(nextAction);
@@ -179,7 +180,7 @@ void MainWindow::setupSignalsAndSlots() {
     backAction -> setShortcut(QKeySequence(Qt::Key_Left));
     backPushButton->addAction(backAction);
     backAction->setEnabled(false);
-
+/*
     upAction = new QAction;
     upAction -> setShortcut(QKeySequence(Qt::Key_W));
     upButton->addAction(upAction);
@@ -199,7 +200,9 @@ void MainWindow::setupSignalsAndSlots() {
     rightAction -> setShortcut(QKeySequence(Qt::Key_D));
     rightButton->addAction(rightAction);
     rightAction->setEnabled(false);
-
+*/
+    saveAction->setEnabled(false);
+    colourFracturesAction->setEnabled(false);
 
     connect(quitAction, &QAction::triggered, this, &QApplication::quit);
     connect(aboutAction, &QAction::triggered, this, &MainWindow::about);
@@ -214,18 +217,13 @@ void MainWindow::setupSignalsAndSlots() {
     connect(detectFracturesPushButton,SIGNAL(clicked()),this,SLOT(detectFractures()));
     //connect(atQuestion,&QMessageBox::buttonClicked,this,&MainWindow::thresholdQShow);
 
-    //connect(detectionPreferences, &QAction::triggered, this, &MainWindow::detectFractures);
+
     connect(&vfdsController,&VFDSController::dataRead,this,&MainWindow::dataLoaded);
-    //connect(&vfdsController,SIGNAL(updateStatus(QString status)),this,SLOT(statusChange(QString status)));
+
     connect(&vfdsController,&VFDSController::updateStatus,this,&MainWindow::statusChange);
-    //connect(&vfdsController,&VFDSController::colourFractures,this,&MainWindow::colourFracs);
-    //connect()
 
-   // connect(&detectionDialog,&QDialog::accepted,this,&MainWindow::detectFractures);
+    connect(colourFracturesAction, &QAction::triggered, this, &MainWindow::colourFracs);
 
-
-
-    //connect(vfdsController, &VFDSController::dataRead,this,&MainWindow::dataLoaded);
 
     
 }
@@ -233,6 +231,8 @@ void MainWindow::setupSignalsAndSlots() {
 void MainWindow::dataLoaded(bool bRead)
 {
         detectFracturesPushButton->setEnabled(bRead);
+        colourFracturesAction->setEnabled(bRead);
+        saveAction->setEnabled(bRead);
 }
 
 void MainWindow::statusChange(std::string status)
@@ -281,41 +281,86 @@ void MainWindow::about()
 
 void MainWindow::next()
 {
-    vfdsController.incImageN();
-    MainWindow::displayImage();
-    //fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()));
-    fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()+1)+"/"+QString::number(vfdsController.getDepth()));
+    if(!colourmade){
+        vfdsController.incImageN();
+        MainWindow::displayImage();
+        //fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()));
+        fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()+1)+"/"+QString::number(vfdsController.getDepth()));
 
-    if (vfdsController.getImageN()==vfdsController.getDepth()-1)
+        if (vfdsController.getImageN()==vfdsController.getDepth()-1)
+        {
+            nextPushButton->setEnabled(false);
+            nextAction->setEnabled(false);
+        }
+
+        if (vfdsController.getImageN() > 0)
+        {
+            backPushButton->setEnabled(true);
+            backAction->setEnabled(true);
+        }
+    }
+    else
     {
-        nextPushButton->setEnabled(false);
-        nextAction->setEnabled(false);
+        vfdsController.incImageN();
+        MainWindow::displaycImg();
+        //fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()));
+        fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()+1)+"/"+QString::number(vfdsController.getDepth()));
+
+        if (vfdsController.getImageN()==vfdsController.getDepth()-1)
+        {
+            nextPushButton->setEnabled(false);
+            nextAction->setEnabled(false);
+        }
+
+        if (vfdsController.getImageN() > 0)
+        {
+            backPushButton->setEnabled(true);
+            backAction->setEnabled(true);
+        }
     }
 
-    if (vfdsController.getImageN() > 0)
-    {
-        backPushButton->setEnabled(true);
-        backAction->setEnabled(true);
-    }
+
 }
 
 void MainWindow::back()
-{
-    vfdsController.decImageN();
-    MainWindow::displayImage();
-    //fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()));
-    fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()+1)+"/"+QString::number(vfdsController.getDepth()));
+{ 
 
-    if (vfdsController.getImageN() == 0)
-    {
-        backPushButton->setEnabled(false);
-        backAction->setEnabled(false);
+    if(!colourmade){
+        vfdsController.decImageN();
+        MainWindow::displayImage();
+        //fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()));
+        fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()+1)+"/"+QString::number(vfdsController.getDepth()));
+
+        if (vfdsController.getImageN() == 0)
+        {
+            backPushButton->setEnabled(false);
+            backAction->setEnabled(false);
+        }
+
+        if (vfdsController.getImageN() < vfdsController.getDepth()-1)
+        {
+            nextPushButton->setEnabled(true);
+            nextAction->setEnabled(true);
+        }
     }
-
-    if (vfdsController.getImageN() < vfdsController.getDepth()-1)
+    else
     {
-        nextPushButton->setEnabled(true);
-        nextAction->setEnabled(true);
+        vfdsController.decImageN();
+        MainWindow::displaycImg();
+        //fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()));
+        fractureLabel->setText(fractureLabelText+QString::number(vfdsController.getImageN()+1)+"/"+QString::number(vfdsController.getDepth()));
+
+        if (vfdsController.getImageN() == 0)
+        {
+            backPushButton->setEnabled(false);
+            backAction->setEnabled(false);
+        }
+
+        if (vfdsController.getImageN() < vfdsController.getDepth()-1)
+        {
+            nextPushButton->setEnabled(true);
+            nextAction->setEnabled(true);
+        }
     }
 
 }
@@ -386,6 +431,11 @@ void MainWindow::detectFractures()
 
 void MainWindow::colourFracs()
 {
+vfdsController.colourFractures();
+colourmade=true;
+vfdsController.setImageN(0);
+
+
 
 }
 
@@ -418,6 +468,37 @@ void MainWindow::displayImage()
                imageLabel->setPixmap(QPixmap::fromImage(image));
               // scrollArea->setVisible(true);
                
+            }
+            else
+            {
+                QMessageBox::warning(this,"Invalid file","Please select a valid PGM file",QMessageBox::Ok,QMessageBox::Default);
+            }
+        }
+        else
+        {
+            QMessageBox::warning(this,"Invalid file path","Invalid file path",QMessageBox::Ok,QMessageBox::Default);
+        }
+    }
+}
+
+void MainWindow::displaycImg()
+{
+    if(vfdsController.getReadDataSuccess()){
+
+        std::string pgmFilePath = "out/colour"+std::to_string(vfdsController.getImageN())+".ppm";
+
+        QString imgfile = QString::fromStdString(pgmFilePath);
+
+        if (pgmFilePath.compare("")!=0)
+        {
+            QImage image;
+            bool valid = image.load(imgfile);
+            //bool valid = true;
+            if(valid)
+            {
+               imageLabel->setPixmap(QPixmap::fromImage(image));
+              // scrollArea->setVisible(true);
+
             }
             else
             {

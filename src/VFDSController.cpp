@@ -190,6 +190,7 @@ void VFDSController::colourFractures()
     }
 
     colourImageData = func::preparePPMCube(imageData,depth,fractures);
+    func::writeCubeColour("colour",colourImageData,depth);
 
 }
 
